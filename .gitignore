@@ -1,0 +1,8 @@
+# created by virtualenv automatically
+pyvenv.cfg
+.vscode
+etc
+lib
+share
+bin
+.DS_Store
