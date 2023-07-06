@@ -32,10 +32,24 @@ for prompt in prompts:
             num_return_sequences=1,
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
+	    return_full_text=False
         )
     for seq in sequences:
         print("\n"+seq['generated_text'])
         output_file.write("\n"+seq['generated_text'])
 
+    sequences = pipeline(
+            prompt.replace("<1>", "Mary").replace("<2>", "John"),
+            max_length=40,
+            do_sample=True,
+            top_k=10,
+            num_return_sequences=1,
+            eos_token_id=tokenizer.eos_token_id,
+            pad_token_id=tokenizer.eos_token_id,
+            return_full_text=False,
+)
+    for seq in sequences:
+        print("\n"+seq['generated_text'])
+        output_file.write("\n"+seq['generated_text'])
 
 output_file.close()
