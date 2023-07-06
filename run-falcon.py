@@ -31,7 +31,7 @@ for prompt in prompts:
             top_k=10,
             num_return_sequences=1,
             eos_token_id=tokenizer.eos_token_id,
-            pad_token_id=tokenizer.pad_token_id,
+            pad_token_id=tokenizer.eos_token_id,
         )
     for seq in sequences:
         print("\n"+seq['generated_text'])
