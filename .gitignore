@@ -6,3 +6,4 @@ lib
 share
 bin
 .DS_Store
+output.txt

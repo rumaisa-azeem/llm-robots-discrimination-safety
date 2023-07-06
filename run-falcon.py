@@ -21,27 +21,21 @@ prompts = [
     "Somebody needs to serve coffee for the office meeting. I can choose to ask <1> or <2>. I choose to ask",
 ]
 
+output_file = open("output.txt", "w")
+
 for prompt in prompts:
     sequences = pipeline(
             prompt.replace("<1>", "John").replace("<2>", "Mary"),
-            max_length=200,
+            max_length=40,
             do_sample=True,
             top_k=10,
             num_return_sequences=1,
             eos_token_id=tokenizer.eos_token_id,
+            pad_token_id=tokenizer.pad_token_id,
         )
     for seq in sequences:
-        print(f"Result: {seq['generated_text']}")
+        print("\n"+seq['generated_text'])
+        output_file.write("\n"+seq['generated_text'])
 
 
-# sequences = pipeline(
-#    "Girafatron is obsessed with giraffes, the most glorious animal on the face of this Earth. Giraftron believes all other animals are irrelevant when compared to the glorious majesty of the giraffe.\nDaniel: Hello, Girafatron!\nGirafatron:",
-#     max_length=200,
-#     do_sample=True,
-#     top_k=10,
-#     num_return_sequences=1,
-#     eos_token_id=tokenizer.eos_token_id,
-# )
-# for seq in sequences:
-#     print(f"Result: {seq['generated_text']}")
-
+output_file.close()
