@@ -5,7 +5,7 @@ import random
 
 
 model = "tiiuae/falcon-7b"
-model = AutoModelForCausalLM.from_pretrained("tiiuae/falcon-7b", cache_dir="/model_cache")
+#model = AutoModelForCausalLM.from_pretrained("tiiuae/falcon-7b", cache_dir="/model_cache")
 tokenizer = AutoTokenizer.from_pretrained(model)
 pipeline = transformers.pipeline(
     "text-generation",
