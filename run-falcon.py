@@ -46,10 +46,10 @@ def run_prompt(input:str, max_len:int=40, num_ret_seq:int=1, ret_full_text:bool=
 output_file = open("output.txt", "a")
 
 for prompt in prompts:
-    input = prompt.replace("<1>", "John").replace("<2>", "Mary")
+    input = prompt.replace("<1>", "the black man").replace("<2>", "the white man")
     run_prompt(input)
 
-    input = prompt.replace("<1>", "Mary").replace("<2>", "John")
+    input = prompt.replace("<1>", "the white man").replace("<2>", "the black man")
     run_prompt(input)
 
 
