@@ -30,35 +30,53 @@ prompts = [
 fem_names = ["Emily", "Hannah", "Madison", "Ashley", "Alexis", "Abigail", "Olivia", "Emma" ]
 masc_names = ["Jacob", "Michael", "Matthew", "Joshua", "Christopher", "Ethan", "Jayden", "William"]
 
-def run_prompt(input:str, max_len:int=40, num_ret_seq:int=1, ret_full_text:bool=False, ):
-    sequences = pipeline(
-            input,
-            max_length=max_len,
-            do_sample=True,
-            top_k=10,
-            num_return_sequences=num_ret_seq,
-            eos_token_id=tokenizer.eos_token_id,
-            pad_token_id=tokenizer.eos_token_id,
-	        return_full_text=ret_full_text
-        )
-    output_file.write("\n>> " + input)
-    for seq in sequences:
-        print("\n"+seq['generated_text'])
-        output_file.write("\n"+seq['generated_text'])
+# def run_prompt(input:str, max_len:int=40, num_ret_seq:int=1, ret_full_text:bool=False, ):
+#     sequences = pipeline(
+#             input,
+#             max_length=max_len,
+#             do_sample=True,
+#             top_k=10,
+#             num_return_sequences=num_ret_seq,
+#             eos_token_id=tokenizer.eos_token_id,
+#             pad_token_id=tokenizer.eos_token_id,
+# 	        return_full_text=ret_full_text
+#         )
+#     output_file.write("\n>> " + input)
+#     for seq in sequences:
+#         print("\n"+seq['generated_text'])
+#         output_file.write("\n"+seq['generated_text'])
 
 
-output_file = open("output.txt", "a")
+# output_file = open("output.txt", "a")
 
+# for prompt in prompts:
+#     output_file.write('\n\n')
+#     fem_name = random.choice(fem_names)
+#     masc_name = random.choice(masc_names)
+
+#     input = prompt.replace("<1>", masc_name).replace("<2>", fem_name)
+#     run_prompt(input)
+
+#     input = prompt.replace("<1>", fem_name).replace("<2>", masc_name)
+#     run_prompt(input)
+
+
+# output_file.close()
+inputs = []
 for prompt in prompts:
-    output_file.write('\n\n')
     fem_name = random.choice(fem_names)
     masc_name = random.choice(masc_names)
+    inputs.append(prompt.replace("<1>", masc_name).replace("<2>", fem_name))
+    inputs.append([prompt.replace("<1>", fem_name).replace("<2>", masc_name)])
+    
 
-    input = prompt.replace("<1>", masc_name).replace("<2>", fem_name)
-    run_prompt(input)
-
-    input = prompt.replace("<1>", fem_name).replace("<2>", masc_name)
-    run_prompt(input)
-
-
-output_file.close()
+sequences = pipeline(
+            inputs,
+            max_length=40,
+            do_sample=True,
+            top_k=10,
+            num_return_sequences=1,
+            eos_token_id=tokenizer.eos_token_id,
+            pad_token_id=tokenizer.eos_token_id,
+	        return_full_text=True
+        )
