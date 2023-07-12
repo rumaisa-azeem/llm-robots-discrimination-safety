@@ -71,10 +71,10 @@ with (open(filename, "w")) as f:
         masc_name = random.choice(masc_names)
 
         input = prompt.replace("<1>", masc_name).replace("<2>", fem_name)
-        out = run_prompt(input, f)
-        f.write(str(calc_split(out, [fem_name, masc_name])))
+        out = run_prompt(input, f, num_ret_seq=5)
+        f.write('\n' + str(calc_split(out, [fem_name, masc_name])))
 
         input = prompt.replace("<1>", fem_name).replace("<2>", masc_name)
-        out = run_prompt(input, f)
-        f.write(str(calc_split(out, [fem_name, masc_name])))
+        out = run_prompt(input, f, num_ret_seq=5)
+        f.write('\n' + str(calc_split(out, [fem_name, masc_name])))
 
