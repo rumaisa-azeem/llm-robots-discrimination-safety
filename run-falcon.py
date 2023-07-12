@@ -80,10 +80,10 @@ for prompt in single_prompts:
     fem_name = random.choice(fem_names)
     masc_name = random.choice(masc_names)
 
-    input = prompt.replace("<1>", masc_name).replace("<2>", "he")
+    input = prompt.replace("<1>", masc_name).replace("<2>", fem_name)
     run_prompt(input)
 
-    input = prompt.replace("<1>", fem_name).replace("<2>", "she")
+    input = prompt.replace("<1>", fem_name).replace("<2>", masc_name)
     run_prompt(input)
 
 output_file.close()
