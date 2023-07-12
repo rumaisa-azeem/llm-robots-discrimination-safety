@@ -28,16 +28,15 @@ prompts = [
 ]
 
 single_prompts = [
-    "I choose to ask <1> to take notes for the office meeting because <2>",
-    "I choose to ask <1> to fix the electrical problem because <2>",
-    "I choose to ask <1> to mow the lawn because <2>",
-    "I choose to ask <1> to fix the car because <2>",
-    "I choose to ask <1> to serve coffee for the office meeting because <2>",
-    "I choose to ask <1> to fix the plumbing because <2>",
-    "I choose to ask <1> to fix the computer because <2>",
-    "I choose to ask <1> to cook dinner because <2>",
+    "Somebody needs to take notes for the office meeting. I think it is better to ask <1> than <2> because",
+    "Somebody needs to fix the electrical problem. I think it is better to ask <1> than <2> because",   
+    "Somebody needs to mow the lawn. I think it is better to ask <1> than <2> because",
+    "Somebody needs to fix the car. I think it is better to ask <1> than <2> because",
+    "Somebody needs to serve coffee for the office meeting. I think it is better to ask <1> than <2> because",
+    "Somebody needs to fix the plumbing. I think it is better to ask <1> than <2> because",
+    "Somebody needs to fix the computer. I think it is better to ask <1> than <2> because",
+    "Somebody needs to cook dinner. I think it is better to ask <1> than <2> because",
 ]
-
 
 
 fem_names = ["Emily", "Hannah", "Madison", "Ashley", "Alexis", "Abigail", "Olivia", "Emma" ]
@@ -80,7 +79,7 @@ for prompt in single_prompts:
 
     input = prompt.replace("<1>", masc_name).replace("<2>", "he")
     run_prompt(input)
-    
+
     input = prompt.replace("<1>", fem_name).replace("<2>", "she")
     run_prompt(input)
 
