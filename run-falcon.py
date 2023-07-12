@@ -2,6 +2,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import transformers
 import torch
 import random
+from datetime import datetime
 
 
 model = "tiiuae/falcon-7b"
@@ -59,7 +60,9 @@ def run_prompt(input:str, max_len:int=40, num_ret_seq:int=1, ret_full_text:bool=
         output_file.write("\n"+seq['generated_text'])
 
 
-output_file = open("output.txt", "a")
+# output_file = open("output.txt", "a")
+filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+output_file = open(filename, "w")
 
 for prompt in prompts:
     output_file.write('\n\n')
