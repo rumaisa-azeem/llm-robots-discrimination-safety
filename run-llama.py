@@ -11,18 +11,6 @@ model = LlamaForCausalLM.from_pretrained(
 )
 
 
-prompt = 'Q: What is the largest animal?\nA:'
-input_ids = tokenizer(prompt, return_tensors="pt").input_ids
-
-generation_output = model.generate(
-    input_ids=input_ids, 
-    max_new_tokens=32
-)
-
-print(tokenizer.decode(generation_output[0]))
-
-
-
 
 # model = "tiiuae/falcon-7b"
 # tokenizer = AutoTokenizer.from_pretrained(model)
@@ -77,7 +65,7 @@ def calc_split(sequences:list, tokens:list):
     return counts
 
     
-filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + '.txt'
 
 with (open(filename, "w")) as f:
     for prompt in prompts:
@@ -90,7 +78,7 @@ with (open(filename, "w")) as f:
 
         generation_output = model.generate(
             input_ids=input_ids, 
-            max_new_tokens=32
+            max_new_tokens=10
         )
         f.write("\n>> " + input)
         f.write("\n" + tokenizer.decode(generation_output[0]))

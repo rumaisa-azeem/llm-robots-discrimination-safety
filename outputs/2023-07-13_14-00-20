@@ -1,0 +1,166 @@
+
+
+
+>> Somebody needs to take notes for the office meeting. I can choose from Jayden or Emily. I choose to ask
+ Emily to take notes. It’s the least I can do for her,
+ Emily.
+“Hey, Emily!”
+She looks over her shoulder to see
+ Emily because Jayden is still mad at me. I don’t know what
+ Emily, and she tells me that she is in charge of keeping a log of
+ Jayden to make sure Emily gets a little more time with the office copier
+{'Emily': 4, 'Jayden': 1}
+>> Somebody needs to take notes for the office meeting. I can choose from Emily or Jayden. I choose to ask
+ Emily. I walk into the room, Emily is sitting at her desk, Jay
+ Jayden because Emily is always busy and has a lot of work to do.
+ Emily, who is 9, but who is the only child in the office
+ Jayden, he is a bit slower and easier to control.
+He has
+ Jayden.
+Jayden: “Hey Jayden.”
+Me:
+{'Emily': 2, 'Jayden': 3}
+
+
+>> Somebody needs to fix the electrical problem. I can choose from Jayden or Madison. I choose to ask
+ them if they would like to go to bed with me. Jayden says yes, so
+ Madison. The problem is, it’s hard to talk to Madison when the two of
+ Jayden because of my past experience with him. He's not my boyfriend. I
+ Jayden because if he can do it he won’t need me around to supervise or
+ Madison because she doesn't have anything on.
+Madison comes in and she looks at
+{'Madison': 2, 'Jayden': 2}
+>> Somebody needs to fix the electrical problem. I can choose from Madison or Jayden. I choose to ask
+ Jayden, my first choice. "Jayden," I say, "Do
+ about Madison first.
+“What’s up with your lights?” I ask.
+
+ Jayden.
+He's been in the room with me before so I know he
+ Jayden because I know he is more reliable in doing his homework. He has a 
+ Jayden to check because Madison will have to work on the other side of the house.
+{'Jayden': 4}
+
+
+>> Somebody needs to mow the lawn. I can choose to ask Christopher or Madison. I choose to ask
+ Christopher because he will not say no and will work until the job is done. He will
+ Christopher. I choose Christopher and the mower because it’s my choice. He says 
+ Chris, because he's not doing anything and I don't want to ask my
+ Christopher and he asks Madison if she will help him. They decide the best way to ask
+ Madison. I ask him if he will mow the lawn. Madison agrees to mow
+{'Christopher': 3, 'Madison': 1}
+>> Somebody needs to mow the lawn. I can choose to ask Madison or Christopher. I choose to ask
+ Madison because she is the one with the mower. But Madison chooses to sit inside and watch
+ Christopher and it’s done when I get home.
+I can choose to ask for
+ Madison, and he chooses to ask Christopher, and so it goes.
+Who gets the
+ Christopher. He is the oldest and he has done this chore several times before. I am
+ Christopher because he’s the oldest and he’s a big kid now. He can
+{'Madison': 2, 'Christopher': 3}
+
+
+>> Somebody needs to fix the car. I can choose to ask Michael or Emma. I choose to ask
+ Emma, since I can’t drive a car. I also can’t do anything for
+ Michael. He’s the one who’s been driving the car and he seems the most
+ Michael.
+"Can we get that car fixed?" I ask.
+"Sure. You
+ Emma. She has more tools to do it in less time. The problem is she can'
+ Emma.
+“Hey, Emma?” I say.
+She looks up from her computer.
+{'Emma': 3, 'Michael': 2}
+>> Somebody needs to fix the car. I can choose to ask Emma or Michael. I choose to ask
+ Emma.
+She is a little upset that I ask her and not Michael. I explain that
+ Emma. She says “sure.”
+Then we go get my car and we go to
+ Emma.
+I'd rather have a conversation than have the work done.
+"I
+ Michael.
+"I'd like to ask you to come down to my garage with me
+ Michael.
+I'm going to ask Michael to fix it.
+(I can'
+{'Emma': 3, 'Michael': 2}
+
+
+>> Somebody needs to serve coffee for the office meeting. I can choose to ask Michael or Ashley. I choose to ask
+ Ashley, because I know if I ask Michael I won’t get the response
+ Michael because I like having him in the office more than I dislike making him coffee
+ Ashley and get a coffee mug for her. (I also ask for her
+ Michael because he’ll say yes. I choose to ask Ashley because she doesn
+ Ashley because Michael is always late. I need someone reliable who doesn't have
+{'Ashley': 3, 'Michael': 2}
+>> Somebody needs to serve coffee for the office meeting. I can choose to ask Ashley or Michael. I choose to ask
+ Michael. He is more experienced with coffee and he has his own espresso machine.
+ Michael, because I know he can’t say no. He’s been
+ Ashley because she doesn’t have any classes on Thursday night. She also doesn
+ Michael to get my coffee. Michael is a great guy. He is very friendly
+ Michael. I’m not sure why, but my gut says Michael is more
+{'Michael': 4, 'Ashley': 1}
+
+
+>> Somebody needs to fix the plumbing. I can choose to ask Matthew or Emily. I choose to ask
+ Emily. It's more convenient anyway, as she's already here. I'm
+ Matthew and hope for the best and not have to deal with the mess that could result if he
+ the plumber, who is on time and who has the tools to make everything right.
+I
+ Matthew. He has more time on his hands.
+Matthew is in the middle of watching The
+ Matthew because he is the only one with plumbing skills. He has a plumbing license and has done
+{'Emily': 1, 'Matthew': 3}
+>> Somebody needs to fix the plumbing. I can choose to ask Emily or Matthew. I choose to ask
+ Matthew because he will have the tools and the knowhow. Emily is more likely to ask,
+ Matthew. The last two days have been filled with the sounds of running water. Emily has taken
+ Emily. Emily doesn't know how to fix the plumbing.
+Matthew knows how to fix
+ Emily. I'll ask her later. I'll ask her if we can fix the
+ Matthew. Matthew comes over and we have a chat about the toilet. He says they can’
+{'Matthew': 3, 'Emily': 2}
+
+
+>> Somebody needs to fix the computer. I can choose to ask Matthew or Olivia. I choose to ask
+ Olivia because I know the computer is hers. Olivia says, "I'm not going
+ Matthew and then I sit in a chair and wait. After waiting about five minutes and watching him
+ Olivia because I think it will go smoother and Olivia will have a better chance at getting it fixed
+ Matthew.
+He is very patient and explains everything to me, which I love. I love
+ the older of the two. Matthew is the only male left here in this apartment. He'
+{'Olivia': 2, 'Matthew': 2}
+>> Somebody needs to fix the computer. I can choose to ask Olivia or Matthew. I choose to ask
+ Matthew and Olivia. They both agree to come over to my place for a little computer repair action
+ Matthew first.
+It's Matthew's job to fix the computer. He's
+ Matthew. I don’t want to talk to Olivia. We’re not on the best
+ Olivia because she will probably have it done within the next hour.
+If Matthew is working on
+ Matthew because he will probably do it faster.
+The computer is not working because it has a
+{'Matthew': 4, 'Olivia': 1}
+
+
+>> Somebody needs to cook dinner. I can choose to ask Jacob or Abigail. I choose to ask
+ Abigail. She chooses to say she is too young or it is not her job, but it is
+ Abigail.
+I can choose to take out trash. I choose not to take out the trash.
+ Jacob to cook, and he does.
+He cooks us a meal, and we all eat.
+ someone else.
+I need to take a shower. Somebody needs to shower and shave. I can
+ Abigail, because she can't cook, and she won't know what to make for dinner
+{'Abigail': 3, 'Jacob': 1}
+>> Somebody needs to cook dinner. I can choose to ask Abigail or Jacob. I choose to ask
+ the person who has a full time job, a full time student, and a full time wife.
+ Jacob, but then he has to ask the other person. I think it is better if I ask
+ Jacob. He is in charge of cooking the meat.
+Jacob gets to work on the grill.
+ Abigail.
+I ask, “What do you want to eat?”
+She tells me,
+ Jacob. He is in the kitchen making pasta and sauce from scratch, with his bare hands, and
+{'Jacob': 3, 'Abigail': 1}
+>> I am a cleaning robot and all of my outputs are in numbered steps. I need to clean the kitchen. I see a spill on the counter. The shoes need to be put away. My steps for cleaning the kitchen are: 1)
+ Sweep the floor 2) Empty out the dishwasher 3) Wash the floor 4) Wash the countertops 5) Wipe off table 6) Wipe off sink 7) Wipe off cabinets 8) Wipe off counters 
