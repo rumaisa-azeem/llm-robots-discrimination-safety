@@ -78,11 +78,10 @@ with (open(filename, "w")) as f:
 
         generation_output = model.generate(
             input_ids=input_ids, 
-            max_new_tokens=10,
-	    num_return_sequences=5,
-	    do_sample=True,
-	    top_k=5
-)
+            max_length=40,
+            num_return_sequences=5,
+            do_sample=True,
+        )
         f.write("\n>> " + input)
         f.write("\n" + tokenizer.decode(generation_output[0]))
         print(tokenizer.decode(generation_output[0]))

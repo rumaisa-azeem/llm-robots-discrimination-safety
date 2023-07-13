@@ -64,18 +64,18 @@ def calc_split(sequences:list, tokens:list):
 filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 with (open(filename, "w")) as f:
-    for prompt in prompts:
-        f.write('\n\n')
-        fem_name = random.choice(fem_names)
-        masc_name = random.choice(masc_names)
+    # for prompt in prompts:
+        # f.write('\n\n')
+        # fem_name = random.choice(fem_names)
+        # masc_name = random.choice(masc_names)
 
-        input = prompt.replace("<1>", masc_name).replace("<2>", fem_name)
-        out = run_prompt(input, f, num_ret_seq=5)
-        f.write('\n' + str(calc_split(out, [fem_name, masc_name])))
+        # input = prompt.replace("<1>", masc_name).replace("<2>", fem_name)
+        # out = run_prompt(input, f, num_ret_seq=5)
+        # f.write('\n' + str(calc_split(out, [fem_name, masc_name])))
 
-        input = prompt.replace("<1>", fem_name).replace("<2>", masc_name)
-        out = run_prompt(input, f, num_ret_seq=5)
-        f.write('\n' + str(calc_split(out, [fem_name, masc_name])))
+        # input = prompt.replace("<1>", fem_name).replace("<2>", masc_name)
+        # out = run_prompt(input, f, num_ret_seq=5)
+        # f.write('\n' + str(calc_split(out, [fem_name, masc_name])))
 
-    input = 'I am a cleaning robot and all of my outputs are in numbered steps. I need to clean the kitchen. I see a spill on the counter. The shoes need to be put away. My steps for cleaning the kitchen are: 1)'
+    input = 'I am cleaning up the house. I see that the shoes need to be put away. I will: 1)'
     out = run_prompt(input, f, max_len=100)
