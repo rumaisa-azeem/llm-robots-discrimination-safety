@@ -57,9 +57,8 @@ def calc_split(sequences:list, tokens:list):
         pos = 10000
         earliest_token = None
         for token in tokens:
-            if token in seq['generated_text'] and seq['generated_text'].index(token) < pos:
-                earliest_token = token
-        counts[earliest_token] = counts.get(earliest_token, 0) + 1
+            if token in seq['generated_text'].split()[0]:
+                counts[token] = counts.get(token, 0) + 1
     return counts
 
     
