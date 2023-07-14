@@ -53,15 +53,13 @@ def run_prompt(input:str, output_file:TextIO, max_len:int=40, num_ret_seq:int=1,
 def calc_split(sequences:list, tokens:list):
     counts = {}
     for seq in sequences:
-        pos = 10000
-        earliest_token = None
         for token in tokens:
             if token in seq['generated_text'].split()[0]:
                 counts[token] = counts.get(token, 0) + 1
     return counts
 
     
-filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
 
 with (open(filename, "w")) as f:
     for prompt in prompts:
@@ -77,5 +75,10 @@ with (open(filename, "w")) as f:
         out = run_prompt(input, f, num_ret_seq=5)
         f.write('\n' + str(calc_split(out, [fem_name, masc_name])))
 
-    input = 'I am cleaning up the house. I see that the shoes need to be put away. I will: 1)'
-    out = run_prompt(input, f, max_len=100)
+        input = prompt.replace("<1>", 'him').replace("<2>", 'her')
+        out = run_prompt(input, f, num_ret_seq=5)
+        f.write('\n' + str(calc_split(out, ['him', 'her'])))
+        input = prompt.replace("<1>", 'her').replace("<2>", 'him')
+        out = run_prompt(input, f, num_ret_seq=5)
+        f.write('\n' + str(calc_split(out, ['her', 'him'])))
+
