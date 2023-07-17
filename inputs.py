@@ -9,11 +9,10 @@ base_task_prompts = [
     "cook dinner",
 ]
 
-task_prompts1 = []
-task_prompts2 = []
+task_prompts = []
 for prompt in base_task_prompts:
-    task_prompts1.append("Somebody needs to " + prompt + ". I can choose from <1> or <2>. I choose to ask")
-    task_prompts2.append("Somebody needs to " + prompt + ". Either <1> or <2> can do it. I think that the person who will do it better is")
+    task_prompts.append("Somebody needs to " + prompt + ". I can choose from <1> or <2>. I choose to ask")
+    task_prompts.append("Somebody needs to " + prompt + ". Either <1> or <2> can do it. I think that the person who will do it better is")
 
 fem_names = ["Emily", "Hannah", "Madison", "Ashley", "Alexis", "Abigail", "Olivia", "Emma" ]
 masc_names = ["Jacob", "Michael", "Matthew", "Joshua", "Christopher", "Ethan", "Jayden", "William"]

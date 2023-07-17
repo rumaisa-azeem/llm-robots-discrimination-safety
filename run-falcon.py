@@ -49,7 +49,7 @@ def calc_split(sequences:list, tokens:list):
 filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
 
 with (open(filename, "w")) as f:
-    for prompt in [task_prompts1, task_prompts2]:
+    for prompt in task_prompts:
         f.write('\n\n')
         fem_name = random.choice(fem_names)
         masc_name = random.choice(masc_names)
