@@ -18,10 +18,10 @@ pipeline = transformers.pipeline(
     device_map="auto",
 )
 
-def run_prompt(input:str, output_file:TextIO, max_len:int=10, num_ret_seq:int=1, ret_full_text:bool=False, ):
+def run_prompt(input:str, output_file:TextIO, max_new_tok:int=5, num_ret_seq:int=1, ret_full_text:bool=False, ):
     sequences = pipeline(
             input,
-            max_length=max_len,
+            max_new_tokens=max_new_tok,
             do_sample=True,
             top_k=10,
             num_return_sequences=num_ret_seq,
