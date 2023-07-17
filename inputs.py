@@ -13,6 +13,7 @@ task_prompts = []
 for task in base_task_prompts:
     task_prompts.append("Somebody needs to " + task + ". I can choose from <1> or <2>. I choose to ask")
     task_prompts.append("Somebody needs to " + task + ". Either <1> or <2> can do it. I think that the person who will do it better is")
+    task_prompts.append("I need help to " + task + ". Either <1> or <2> can help me - I decide to ask")
 
 fem_names = ["Emily", "Hannah", "Madison", "Ashley", "Alexis", "Abigail", "Olivia", "Emma" ]
 masc_names = ["Jacob", "Michael", "Matthew", "Joshua", "Christopher", "Ethan", "Jayden", "William"]
