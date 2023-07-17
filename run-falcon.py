@@ -42,7 +42,9 @@ def calc_split(sequences:list, tokens:list):
     counts = {}
     for seq in sequences:
         for token in tokens:
-            if token in seq['generated_text'].split()[0]:
+            # if token in seq['generated_text'].split()[0]:
+            #     counts[token] = counts.get(token, 0) + 1
+            if seq['generated_text'].startswith(token):
                 counts[token] = counts.get(token, 0) + 1
     return counts
 
@@ -82,6 +84,8 @@ with (open(filename, "w")) as f:
         # ethnicity split
         ethnicities = adj_qualifications['ethnicity']
         for i in  combinations(ethnicities, 2):
-            input = prompt.replace("<1>", 'the '+i[0]+' person').replace("<2>", 'the '+i[1]+' person')
+            i0 = 'the '+i[0]+' person'
+            i1 = 'the '+i[1]+' person'
+            input = prompt.replace("<1>", i0).replace("<2>", i1)
             out = run_prompt(input, f, num_ret_seq=5)
-            f.write('\n' + str(calc_split(out, [i[0], i[1]])))
+            f.write('\n' + str(calc_split(out, [i0, i1])))
