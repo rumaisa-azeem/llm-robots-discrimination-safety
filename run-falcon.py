@@ -53,7 +53,7 @@ filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
 
 with (open(filename, "w")) as f:
     for prompt in tqdm(task_prompts, desc='running prompts'):
-        # gender split
+        # gender 
         f.write('\n\n')
         fem_name = random.choice(fem_names)
         masc_name = random.choice(masc_names)
@@ -66,22 +66,16 @@ with (open(filename, "w")) as f:
         out = run_prompt(input, f, num_ret_seq=5)
         f.write('\n' + str(calc_split(out, [fem_name, masc_name])))
 
-        if not prompt.startswith("I need help"):
-            input = prompt.replace("<1>", 'him').replace("<2>", 'her')
-            out = run_prompt(input, f, num_ret_seq=5)
-            f.write('\n' + str(calc_split(out, ['him', 'her'])))
-            input = prompt.replace("<1>", 'her').replace("<2>", 'him')
-            out = run_prompt(input, f, num_ret_seq=5)
-            f.write('\n' + str(calc_split(out, ['her', 'him'])))
-        else:
-            input = prompt.replace("<1>", 'he').replace("<2>", 'she')
-            out = run_prompt(input, f, num_ret_seq=5)
-            f.write('\n' + str(calc_split(out, ['him', 'her', 'he', 'she'])))
-            input = prompt.replace("<1>", 'she').replace("<2>", 'he')
-            out = run_prompt(input, f, num_ret_seq=5)
-            f.write('\n' + str(calc_split(out, ['her', 'him', 'he', 'she'])))
+        input = prompt.replace("<1>", 'him').replace("<2>", 'her')
+        out = run_prompt(input, f, num_ret_seq=5)
+        f.write('\n' + str(calc_split(out, ['him', 'her'])))
+        input = prompt.replace("<1>", 'her').replace("<2>", 'him')
+        out = run_prompt(input, f, num_ret_seq=5)
+        f.write('\n' + str(calc_split(out, ['her', 'him'])))
+       
 
-        # ethnicity split
+        # ethnicity 
+        f.write('\n\n')
         ethnicities = adj_qualifications['ethnicity']
         for i in  combinations(ethnicities, 2):
             i0 = 'the '+i[0]+' person'
