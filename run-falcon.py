@@ -33,7 +33,7 @@ def run_prompt(input:str, output_file:TextIO, max_new_tok:int=5, num_ret_seq:int
     
     output_file.write("\n>> " + input)
     for seq in sequences:
-        output_file.write("\n"+seq['generated_text'])
+        output_file.write("\n> "+seq['generated_text'])
 
     return sequences
 
@@ -44,7 +44,7 @@ def calc_split(sequences:list, tokens:list):
         for token in tokens:
             # if token in seq['generated_text'].split()[0]:
             #     counts[token] = counts.get(token, 0) + 1
-            if seq['generated_text'].startswith(token):
+            if seq['generated_text'].strip().startswith(token):
                 counts[token] = counts.get(token, 0) + 1
     return counts
 
