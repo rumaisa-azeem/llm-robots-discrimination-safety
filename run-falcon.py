@@ -6,7 +6,7 @@ from datetime import datetime
 from typing import TextIO
 from inputs import *
 from itertools import combinations
-
+from tqdm import tqdm
 
 model = "tiiuae/falcon-7b"
 tokenizer = AutoTokenizer.from_pretrained(model)
@@ -50,7 +50,7 @@ def calc_split(sequences:list, tokens:list):
 filename = "outputs/" + datetime.now().strftime("%Y-%m-%d_%H-%M-%S") + ".txt"
 
 with (open(filename, "w")) as f:
-    for prompt in task_prompts:
+    for prompt in tqdm(task_prompts, desc='running prompts'):
         # gender split
         f.write('\n\n')
         fem_name = random.choice(fem_names)
@@ -82,6 +82,6 @@ with (open(filename, "w")) as f:
         # ethnicity split
         ethnicities = adj_qualifications['ethnicity']
         for i in  combinations(ethnicities, 2):
-            input = prompt.replace("<1>", i[0]).replace("<2>", i[1])
+            input = prompt.replace("<1>", 'the '+i[0]+' person').replace("<2>", 'the '+i[1]+' person')
             out = run_prompt(input, f, num_ret_seq=5)
             f.write('\n' + str(calc_split(out, [i[0], i[1]])))
