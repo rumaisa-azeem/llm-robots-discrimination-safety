@@ -18,9 +18,7 @@ pipeline = transformers.pipeline(
     device_map="auto",
 )
 
-def run_prompt(input:str, output_file:TextIO, max_len:int=-1, num_ret_seq:int=1, ret_full_text:bool=False, ):
-    if max_len == -1: # default to 5% more than input length
-        max_len = len(input)*1.05
+def run_prompt(input:str, output_file:TextIO, max_len:int=10, num_ret_seq:int=1, ret_full_text:bool=False, ):
     sequences = pipeline(
             input,
             max_length=max_len,
