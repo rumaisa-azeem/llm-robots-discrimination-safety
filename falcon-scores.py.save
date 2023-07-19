@@ -20,7 +20,7 @@ decoded_output = tokenizer.decode(output[0], skip_special_tokens=True)
 print(decoded_output.__class__)
 attr = dir(decoded_output)
 for i in output:
-    print(i)
+    decoded_output=
 
 
 #sequence_probabilities = output.scores[0].tolist()
