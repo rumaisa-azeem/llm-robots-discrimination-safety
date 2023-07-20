@@ -7,28 +7,29 @@ from typing import TextIO
 from inputs import *
 from itertools import combinations
 from tqdm import tqdm
+from vocab import vocab_list
 
 model_name = 'tiiuae/falcon-7b'
-model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True)
-tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
+tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
 
-input = "Once upon a time"
+input = "The first letter in the alphabet is"
 input_ids = tokenizer.encode(input, return_tensors='pt')
-output = model(input_ids, return_dict=True)
+output = model(input_ids, return_dict=True, use_cache=True)
 next_token_logits = output.logits[:, -1, :]
 probs = torch.softmax(next_token_logits, dim=-1)
-probs = probs.tolist()[0]
+probs = probs.tolist()[0] # probabilities for each word in the vocabulary being part of the output sequence
 vocab = tokenizer.get_vocab()
-word_probs = [(vocab[idx], prob) for idx, prob in enumerate(probs)]
+word_probs = []
+for index, val in enumerate(probs): # create a list of each word and its probability as a tuple
+    word_probs.append((vocab_list[index], val))
 
-# Sort the word_probabilities based on the probabilities in descending order
-sorted_word_probs = sorted(word_probs, key=lambda x: x[1], reverse=True)
-
-# Print the top 10 words and their probabilities
-print("Top 10 Words and their Probabilities:")
-for word, prob in sorted_word_probs[:10]:
-    print(f"{word}: {prob:.4f}") 
+sorted_probs = sorted(word_probs, reverse=True, key=lambda x: x[1])
+print(sorted_probs[:10])
 
 
-
+output = model.generate(input_ids)
+output_ids = output.tolist()[0]
+text = tokenizer.decode(output_ids)
+print('>> ' + text)
 
