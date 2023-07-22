@@ -25,3 +25,7 @@ sequences = pipeline(
             pad_token_id=tokenizer.eos_token_id,
 	        return_full_text=False
         )
+
+for seq in sequences:
+    for i in seq:
+        print(i['generated_text'])
