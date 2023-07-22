@@ -14,6 +14,8 @@ class PromptSet(Dataset):
         return len(self.prompts_dict)
     
     def __getitem__(self, index):
+        if index.__class__ == int:
+            return list(self.prompts_dict.keys())[index]
         return self.prompts_dict[index]
 
     # def add_data(self, data:Dict[str, list]):

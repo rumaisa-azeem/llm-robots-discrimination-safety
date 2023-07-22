@@ -16,7 +16,7 @@ pipeline = transformers.pipeline(
 )
 
 sequences = pipeline(
-            KeyDataset(prompt_set),
+            prompt_set,
             max_new_tokens=10,
             do_sample=True,
             top_k=10,
