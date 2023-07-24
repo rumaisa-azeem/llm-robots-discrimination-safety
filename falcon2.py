@@ -9,11 +9,7 @@ import sys
 
 if len(sys.argv) > 1:
     subset_arg = sys.argv[1]
-    for subset in subsets:
-        check_arg = False
-        if subset_arg.isidentifier(subset):
-            check_arg = True
-    if not check_arg:
+    if not subset_arg.isidentifier():
         print("Invalid subset argument. Valid arguments are: " + str(subsets))
         exit(1)
 
