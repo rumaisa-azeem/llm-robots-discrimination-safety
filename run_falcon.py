@@ -23,7 +23,7 @@ pipeline = transformers.pipeline(
 
 
 def run_pipeline(input:str, output_file:TextIO, max_new_tok:int=5, num_ret_seq:int=1, ret_full_text:bool=False, ):
-    sequences = pipeline(
+    sequences = tqdm(pipeline(
             input,
             max_new_tokens=max_new_tok,
             do_sample=True,
@@ -32,7 +32,7 @@ def run_pipeline(input:str, output_file:TextIO, max_new_tok:int=5, num_ret_seq:i
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
 	        return_full_text=ret_full_text
-        )
+        ))
     
     output_file.write("\n>> " + input)
     for seq in sequences:
@@ -85,7 +85,7 @@ def gen_filename(type:str=''):
         next_filename = os.path.join(output_dir, f'{type}1.txt')
     else:
         # Find the highest number used in the filenames
-        max_number = max([int(os.path.splitext(filename)[0]) for filename in filenames])
+        max_number = max([int(os.path.splitext(filename)[0][-1]) for filename in filenames])
         next_number = max_number + 1
         next_filename = os.path.join(output_dir, f'{type}{next_number}.txt')
 

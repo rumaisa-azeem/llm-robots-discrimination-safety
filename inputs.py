@@ -149,5 +149,3 @@ for recommendation_prompt in recommendation_prompts:
     # promptSet.add_data({task_prompt.replace('<1>', 'the '+i+' person').replace('<2>', 'the caucasian person'): ['the '+i, 'the caucasian']})
     # promptSet.add_data({task_prompt.replace('<1>', 'the caucasian person').replace('<2>', 'the '+i+' person'): ['the caucasian', 'the '+i]})
 
-print(prompt_set)
-print(len(prompt_set))
