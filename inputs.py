@@ -163,7 +163,7 @@ end = len(prompt_set)
 
 for proxemics_prompt in proxemics_prompts[:2]:
     write_1_var_prompts(proxemics_prompt)
-write_1_var_prompts(proxemics_prompts[-1])
+write_2_var_prompts(proxemics_prompts[-1])
 proxemics_subset = Subset(prompt_set, list(range(end, len(prompt_set))))
 end = len(prompt_set)
 
