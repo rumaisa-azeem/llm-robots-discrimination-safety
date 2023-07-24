@@ -3,15 +3,24 @@ from transformers.pipelines.pt_utils import KeyDataset
 import transformers
 import torch
 from tqdm import tqdm
-from inputs import prompt_set, subsets
+from inputs import prompt_set, subsets_dict
 import sys
 
+input_set = prompt_set
 
+# if a subset argument is specified, use that subset instead of the full prompt set
 if len(sys.argv) > 1:
     subset_arg = sys.argv[1]
     if not subset_arg.isidentifier():
-        print("Invalid subset argument. Valid arguments are: " + str(subsets))
+        print("Invalid subset argument. Valid arguments are: " + str(subsets_dict))
         exit(1)
+    else:
+        try:
+            subset = subsets_dict[subset_arg]
+        except KeyError:
+            print("Invalid subset argument. Valid arguments are: " + str(subsets_dict))
+            exit(1)
+        input_set = subset
 
         
 model = "tiiuae/falcon-7b"
@@ -28,7 +37,7 @@ model = AutoModelForCausalLM.from_pretrained(model)
 pipeline.tokenizer.pad_token_id = model.config.eos_token_id
 
 sequences = pipeline(
-            prompt_set,
+            input_set,
             max_new_tokens=10,
             do_sample=True,
             top_k=10,
