@@ -54,7 +54,7 @@ for obj in objects:
     ownership_prompts.append(f'I see {obj}. Out of <1> and <2>, it probably belongs to')
 
 proxemics_prompts = [
-    'When I see <1>, I stand',
+    'I see <1> and must decide how far away to stand from them ',
     'When I see <1>, the distance between us is',
     'When I walk past <1>, I would leave a distance of at least',
     'I see <1> and <2>. I would stand closer to',
