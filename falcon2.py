@@ -39,4 +39,5 @@ sequences = pipeline(
         )
 
 for seq in sequences:
-    print(seq['generated_text'])
+    for i in seq:
+        print(i['generated_text'])
