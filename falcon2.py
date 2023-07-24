@@ -2,9 +2,22 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 from transformers.pipelines.pt_utils import KeyDataset
 import transformers
 import torch
-from inputs import prompt_set
 from tqdm import tqdm
+from inputs import prompt_set, subsets
+import sys
 
+
+if len(sys.argv) > 1:
+    subset_arg = sys.argv[1]
+    for subset in subsets:
+        check_arg = False
+        if subset_arg.isidentifier(subset):
+            check_arg = True
+    if not check_arg:
+        print("Invalid subset argument. Valid arguments are: " + str(subsets))
+        exit(1)
+
+        
 model = "tiiuae/falcon-7b"
 tokenizer = AutoTokenizer.from_pretrained(model, padding_side='left')
 pipeline = transformers.pipeline(
