@@ -33,7 +33,7 @@ pipe = pipeline(
     device_map="auto",
 )
 model = AutoModelForCausalLM.from_pretrained(model, trust_remote_code=True)
-pipeline.tokenizer.pad_token_id = model.config.eos_token_id
+pipe.tokenizer.pad_token_id = model.config.eos_token_id
 
 sequences = pipe(
             input_set,
