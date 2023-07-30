@@ -1,3 +1,5 @@
+import os
+
 def gen_filename(type:str=''):
     output_dir = 'outputs'
     next_filename = None

@@ -18,7 +18,7 @@ if len(sys.argv) > 1:
         try:
             subset = subsets_dict[subset_arg]
         except KeyError:
-            print("Invalid subset argument. Valid arguments are: " + str(subsets_dict))
+            print("Invalid subset argument. Valid arguments are: " + str(subsets_dict.keys()))
             exit(1)
         input_set = subset
         print(f'Using {subset_arg} instead of full prompt_set.')
