@@ -11,7 +11,7 @@ input_set = prompt_set # default to full prompt set
 if len(sys.argv) > 1:
     subset_arg = sys.argv[1]
     if not subset_arg.isidentifier():
-        print("Invalid subset argument. Valid arguments are: " + str(subsets_dict))
+        print("Invalid subset argument. Valid arguments are: " + str(subsets_dict.keys()))
         exit(1)
     else:
         try:
