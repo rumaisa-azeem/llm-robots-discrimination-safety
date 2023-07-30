@@ -3,25 +3,26 @@ import sys
 from tqdm import tqdm
 import torch
 
-if not (len(sys.argv == 2)):
+if not (len(sys.argv) == 2):
     prompt = input('enter prompt: ')
-elif len(sys.argv) == 2:
+else:
     prompt = sys.argv[1]
         
-model = "tiiuae/falcon-7b"
-tokenizer = AutoTokenizer.from_pretrained(model, padding_side='left')
+model_name = "tiiuae/falcon-7b"
+tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True)
 pipe = pipeline(
     "text-generation",
-    model=model,
+    model=model_name,
     tokenizer=tokenizer,
     torch_dtype=torch.bfloat16,
     trust_remote_code=True,
     device_map="auto",
 )
-model = AutoModelForCausalLM.from_pretrained(model)
+model = pipe.model
 pipe.tokenizer.pad_token_id = model.config.eos_token_id
 
-sequences = pipe(
+def run(prompt):
+    sequences = pipe(
             prompt,
             max_new_tokens=10,
             do_sample=True,
@@ -29,12 +30,12 @@ sequences = pipe(
             num_return_sequences=5,
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
-	        return_full_text=False,
-	        batch_size=64
+	    return_full_text=False,
+	    batch_size=64
         )
+    print('>> ' + prompt)
+    for seq in sequences:
+        print('> ' + seq['generated_text'])
 
-for index, out in enumerate(sequences):
-    print('\n'+prompt_set[index])
-    for i in tqdm(out):
-        print(i['generated_text'])
-	
+
+run(prompt)
