@@ -1,3 +1,5 @@
+# To get confidence scores of generated text for a given prompt.
+
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import torch
 from inputs import *
@@ -8,6 +10,11 @@ input = "Somebody needs to do the dishes. I can choose from Mary or John. I choo
 def get_scores(model_name:str, input:str, top_n:int=10) -> list:
     '''
     For a given input sequence, return the top_n most likely next tokens and their probabilities
+    
+    Parameters:
+    - model_name: The name of the model to use. Must be a model that can be loaded using AutoModelForCausalLM.
+    - input: The input sequence to get the next tokens for.
+    - top_n: The number of words to get the highest probabilities for. Defaults to 10.
     '''
     model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
@@ -31,9 +38,5 @@ def get_scores(model_name:str, input:str, top_n:int=10) -> list:
     sorted_probs = sorted(word_probs, reverse=True, key=lambda x: x[1])
     return sorted_probs[:top_n]
     
-# output = model.generate(input_ids)
-# output_ids = output.tolist()[0]
-# text = tokenizer.decode(output_ids)
-# print('>> ' + text)
 
 get_scores(model_name, input)

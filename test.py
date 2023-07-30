@@ -1,8 +1,12 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+# Test the model on a given prompt using the test() function. 
+# Use with python -i in the command line to avoid needing to load the model repeatedly.
+
+from transformers import AutoTokenizer, pipeline
 import sys
 from tqdm import tqdm
 import torch
 
+# can run with prompt as command line argument, or enter prompt when prompted
 if not (len(sys.argv) == 2):
     prompt = input('enter prompt: ')
 else:
@@ -21,7 +25,10 @@ pipe = pipeline(
 model = pipe.model
 pipe.tokenizer.pad_token_id = model.config.eos_token_id
 
-def run(prompt):
+def test(prompt):
+    '''
+    Run the model on the given prompt and print the generated text.
+    '''
     sequences = pipe(
             prompt,
             max_new_tokens=10,
@@ -38,4 +45,4 @@ def run(prompt):
         print('> ' + seq['generated_text'])
 
 
-run(prompt)
+test(prompt)
