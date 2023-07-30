@@ -1,13 +1,12 @@
-from transformers import AutoTokenizer, AutoModelForCausalLM
-from transformers.pipelines.pt_utils import KeyDataset
-import transformers
+# Run prompts on Falcon model w either full dataset of prompts or a subset
+
+from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
 import torch
 from tqdm import tqdm
 from inputs import prompt_set, subsets_dict
 import sys
 
-input_set = prompt_set
-
+input_set = prompt_set # default to full prompt set
 # if a subset argument is specified, use that subset instead of the full prompt set
 if len(sys.argv) > 1:
     subset_arg = sys.argv[1]
@@ -25,7 +24,7 @@ if len(sys.argv) > 1:
 
 model = "tiiuae/falcon-7b"
 tokenizer = AutoTokenizer.from_pretrained(model, padding_side='left', trust_remote_code=True)
-pipeline = transformers.pipeline(
+pipe = pipeline(
     "text-generation",
     model=model,
     tokenizer=tokenizer,
@@ -36,7 +35,7 @@ pipeline = transformers.pipeline(
 model = AutoModelForCausalLM.from_pretrained(model, trust_remote_code=True)
 pipeline.tokenizer.pad_token_id = model.config.eos_token_id
 
-sequences = pipeline(
+sequences = pipe(
             input_set,
             max_new_tokens=10,
             do_sample=True,
@@ -44,8 +43,8 @@ sequences = pipeline(
             num_return_sequences=5,
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
-	    return_full_text=False,
-	    batch_size=64
+	        return_full_text=False,
+	        batch_size=64
         )
 
 for index, out in enumerate(sequences):
