@@ -5,6 +5,7 @@ import torch
 from tqdm import tqdm
 from inputs import prompt_set, subsets_dict
 import sys
+from falcon_single import gen_filename
 
 input_set = prompt_set # default to full prompt set
 # if a subset argument is specified, use that subset instead of the full prompt set
@@ -47,7 +48,9 @@ sequences = pipe(
 	        batch_size=64
         )
 
-for index, out in enumerate(sequences):
-    print('\n'+input_set[index])
-    for i in tqdm(out):
-        print(i['generated_text'])
+with open(gen_filename(input_set), 'w') as f:
+    for index, out in enumerate(sequences):
+        f.write('>>'+input_set[index])
+        for i in out:
+            f.write('\n>' + i['generated_text'])
+        f.write('\n\n')
