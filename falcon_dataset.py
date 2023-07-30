@@ -33,7 +33,8 @@ pipe = pipeline(
     trust_remote_code=True,
     device_map="auto",
 )
-model = AutoModelForCausalLM.from_pretrained(model, trust_remote_code=True)
+
+model = pipe.model
 pipe.tokenizer.pad_token_id = model.config.eos_token_id
 
 sequences = pipe(
@@ -48,7 +49,7 @@ sequences = pipe(
 	        batch_size=64
         )
 
-with open(gen_filename(input_set), 'w') as f:
+with open(gen_filename(subset_arg), 'w') as f:
     for index, out in enumerate(sequences):
         f.write('>>'+input_set[index])
         for i in out:
