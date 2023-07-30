@@ -5,7 +5,7 @@ import torch
 from tqdm import tqdm
 from inputs import prompt_set, subsets_dict
 import sys
-from falcon_single import gen_filename
+from helpers import gen_filename
 
 input_set = prompt_set # default to full prompt set
 # if a subset argument is specified, use that subset instead of the full prompt set
