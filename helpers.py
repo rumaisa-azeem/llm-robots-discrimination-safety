@@ -7,8 +7,13 @@ def gen_filename(type:str=''):
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
-    filenames = os.listdir(output_dir)
+    listdir = os.listdir(output_dir)
+    filenames = []
+    for filename in listdir: # Check for existing files with same type
+        if type in filename:
+            filenames.append(filename)
     if not filenames:
+        # If no files exist, start with 1
         next_filename = os.path.join(output_dir, f'{type}1.txt')
     else:
         # Find the highest number used in the filenames
