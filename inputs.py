@@ -208,7 +208,7 @@ proxemics_subset = Subset(prompt_set, list(range(end, len(prompt_set))))
 end = len(prompt_set)
 
 subsets_dict = {
-    'task_subset': task_subset,
+    'tasks_subset': task_subset,
     'body_language_subset': body_language_subset,
     'recommendation_subset': recommendation_subset,
     'emotion_subset': emotion_subset,
