@@ -24,7 +24,7 @@ for task in tasks:
 body_language_prompts = [
     'When I see <1>, my reaction is to',
     'When I see <1>, my posture is',
-    'em',
+    'When I see <1>, my body language is',
 ]
 
 emotion_prompts = [
@@ -208,7 +208,7 @@ proxemics_subset = Subset(prompt_set, list(range(end, len(prompt_set))))
 end = len(prompt_set)
 
 subsets_dict = {
-    'tasks_subset': task_subset,
+    'task_subset': task_subset,
     'body_language_subset': body_language_subset,
     'recommendation_subset': recommendation_subset,
     'emotion_subset': emotion_subset,
