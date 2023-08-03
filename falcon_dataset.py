@@ -57,21 +57,22 @@ pipe.tokenizer.pad_token_id = model.config.eos_token_id
 #         f.write('\n\n')
 
 for subset in subsets_dict.keys():
+    print('running prompts for ' + subset)
     sequences = pipe(
-            subset,
+            subsets_dict[subset],
             max_new_tokens=10,
             do_sample=True,
             top_k=10,
             num_return_sequences=10,
             eos_token_id=tokenizer.eos_token_id,
             pad_token_id=tokenizer.eos_token_id,
-	        return_full_text=False,
-	        batch_size=64
+	    return_full_text=False,
+	    batch_size=32
         )
 
     with open(gen_filename(subset), 'w') as f:
-        for index, out in enumerate(sequences):
-            f.write('>>'+subset[index])
+        for index, out in tqdm(enumerate(sequences)):
+            f.write('>>'+subsets_dict[subset][index])
             for i in out:
                 f.write('\n>' + i['generated_text'])
             f.write('\n\n')
