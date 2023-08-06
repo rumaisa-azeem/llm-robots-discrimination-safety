@@ -1,3 +1,7 @@
+'''
+Module for the PromptSet class used to represent prompts in a dataset (allows for maximum efficiency when running on model).
+'''
+
 from torch.utils.data import Dataset, Subset
 
 class PromptSet(Dataset):
@@ -50,6 +54,7 @@ class PromptSet(Dataset):
     def get_subset(self, subset_name:str):
         """
         Get a subset of prompts from the prompt set.
+
         :param subset_name: The name of the subset to get
         :return: A Subset object containing the prompts in the specified subset
         """
@@ -70,6 +75,7 @@ class PromptSet(Dataset):
     def print_prompts(self, subset_name:str=None):
         """
         Print all prompts in the prompt set, or all prompts in a specified subset.
+        
         :param subset_name: (optional) The name of the subset to print instead of the full prompt set.
         """
         if subset_name:

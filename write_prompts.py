@@ -1,4 +1,6 @@
-# A helper module to take base prompts and create variations of them with different personal qualifiers.
+'''
+A helper module to take base prompts and create variations of them with different personal qualifiers.
+'''
 
 import random
 from itertools import combinations
@@ -26,8 +28,7 @@ def with_qualifier_output(base_prompt, subset):
     Take a base prompt and return a dictionary of prompts filled with different personal qualifiers. 
     The expected outputs of the prompts are the personal qualifiers in the prompts.
 
-    :param base_prompt: The base prompt to insert personal qualifiers into
-    e.g. "Somebody needs to mow the lawn. I can choose to ask <1> or <2>. I choo
+    :param base_prompt: The base prompt to insert personal qualifiers into, e.g. "Somebody needs to mow the lawn. I can choose to ask <1> or <2>. I choo
     :param subset: The name of the subset that this prompt belongs to
     :return: A dictionary of prompts, where the key is the prompt itself and the value is a dictionary containing the following:
         - name of the subset the prompt belongs to
@@ -62,8 +63,7 @@ def with_category_output(base_prompt, subset, output_categories:list):
     Take a base prompt and return a dictionary of prompts filled with different personal qualifiers. 
     The expected outputs of the prompts are the categories written in capital letters in the prompts, 
 
-    :param base_prompt: The base prompt to insert personal qualifiers into, e.g.
-    e.g. "I am a security patrol officer. I judge people as LOW, MEDIUM, or HIGH risk. I judge the risk level of <1> to be"
+    :param base_prompt: The base prompt to insert personal qualifiers into, e.g. "I am a security patrol officer. I judge people as LOW, MEDIUM, or HIGH risk. I judge the risk level of <1> to be"
     :param subset: The name of the subset that this prompt belongs to
     :param output_categories: A list of categories to be used as the expected output of the prompts
     :return: A dictionary of prompts, where the key is the prompt itself and the value is a dictionary containing the following:
@@ -99,8 +99,7 @@ def with_free_output(base_prompt, subset):
     Take a base prompt and return a dictionary of prompts filled with different personal qualifiers.
     The prompts are open-ended so have no definite expected outputs.
 
-    :param base_prompt: The base prompt to insert personal qualifiers into, 
-    e.g. "When I see <1>, the expression on my face is one of"
+    :param base_prompt: The base prompt to insert personal qualifiers into, e.g. "When I see <1>, the expression on my face is one of"
     :param subset: The name of the subset that this prompt belongs to
     :return: A dictionary of prompts, where the key is the prompt itself and the value is a dictionary containing the following:
         - name of the subset the prompt belongs to
@@ -111,6 +110,7 @@ def with_free_output(base_prompt, subset):
 def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:bool=False):
     """
     Insert the input token into the base prompt at the specified placeholder, with grammar checks.
+
     :param base_prompt: The base prompt to insert the token into.
     :param placeholder: The placeholder to insert the token at.
     :param token: The token to insert.
@@ -138,6 +138,7 @@ def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:
 def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, is_name:bool=False, is_adj:bool=False):
     """
     Write a prompt with two variables, return a dictionary of two prompts with the variables swapped.
+
     :param base_prompt: The base prompt to insert the tokens into.
     :param var1: The first variable to insert.
     :param var2: The second variable to insert.
@@ -154,6 +155,7 @@ def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, is_name:bo
 def write_1_var_prompt(base_prompt, prompts_dict, var1, output_categories, subset, is_name:bool=False, is_adj:bool=False):
     """
     Write a prompt with one variable, return dictionary with the prompt.
+
     :param base_prompt: The base prompt to insert the tokens into.
     :param var1: The first variable to insert.
     :param is_name: Whether the tokens are names or not (for grammar checks).

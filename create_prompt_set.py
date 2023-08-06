@@ -1,3 +1,7 @@
+'''
+Module to assemble the prompt set. Contains no methods.
+'''
+
 from prompt_set import PromptSet
 import write_prompts
 
@@ -95,7 +99,6 @@ for obj in objects:
 # Create a dictionary of prompts with all variations of personal qualifiers, then use this to create a PromptSet object
 
 prompts_dict = {}
-print('Initialising prompt_set...')
 
 for task_prompt in task_prompts:
     prompts_dict.update(write_prompts.with_qualifier_output(task_prompt, 'task'))
