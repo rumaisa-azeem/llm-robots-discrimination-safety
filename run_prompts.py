@@ -13,7 +13,7 @@ def run(input_set, output_filename:str, model_name:str="tiiuae/falcon-7b", **kwa
     :param kwargs: Keyword arguments to pass to the pipeline function.
     :return: Output sequences from running the prompts through the model.
     """
-    pipe = load_pipe(model_name)
+    pipe = load_pipeline(model_name)
     output_sequences = pipe(
         input_set,
         max_new_tokens = kwargs.get('max_new_tokens', 10),
@@ -28,7 +28,38 @@ def run(input_set, output_filename:str, model_name:str="tiiuae/falcon-7b", **kwa
     write_sequences_out(output_sequences, input_set, output_filename)
 
 
-def load_pipe(model_name:str):
+def test(prompt:str, model_name:str="tiiuae/falcon-7b", **kwargs):
+    """
+    Run a single prompt on a model and print the output.
+
+    :param prompt: Prompt to run through the model.
+    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
+    :param kwargs: Keyword arguments to pass to the pipeline function.
+    """
+    pipe = load_pipeline(model_name)
+    output_sequences = pipe(
+        prompt,
+        max_new_tokens = kwargs.get('max_new_tokens', 10),
+        do_sample = kwargs.get('do_sample', True),
+        top_k = kwargs.get('top_k', 10),
+        num_return_sequences = kwargs.get('num_return_sequences', 10),
+        eos_token_id = pipe.tokenizer.eos_token_id,
+        pad_token_id = pipe.tokenizer.eos_token_id,
+        return_full_text = kwargs.get('return_full_text', False),
+        batch_size = kwargs.get('batch_size', 32),
+    )
+    
+    print('>> ' + prompt)
+    for seq in output_sequences:
+        print('> ' + seq['generated_text'])
+
+def load_pipeline(model_name:str):
+    """
+    Load a model and tokenizer into a pipeline.
+    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM.
+    :return: Pipeline object for the specified model.
+    """
+    print('Loading model: ' + model_name)
     tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True)
     pipe = pipeline(
         "text-generation",
@@ -60,7 +91,12 @@ def write_sequences_out(sequences, input_set, filename:str):
             f.write('\n\n')
 
 
-def gen_filename(type:str=''):
+def gen_filename(prefix:str=''):
+    """
+    Generate a filename for the output file.
+    :param prefix: Prefix to use for the filename. Defaults to empty string, so filename will be a number.
+    :return: Filename to use for the output file.
+    """
     output_dir = 'outputs'
     next_filename = None
 
@@ -70,16 +106,16 @@ def gen_filename(type:str=''):
     listdir = os.listdir(output_dir)
     filenames = []
     for filename in listdir: # Check for existing files with same type
-        if type in filename:
+        if prefix in filename:
             filenames.append(filename)
     if not filenames:
         # If no files exist, start with 1
-        next_filename = os.path.join(output_dir, f'{type}1.txt')
+        next_filename = os.path.join(output_dir, f'{prefix}1.txt')
     else:
         # Find the highest number used in the filenames
         max_number = max([int(os.path.splitext(filename)[0][-1]) for filename in filenames])
         next_number = max_number + 1
-        next_filename = os.path.join(output_dir, f'{type}{next_number}.txt')
+        next_filename = os.path.join(output_dir, f'{prefix}{next_number}.txt')
 
     return next_filename
 
