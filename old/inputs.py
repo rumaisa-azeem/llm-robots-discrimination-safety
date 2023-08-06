@@ -170,7 +170,7 @@ def write_QR_prompt(base_prompt:str):
 
 # -------------------------------------------------------------------------------------- create dataset + subsets of prompts
 
-prompt_set = PromptSet({})
+prompt_set = PromptSet()
 
 for task_prompt in task_prompts:
     write_QQ_prompt(task_prompt)

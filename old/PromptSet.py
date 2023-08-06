@@ -11,8 +11,11 @@ class PromptSet(Dataset):
         - the prompt at the specified index if an integer is specified
         - the list of tokens for the specified prompt if a string is specified
     '''
-    def __init__(self, prompts_dict:Dict[str, list]):
-        self.prompts_dict = prompts_dict
+    def __init__(self, subsets_list:list=None):
+        self.prompts_dict = {}
+        self.subsets_dict = {}
+        for subset in subsets_list:
+            self.subsets_dict[subset] = None
     
     def __len__(self):
         return len(self.prompts_dict)
@@ -102,3 +105,5 @@ class PromptSet(Dataset):
         #     base_prompt.replace(placeholder, token)
         
         return base_prompt
+
+    
