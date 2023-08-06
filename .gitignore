@@ -8,5 +8,4 @@ bin
 .DS_Store
 scratch.py
 discarded.py
-__pychache__
-__pycache__/inputs.cpython-311.pyc
+__pycache__
