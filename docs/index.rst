@@ -12,6 +12,7 @@ Contents
 .. toctree::
    :maxdepth: 2
    
+   main
    run_prompts
    write_prompts
    prompt_set
@@ -22,6 +23,7 @@ Modules
 
 .. autosummary:: 
 
+   main
    run_prompts
    write_prompts
    prompt_set
