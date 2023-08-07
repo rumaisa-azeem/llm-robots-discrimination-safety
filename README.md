@@ -27,4 +27,4 @@ Example of dictionary used to create a PromptSet:
 ```
 The dictionary of prompts and the PromptSet used with the model are in `create_prompt_set.py` 
 
-> TO DO: Add own prompts to `prompts_dict` in `create_prompt_set.py`
+> TO DO: Add your prompts to `prompts_dict` in `create_prompt_set.py`
