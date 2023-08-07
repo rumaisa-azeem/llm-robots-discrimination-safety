@@ -157,8 +157,3 @@ def gen_filename(prefix:str=''):
         next_filename = os.path.join(output_dir, f'{prefix}{next_number}.txt')
 
     return next_filename
-
-
-subsets_dict = prompt_set.get_subsets_dict()
-for subset_name in subsets_dict:
-    run(subsets_dict[subset_name], gen_filename(subset_name))
