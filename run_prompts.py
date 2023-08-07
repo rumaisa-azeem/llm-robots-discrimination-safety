@@ -3,74 +3,84 @@ Module containing methods to run prompts on a model.
 '''
 
 from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
-import torch
 from tqdm import tqdm
-from create_prompt_set import prompt_set
-import os
+from csv import writer
+import os, torch
 
 def run(input_set, output_filename:str, model_name:str="tiiuae/falcon-7b", **kwargs):
     """
-    Run prompts on a model, where the prompts are collected into a dataset (or subset of a dataset).
+    Run prompts through a model, where sequences are generated for each prompt and written to a file.
 
     :param input_set: Dataset of prompts to run through the model.
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
     :param kwargs: Keyword arguments to pass to the pipeline function.
     :return: Output sequences from running the prompts through the model.
     """
-    pipe = load_pipeline(model_name)
-    output_sequences = pipe(
-        input_set,
-        max_new_tokens = kwargs.get('max_new_tokens', 10),
-        do_sample = kwargs.get('do_sample', True),
-        top_k = kwargs.get('top_k', 10),
-        num_return_sequences = kwargs.get('num_return_sequences', 10),
-        eos_token_id = pipe.tokenizer.eos_token_id,
-        pad_token_id = pipe.tokenizer.eos_token_id,
-        return_full_text = kwargs.get('return_full_text', False),
-        batch_size = kwargs.get('batch_size', 32),
-    )
+    output_sequences = use_pipeline(input_set, model_name, **kwargs)
     write_sequences_out(output_sequences, input_set, output_filename)
 
 
 def test(prompt:str, model_name:str="tiiuae/falcon-7b", **kwargs):
     """
-    Run a single prompt on a model and print the output.
+    Run a single prompt on a model and print the output sequences.
 
     :param prompt: Prompt to run through the model.
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
     :param kwargs: Keyword arguments to pass to the pipeline function.
     """
-    pipe = load_pipeline(model_name)
-    output_sequences = pipe(
-        prompt,
-        max_new_tokens = kwargs.get('max_new_tokens', 10),
-        do_sample = kwargs.get('do_sample', True),
-        top_k = kwargs.get('top_k', 10),
-        num_return_sequences = kwargs.get('num_return_sequences', 10),
-        eos_token_id = pipe.tokenizer.eos_token_id,
-        pad_token_id = pipe.tokenizer.eos_token_id,
-        return_full_text = kwargs.get('return_full_text', False),
-        batch_size = kwargs.get('batch_size', 32),
-    )
-    
+    output_sequences = use_pipeline(prompt, model_name, **kwargs)
     print('>> ' + prompt)
     for seq in output_sequences:
         print('> ' + seq['generated_text'])
 
 
-def get_scores(prompt, model_name:str='tiiua/falcon-7b', top_n:int=10):
+def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', top_n:int=10):
+    """
+    Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt, 
+    then written to a csv file.
+
+    :param prompt_set: Dataset of prompts to run through the model.
+    :param filename: Name of the file to write the scores to.
+    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
+    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
+    """
+    scores_dict = {}
+    for prompt in prompt_set:
+        scores = get_scores_for_prompt(prompt, model_name, top_n)
+        scores_dict[prompt] = scores
+    write_scores_out(scores_dict, filename)
+
+
+def test_for_scores(prompt:str, model_name:str="tiiuae/falcon-7b", top_n:int=10):
+    """
+    Run a single prompt through a model and print the top_n most likely next tokens and their probabilities.
+
+    :param prompt: Prompt to run through the model.
+    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
+    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
+    """
+    scores = get_scores_for_prompt(prompt, model_name, top_n)
+    print('>> ' + prompt)
+    for word, prob in scores:
+        print(f'{word}: {prob}')
+
+
+# helper functions -----------------------------------------------------------------------------------------------------
+
+
+def get_scores_for_prompt(prompt, model_name:str='tiiuae/falcon-7b', top_n:int=10):
     '''
-    For a given input sequence, return the top_n most likely next tokens and their probabilities.
+    For a given prompt, return the top_n most likely next tokens and their probabilities.
     
     :param model_name: The name of the model to use. Must be a model that can be loaded using AutoModelForCausalLM.
-    :param input: The input sequence to get the next tokens for.
+    :param prompt: The input sequence to get the most likely next tokens for.
     :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
     :return: A list of tuples of the form (word, probability) for the top_n most likely next tokens.
     '''
     model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
     tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
 
-    input_ids = tokenizer.encode(input, return_tensors='pt')
+    input_ids = tokenizer.encode(prompt, return_tensors='pt')
     output = model(input_ids, return_dict=True, use_cache=True)
     next_token_logits = output.logits[:, -1, :] # get logits for the next token in the sequence
     probs = torch.softmax(next_token_logits, dim=-1).tolist()[0] # convert logits to list of probabilities
@@ -86,15 +96,17 @@ def get_scores(prompt, model_name:str='tiiua/falcon-7b', top_n:int=10):
         word_probs.append((vocab_list[index], prob))
 
     # get top n most probable words
-    sorted_probs = sorted(word_probs, reverse=True, key=lambda x: x[1])
+    sorted_probs = sorted(word_probs, reverse=True, key=lambda x: x[1])[:top_n]
     return sorted_probs[:top_n]
 
 
-def load_pipeline(model_name:str):
+def use_pipeline(inp, model_name:str, **kwargs):
     """
-    Load a model and tokenizer into a pipeline.
+    Use a pipeline to run a prompt/prompts through a model, returning the output sequences.
 
+    :param inp: Input for the pipeline.
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM.
+    :param kwargs: Keyword arguments to pass to the pipeline function.
     :return: Pipeline object for the specified model.
     """
     print('Loading model: ' + model_name)
@@ -109,7 +121,18 @@ def load_pipeline(model_name:str):
     )
     model = pipe.model
     pipe.tokenizer.pad_token_id = model.config.eos_token_id
-    return pipe
+
+    return pipe(
+        inp,
+        max_new_tokens = kwargs.get('max_new_tokens', 10),
+        do_sample = kwargs.get('do_sample', True),
+        top_k = kwargs.get('top_k', 10),
+        num_return_sequences = kwargs.get('num_return_sequences', 10),
+        eos_token_id = pipe.tokenizer.eos_token_id,
+        pad_token_id = pipe.tokenizer.eos_token_id,
+        return_full_text = kwargs.get('return_full_text', False),
+        batch_size = kwargs.get('batch_size', 32),
+    )
 
 
 def write_sequences_out(sequences, input_set, filename:str):
@@ -121,7 +144,7 @@ def write_sequences_out(sequences, input_set, filename:str):
     :param filename: Name of file to write to
     """
     print('Writing to file: ' + filename)
-    with open(filename, 'w') as f:
+    with open(filename+'.txt', 'w') as f:
         for index, out in tqdm(enumerate(sequences)):
             f.write('>>'+input_set[index])
             for i in out:
@@ -129,11 +152,38 @@ def write_sequences_out(sequences, input_set, filename:str):
             f.write('\n\n')
 
 
+def write_scores_out(scores_dict, filename:str):
+    """
+    Take a dictionary of prompts and their top_n most likely tokens with probabilities, and write to a csv file.
+    Format: Prompt, Word 1, Probability 1, Word 2, Probability 2, ..., Word n, Probability n
+
+    :param scores_dict: Dictionary of prompts and their top_n most likely tokens with probabilities
+    :param filename: Name of file to write to
+    """
+    top_n = len(list(scores_dict.values())[0])
+    title_row = ['Prompt']
+    for n in range(top_n):
+        title_row.append('Word ' + str(n+1))
+        title_row.append('Probability ' + str(n+1))
+
+    with open(filename+'.csv', 'w', newline='') as f:
+        w = writer(f)
+        w.writerow(title_row)
+        for prompt, scores in scores_dict.items():
+            row = [prompt]
+            for word, prob in scores:
+                row.append(word)
+                row.append(prob)
+            w.writerow(row)
+
+
 def gen_filename(prefix:str=''):
     """
-    Generate a filename for the output file.
+    Generate a filename for the output file (doesn't include file extension). 
+    If prefix is specified, filename will start with that prefix and end with a number (e.g. 'outputs/prefix1' if no other files with that prefix exist)
+    Otherwise filename will be a number (e.g. 'outputs/1' if no other files exist, or 'outputs/2' if 'outputs/1' already exists, etc)
 
-    :param prefix: Prefix to use for the filename. Defaults to empty string, so filename will be a number.
+    :param prefix: Prefix to use for the filename. (Optional)
     :return: Filename to use for the output file.
     """
     output_dir = 'outputs'
@@ -149,11 +199,11 @@ def gen_filename(prefix:str=''):
             filenames.append(filename)
     if not filenames:
         # If no files exist, start with 1
-        next_filename = os.path.join(output_dir, f'{prefix}1.txt')
+        next_filename = os.path.join(output_dir, f'{prefix}1')
     else:
         # Find the highest number used in the filenames
         max_number = max([int(os.path.splitext(filename)[0][-1]) for filename in filenames])
         next_number = max_number + 1
-        next_filename = os.path.join(output_dir, f'{prefix}{next_number}.txt')
+        next_filename = os.path.join(output_dir, f'{prefix}{next_number}')
 
     return next_filename
