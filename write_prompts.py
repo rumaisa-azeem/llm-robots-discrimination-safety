@@ -131,6 +131,9 @@ def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:
         base_prompt = mod_prompt.replace(placeholder, token)
     else:
         base_prompt = base_prompt.replace(placeholder, token)
+
+    if is_name and base_prompt.endswith('the'):
+        base_prompt = base_prompt[:-3]
     
     return base_prompt
 
