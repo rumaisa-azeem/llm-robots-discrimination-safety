@@ -44,9 +44,12 @@ def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', 
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
     :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
     """
+    model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
+
     scores_dict = {}
-    for prompt in prompt_set:
-        scores = get_scores_for_prompt(prompt, model_name, top_n)
+    for prompt in tqdm(prompt_set):
+        scores = get_scores_for_prompt(prompt, model, tokenizer, top_n)
         scores_dict[prompt] = scores
     write_scores_out(scores_dict, filename)
 
@@ -59,7 +62,10 @@ def test_for_scores(prompt:str, model_name:str="tiiuae/falcon-7b", top_n:int=10)
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
     :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
     """
-    scores = get_scores_for_prompt(prompt, model_name, top_n)
+    model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
+
+    scores = get_scores_for_prompt(prompt, model, tokenizer, top_n)
     print('>> ' + prompt)
     for word, prob in scores:
         print(f'{word}: {prob}')
@@ -68,18 +74,16 @@ def test_for_scores(prompt:str, model_name:str="tiiuae/falcon-7b", top_n:int=10)
 # helper functions -----------------------------------------------------------------------------------------------------
 
 
-def get_scores_for_prompt(prompt, model_name:str='tiiuae/falcon-7b', top_n:int=10):
+def get_scores_for_prompt(prompt, model, tokenizer, top_n:int=10):
     '''
     For a given prompt, return the top_n most likely next tokens and their probabilities.
     
-    :param model_name: The name of the model to use. Must be a model that can be loaded using AutoModelForCausalLM.
     :param prompt: The input sequence to get the most likely next tokens for.
+    :param model: The model to use.
+    :param tokenizer: The tokenizer to use (should match the model).
     :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
     :return: A list of tuples of the form (word, probability) for the top_n most likely next tokens.
     '''
-    model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
-
     input_ids = tokenizer.encode(prompt, return_tensors='pt')
     output = model(input_ids, return_dict=True, use_cache=True)
     next_token_logits = output.logits[:, -1, :] # get logits for the next token in the sequence
