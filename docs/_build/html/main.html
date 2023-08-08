@@ -93,6 +93,7 @@ also to get top n most likely output words for each prompts alongside their prob
 
 <span class="c1"># run prompts to get confidence scores of possible outputs</span>
 <span class="k">for</span> <span class="n">subset_name</span> <span class="ow">in</span> <span class="n">subsets_dict</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running prompts for &#39;</span> <span class="o">+</span> <span class="n">subset_name</span><span class="p">)</span>
     <span class="n">subset</span> <span class="o">=</span> <span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span>
     <span class="n">run_prompts</span><span class="o">.</span><span class="n">run_for_scores</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="n">run_prompts</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">subset_name</span> <span class="o">+</span> <span class="s1">&#39;_scores&#39;</span><span class="p">))</span>
 </pre></div>

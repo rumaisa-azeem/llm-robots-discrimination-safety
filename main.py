@@ -13,5 +13,6 @@ for subset_name in subsets_dict:
 
 # run prompts to get confidence scores of possible outputs
 for subset_name in subsets_dict:
+    print('Running prompts for ' + subset_name)
     subset = subsets_dict[subset_name]
     run_prompts.run_for_scores(subset, run_prompts.gen_filename(subset_name + '_scores'))
