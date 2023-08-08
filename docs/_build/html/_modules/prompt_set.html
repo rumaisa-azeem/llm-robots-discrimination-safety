@@ -89,7 +89,7 @@
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompts_dict</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span> <span class="o">=</span> <span class="n">prompts_dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_subsets_dict</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init_subsets_dict</span><span class="p">()</span>
     
     <span class="k">def</span> <span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="p">)</span>
@@ -109,7 +109,7 @@
             <span class="n">string</span> <span class="o">+=</span> <span class="n">prompt</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
         <span class="k">return</span> <span class="n">string</span>
     
-<div class="viewcode-block" id="PromptSet.init_subsets_dict"><a class="viewcode-back" href="../prompt_set.html#prompt_set.PromptSet.init_subsets_dict">[docs]</a>    <span class="k">def</span> <span class="nf">init_subsets_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init_subsets_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a dictionary of subsets within the full prompt set.</span>
 <span class="sd">            - key: name of the subset</span>
@@ -123,7 +123,7 @@
 
         <span class="k">for</span> <span class="n">subset_name</span> <span class="ow">in</span> <span class="n">subset_names</span><span class="p">:</span>
             <span class="n">subset</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;subset&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">subset_name</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subset</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subset</span>
     
 <div class="viewcode-block" id="PromptSet.get_subset"><a class="viewcode-back" href="../prompt_set.html#prompt_set.PromptSet.get_subset">[docs]</a>    <span class="k">def</span> <span class="nf">get_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset_name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
