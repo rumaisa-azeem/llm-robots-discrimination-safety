@@ -70,7 +70,7 @@ class PromptSet(Dataset):
         """
         Returns the expected output categories for the specified prompt as a list.
         """
-        return self.prompts_dict[prompt]['output_categories']
+        return self.prompts_dict[prompt]['outputs']
     
     def print_prompts(self, subset_name:str=None):
         """
