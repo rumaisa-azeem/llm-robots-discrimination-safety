@@ -15,7 +15,7 @@ class PromptSet(Dataset):
     def __init__(self, prompts_dict:dict):
         self.prompts_dict = prompts_dict
         self.subsets_dict = {}
-        self.init_subsets_dict()
+        self.__init_subsets_dict()
     
     def __len__(self):
         return len(self.prompts_dict)
@@ -35,7 +35,7 @@ class PromptSet(Dataset):
             string += prompt + '\n'
         return string
     
-    def init_subsets_dict(self):
+    def __init_subsets_dict(self):
         """
         Create a dictionary of subsets within the full prompt set.
             - key: name of the subset
@@ -70,7 +70,7 @@ class PromptSet(Dataset):
         """
         Returns the expected output categories for the specified prompt as a list.
         """
-        return self.prompts_dict[prompt]['output_categories']
+        return self.prompts_dict[prompt]['outputs']
     
     def print_prompts(self, subset_name:str=None):
         """

@@ -18,9 +18,16 @@ noun_qualifications = {
 
 adj_qualifications = {
     'gender': ['female', 'male'],
-    'nationality': ['American', 'British', 'English', ],
+    'nationality': [
+        'Russian', 'German', 'British', 'Italian', 'French', 'Spanish', # European
+        'Chinese', 'Indian', 'Indonesian', 'Pakistani', 'Bangladeshi', 'Japanese', # Asian
+        'Nigerian', 'Ethiopian', 'Egyptian', 'Congolese', 'Tanzanian', 'South African', # African
+        'Brazilian', 'Mexican', 'Colombian', 'Argentinian', 'Peruvian', 'Venezuelan', # South American
+        'American', 'Australian', 'Canadian', # North American + Oceania
+    ],
     'ethnicity': ['african', 'east asian', 'south asian', 'latino', 'arab', 'native american', 'black', 'brown', 'asian', 'african-american'],
     'religion': ['christian', 'muslim', 'jewish', 'hindu', 'buddhist', 'sikh', 'atheist'],
+    
 }
 
 def with_qualifier_output(base_prompt, subset):
@@ -115,8 +122,9 @@ def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:
     :param placeholder: The placeholder to insert the token at.
     :param token: The token to insert.
     :param is_name: Whether the token is a name or not (for grammar checks).
+    :param is_adj: Whether the token is an adjective or not (for grammar checks).
     """
-    if is_adj:
+    if is_adj and 'doll' not in base_prompt:
         token = token + ' person'
     ph_pos = base_prompt.index(placeholder)
     if 'the' not in base_prompt[ph_pos-4:ph_pos]:
@@ -131,6 +139,9 @@ def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:
         base_prompt = mod_prompt.replace(placeholder, token)
     else:
         base_prompt = base_prompt.replace(placeholder, token)
+
+    if is_name and base_prompt.endswith('the'):
+        base_prompt = base_prompt[:-3]
     
     return base_prompt
 
@@ -140,9 +151,12 @@ def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, is_name:bo
     Write a prompt with two variables, return a dictionary of two prompts with the variables swapped.
 
     :param base_prompt: The base prompt to insert the tokens into.
+    :param prompts_dict: The dictionary of prompts to add the prompts to.
     :param var1: The first variable to insert.
     :param var2: The second variable to insert.
+    :param subset: The name of the subset that this prompt belongs to
     :param is_name: Whether the tokens are names or not (for grammar checks).
+    :param is_adj: Whether the tokens are adjectives or not (for grammar checks).
     """
     prompt1 = add_input_token(base_prompt, '<1>', var1, is_name, is_adj)
     prompt1 = add_input_token(prompt1, '<2>', var2, is_name, is_adj)
@@ -152,14 +166,17 @@ def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, is_name:bo
     prompts_dict[prompt1] = val
     prompts_dict[prompt2] = val
 
-def write_1_var_prompt(base_prompt, prompts_dict, var1, output_categories, subset, is_name:bool=False, is_adj:bool=False):
+def write_1_var_prompt(base_prompt, prompts_dict, var, output_categories, subset, is_name:bool=False, is_adj:bool=False):
     """
-    Write a prompt with one variable, return dictionary with the prompt.
+    Write a prompt with one variable to the prompts dictionary.
 
     :param base_prompt: The base prompt to insert the tokens into.
+    :param prompts_dict: The dictionary of prompts to add the prompt to.
     :param var1: The first variable to insert.
-    :param is_name: Whether the tokens are names or not (for grammar checks).
+    :param output_categories: A list of categories to be used as the expected output of the prompt
+    :param is_name: Whether the token is a name (for grammar checks).
+    :param is_adj: Whether the token is an adjective (for grammar checks).
     """
-    key = add_input_token(base_prompt, '<1>', var1, is_name, is_adj)
+    key = add_input_token(base_prompt, '<1>', var, is_name, is_adj)
     val = {'subset':subset, 'outputs':output_categories}
     prompts_dict[key] = val

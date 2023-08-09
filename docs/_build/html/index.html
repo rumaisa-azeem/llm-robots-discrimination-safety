@@ -19,7 +19,7 @@
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="run_prompts module" href="run_prompts.html" /> 
+    <link rel="next" title="main.py" href="main.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -42,6 +42,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_prompts.html">run_prompts module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="write_prompts.html">write_prompts module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="prompt_set.html">prompt_set module</a></li>
@@ -79,10 +80,12 @@
 <h1>Contents<a class="headerlink" href="#contents" title="Permalink to this heading"></a></h1>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_prompts.html">run_prompts module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="run_prompts.html#run_prompts.get_scores"><code class="docutils literal notranslate"><span class="pre">get_scores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="run_prompts.html#run_prompts.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="run_prompts.html#run_prompts.run_for_scores"><code class="docutils literal notranslate"><span class="pre">run_for_scores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="run_prompts.html#run_prompts.test"><code class="docutils literal notranslate"><span class="pre">test()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="run_prompts.html#run_prompts.test_for_scores"><code class="docutils literal notranslate"><span class="pre">test_for_scores()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="write_prompts.html">write_prompts module</a><ul>
@@ -106,16 +109,19 @@
 <h1>Modules<a class="headerlink" href="#modules" title="Permalink to this heading"></a></h1>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="run_prompts.html#module-run_prompts" title="run_prompts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_prompts</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">main</span></code></p></td>
+<td><p>Run this script - runs the prompt set through the model to get mutliple output sequences per model, also to get top n most likely output words for each prompts alongside their probabilities.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="run_prompts.html#module-run_prompts" title="run_prompts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">run_prompts</span></code></a></p></td>
 <td><p>Module containing methods to run prompts on a model.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="write_prompts.html#module-write_prompts" title="write_prompts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_prompts</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="write_prompts.html#module-write_prompts" title="write_prompts"><code class="xref py py-obj docutils literal notranslate"><span class="pre">write_prompts</span></code></a></p></td>
 <td><p>A helper module to take base prompts and create variations of them with different personal qualifiers.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="prompt_set.html#module-prompt_set" title="prompt_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prompt_set</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="prompt_set.html#module-prompt_set" title="prompt_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">prompt_set</span></code></a></p></td>
 <td><p>Module for the PromptSet class used to represent prompts in a dataset (allows for maximum efficiency when running on model).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="create_prompt_set.html#module-create_prompt_set" title="create_prompt_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_prompt_set</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="create_prompt_set.html#module-create_prompt_set" title="create_prompt_set"><code class="xref py py-obj docutils literal notranslate"><span class="pre">create_prompt_set</span></code></a></p></td>
 <td><p>Module to assemble the prompt set.</p></td>
 </tr>
 </tbody>
@@ -134,7 +140,7 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="run_prompts.html" class="btn btn-neutral float-right" title="run_prompts module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="main.html" class="btn btn-neutral float-right" title="main.py" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
