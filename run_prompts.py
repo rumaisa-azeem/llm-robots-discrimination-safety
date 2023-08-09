@@ -156,6 +156,23 @@ def write_sequences_out(sequences, input_set, filename:str):
             f.write('\n\n')
 
 
+def write_sequences_out(sequences, input_set, filename:str):
+    print('Writing to file: ' + filename)
+    num_return_sequences = len(sequences[0])
+    title_row = ['prompt', 'output_categories']
+    for i in range(num_return_sequences):
+        title_row.append('sequence'+str(i+1))
+    with open(filename+'.csv', 'w', newline='') as f:
+        w = writer(f)
+        w.writerow(title_row)
+        for index, sequences_for_prompt in tqdm(enumerate(sequences)):
+            prompt = input_set[index]
+            output_categories = input_set[prompt].get('output_categories', '')
+            row = [prompt, output_categories]
+            for seq in sequences_for_prompt:
+                row.append(seq['generated_text'])
+
+
 def write_scores_out(scores_dict, filename:str):
     """
     Take a dictionary of prompts and their top_n most likely tokens with probabilities, and write to a csv file.
@@ -165,10 +182,10 @@ def write_scores_out(scores_dict, filename:str):
     :param filename: Name of file to write to
     """
     top_n = len(list(scores_dict.values())[0])
-    title_row = ['Prompt']
+    title_row = ['prompt']
     for n in range(top_n):
-        title_row.append('Word ' + str(n+1))
-        title_row.append('Probability ' + str(n+1))
+        title_row.append('word' + str(n+1))
+        title_row.append('probability' + str(n+1))
 
     with open(filename+'.csv', 'w', newline='') as f:
         w = writer(f)
