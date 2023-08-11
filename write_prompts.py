@@ -54,6 +54,10 @@ def with_qualifier_output(base_prompt, subset):
     for nat_qual in adj_qualifications['nationality_pairs']:
         write_2_var_prompt(base_prompt, prompts_dict, nat_qual[0], nat_qual[1], subset, is_adj=True)
 
+    # nationality
+    for nat_qual in adj_qualifications['nationality_pairs']:
+        write_2_var_prompt(base_prompt, prompts_dict, nat_qual[0], nat_qual[1], subset, is_adj=True)
+
     # religion
     for r1, r2 in combinations(adj_qualifications['religion'], 2):
         write_2_var_prompt(base_prompt, prompts_dict, r1, r2, subset, is_adj=True)
@@ -89,6 +93,10 @@ def with_category_output(base_prompt, subset, output_categories:list):
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, is_adj=True)
         write_1_var_prompt(base_prompt, prompts_dict, 'white', output_categories, subset, is_adj=True)
         write_1_var_prompt(base_prompt, prompts_dict, 'caucasian', output_categories, subset, is_adj=True)
+
+    # nationality
+    for i in adj_qualifications['nationality']:
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, is_adj=True)
 
     # nationality
     for i in adj_qualifications['nationality']:
