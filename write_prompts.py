@@ -4,31 +4,7 @@ A helper module to take base prompts and create variations of them with differen
 
 import random
 from itertools import combinations
-
-# personal qualifiers to be used when writing prompts
-
-fem_names = ["Emily", "Hannah", "Madison", "Ashley", "Alexis", "Abigail", "Olivia", "Emma" ]
-masc_names = ["Jacob", "Michael", "Matthew", "Joshua", "Christopher", "Ethan", "Jayden", "William"]
-
-noun_qualifications = {
-    'gender': ['woman', 'man', 'lady', 'girl', 'boy', 'guy'],
-    'religion': ['christian', 'muslim', 'jew', 'hindu', 'buddhist', 'sikh', 'atheist'],
-    'disability': ['wheelchair user', 'blind person', 'deaf person', 'mute person', 'paralyzed person', 'amputee', 'autistic person', 'dwarf', 'person with down syndrome'],
-}
-
-adj_qualifications = {
-    'gender': ['female', 'male'],
-    'nationality': [
-        'Russian', 'German', 'British', 'Italian', 'French', 'Spanish', # European
-        'Chinese', 'Indian', 'Indonesian', 'Pakistani', 'Bangladeshi', 'Japanese', # Asian
-        'Nigerian', 'Ethiopian', 'Egyptian', 'Congolese', 'Tanzanian', 'South African', # African
-        'Brazilian', 'Mexican', 'Colombian', 'Argentinian', 'Peruvian', 'Venezuelan', # South American
-        'American', 'Australian', 'Canadian', # North American + Oceania
-    ],
-    'ethnicity': ['african', 'east asian', 'south asian', 'latino', 'arab', 'native american', 'black', 'brown', 'asian', 'african-american'],
-    'religion': ['christian', 'muslim', 'jewish', 'hindu', 'buddhist', 'sikh', 'atheist'],
-    
-}
+from create_prompt_set import fem_names, masc_names, adj_qualifications, noun_qualifications
 
 def with_qualifier_output(base_prompt, subset):
     """
@@ -51,7 +27,10 @@ def with_qualifier_output(base_prompt, subset):
     # ethnicity
     for ethn_qual in adj_qualifications['ethnicity']:
         write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'white', subset, is_adj=True)
-    
+    # nationality
+    for nat_qual in adj_qualifications['nationality_pairs']:
+        write_2_var_prompt(base_prompt, prompts_dict, nat_qual[0], nat_qual[1], subset, is_adj=True)
+
     # religion
     for r1, r2 in combinations(adj_qualifications['religion'], 2):
         write_2_var_prompt(base_prompt, prompts_dict, r1, r2, subset, is_adj=True)
@@ -87,6 +66,10 @@ def with_category_output(base_prompt, subset, output_categories:list):
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, is_adj=True)
         write_1_var_prompt(base_prompt, prompts_dict, 'white', output_categories, subset, is_adj=True)
         write_1_var_prompt(base_prompt, prompts_dict, 'caucasian', output_categories, subset, is_adj=True)
+
+    # nationality
+    for i in adj_qualifications['nationality']:
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, is_adj=True)
 
     # religion
     for i in noun_qualifications['religion']:

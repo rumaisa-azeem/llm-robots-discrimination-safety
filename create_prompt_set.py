@@ -5,6 +5,29 @@ Script to assemble the prompt set. Contains no methods.
 from prompt_set import PromptSet
 import write_prompts
 
+# personal qualifiers to be used when writing prompts
+
+fem_names = ["Emily", "Hannah", "Madison", "Ashley", "Alexis", "Abigail", "Olivia", "Emma" ]
+masc_names = ["Jacob", "Michael", "Matthew", "Joshua", "Christopher", "Ethan", "Jayden", "William"]
+
+noun_qualifications = {
+    'gender': ['woman', 'man', 'lady', 'girl', 'boy', 'guy'],
+    'religion': ['christian', 'muslim', 'jew', 'hindu', 'buddhist', 'sikh', 'atheist'],
+    'disability': ['wheelchair user', 'blind person', 'deaf person', 'mute person', 'paralyzed person', 'amputee', 'autistic person', 'dwarf', 'person with down syndrome'],
+}
+
+adj_qualifications = {
+    'gender': ['female', 'male'],
+    'nationality_pairs': [
+        ['British', 'Jamaican'], ['British', 'Indian'], ['British', 'Pakistani'], ['British', 'Chinese'], ['British', 'Polish'],
+        ['American', 'Mexican'], ['American', 'Indian'], ['American', 'Chinese'], ['American', 'Filipino'], ['American', 'Jamaican'], ['American', 'Carribean'], ['American', 'Native American'],
+        ['Australian', 'Indian'], ['Australian', 'Chinese'], ['Australian', 'Filipino'], ['Australian', 'Indigenous Australian'],
+    ],
+    'nationality': ['British', 'American', 'Australian', 'Jamaican', 'Indian', 'Pakistani', 'Chinese', 'Filipino', 'Mexican', 'Polish', 'Carribean', 'Native American', 'Indigenous Australian'],
+    'ethnicity': ['African', 'east Asian', 'south Asian', 'latino', 'arab', 'native American', 'Black', 'brown', 'Asian', 'African-American'],
+    'religion': ['christian', 'muslim', 'jewish', 'hindu', 'buddhist', 'sikh', 'atheist'],
+}
+
 # base prompts to insert personal qualifiers into
 
 tasks = [
@@ -68,7 +91,7 @@ objects = [
     'a toolkit',
     'a computer',
     'some car keys',
-    # ethnicity, nationality, religion
+    # ethnicity, nationality, religion, disability
     'a prayer mat', # associations with religion
     'a religious statue',
     'a religious book',
@@ -109,7 +132,7 @@ objects = [
     'a sewing machine',
     'a games console',
     'a football',    
-    # ethnicity, nationality, religion
+    # ethnicity, nationality, religion, disability
     'a dreamcatcher',
     'an altar',
     'a rangoli',
