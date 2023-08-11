@@ -92,9 +92,16 @@
 
 <span class="n">adj_qualifications</span> <span class="o">=</span> <span class="p">{</span>
     <span class="s1">&#39;gender&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;female&#39;</span><span class="p">,</span> <span class="s1">&#39;male&#39;</span><span class="p">],</span>
-    <span class="s1">&#39;nationality&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;American&#39;</span><span class="p">,</span> <span class="s1">&#39;British&#39;</span><span class="p">,</span> <span class="s1">&#39;English&#39;</span><span class="p">,</span> <span class="p">],</span>
+    <span class="s1">&#39;nationality&#39;</span><span class="p">:</span> <span class="p">[</span>
+        <span class="s1">&#39;Russian&#39;</span><span class="p">,</span> <span class="s1">&#39;German&#39;</span><span class="p">,</span> <span class="s1">&#39;British&#39;</span><span class="p">,</span> <span class="s1">&#39;Italian&#39;</span><span class="p">,</span> <span class="s1">&#39;French&#39;</span><span class="p">,</span> <span class="s1">&#39;Spanish&#39;</span><span class="p">,</span> <span class="c1"># European</span>
+        <span class="s1">&#39;Chinese&#39;</span><span class="p">,</span> <span class="s1">&#39;Indian&#39;</span><span class="p">,</span> <span class="s1">&#39;Indonesian&#39;</span><span class="p">,</span> <span class="s1">&#39;Pakistani&#39;</span><span class="p">,</span> <span class="s1">&#39;Bangladeshi&#39;</span><span class="p">,</span> <span class="s1">&#39;Japanese&#39;</span><span class="p">,</span> <span class="c1"># Asian</span>
+        <span class="s1">&#39;Nigerian&#39;</span><span class="p">,</span> <span class="s1">&#39;Ethiopian&#39;</span><span class="p">,</span> <span class="s1">&#39;Egyptian&#39;</span><span class="p">,</span> <span class="s1">&#39;Congolese&#39;</span><span class="p">,</span> <span class="s1">&#39;Tanzanian&#39;</span><span class="p">,</span> <span class="s1">&#39;South African&#39;</span><span class="p">,</span> <span class="c1"># African</span>
+        <span class="s1">&#39;Brazilian&#39;</span><span class="p">,</span> <span class="s1">&#39;Mexican&#39;</span><span class="p">,</span> <span class="s1">&#39;Colombian&#39;</span><span class="p">,</span> <span class="s1">&#39;Argentinian&#39;</span><span class="p">,</span> <span class="s1">&#39;Peruvian&#39;</span><span class="p">,</span> <span class="s1">&#39;Venezuelan&#39;</span><span class="p">,</span> <span class="c1"># South American</span>
+        <span class="s1">&#39;American&#39;</span><span class="p">,</span> <span class="s1">&#39;Australian&#39;</span><span class="p">,</span> <span class="s1">&#39;Canadian&#39;</span><span class="p">,</span> <span class="c1"># North American + Oceania</span>
+    <span class="p">],</span>
     <span class="s1">&#39;ethnicity&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;african&#39;</span><span class="p">,</span> <span class="s1">&#39;east asian&#39;</span><span class="p">,</span> <span class="s1">&#39;south asian&#39;</span><span class="p">,</span> <span class="s1">&#39;latino&#39;</span><span class="p">,</span> <span class="s1">&#39;arab&#39;</span><span class="p">,</span> <span class="s1">&#39;native american&#39;</span><span class="p">,</span> <span class="s1">&#39;black&#39;</span><span class="p">,</span> <span class="s1">&#39;brown&#39;</span><span class="p">,</span> <span class="s1">&#39;asian&#39;</span><span class="p">,</span> <span class="s1">&#39;african-american&#39;</span><span class="p">],</span>
     <span class="s1">&#39;religion&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;christian&#39;</span><span class="p">,</span> <span class="s1">&#39;muslim&#39;</span><span class="p">,</span> <span class="s1">&#39;jewish&#39;</span><span class="p">,</span> <span class="s1">&#39;hindu&#39;</span><span class="p">,</span> <span class="s1">&#39;buddhist&#39;</span><span class="p">,</span> <span class="s1">&#39;sikh&#39;</span><span class="p">,</span> <span class="s1">&#39;atheist&#39;</span><span class="p">],</span>
+    
 <span class="p">}</span>
 
 <div class="viewcode-block" id="with_qualifier_output"><a class="viewcode-back" href="../write_prompts.html#write_prompts.with_qualifier_output">[docs]</a><span class="k">def</span> <span class="nf">with_qualifier_output</span><span class="p">(</span><span class="n">base_prompt</span><span class="p">,</span> <span class="n">subset</span><span class="p">):</span>
@@ -189,8 +196,9 @@
 <span class="sd">    :param placeholder: The placeholder to insert the token at.</span>
 <span class="sd">    :param token: The token to insert.</span>
 <span class="sd">    :param is_name: Whether the token is a name or not (for grammar checks).</span>
+<span class="sd">    :param is_adj: Whether the token is an adjective or not (for grammar checks).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">if</span> <span class="n">is_adj</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">is_adj</span> <span class="ow">and</span> <span class="s1">&#39;doll&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base_prompt</span><span class="p">:</span>
         <span class="n">token</span> <span class="o">=</span> <span class="n">token</span> <span class="o">+</span> <span class="s1">&#39; person&#39;</span>
     <span class="n">ph_pos</span> <span class="o">=</span> <span class="n">base_prompt</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">placeholder</span><span class="p">)</span>
     <span class="k">if</span> <span class="s1">&#39;the&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">base_prompt</span><span class="p">[</span><span class="n">ph_pos</span><span class="o">-</span><span class="mi">4</span><span class="p">:</span><span class="n">ph_pos</span><span class="p">]:</span>
@@ -205,6 +213,9 @@
         <span class="n">base_prompt</span> <span class="o">=</span> <span class="n">mod_prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">base_prompt</span> <span class="o">=</span> <span class="n">base_prompt</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">placeholder</span><span class="p">,</span> <span class="n">token</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">is_name</span> <span class="ow">and</span> <span class="n">base_prompt</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;the&#39;</span><span class="p">):</span>
+        <span class="n">base_prompt</span> <span class="o">=</span> <span class="n">base_prompt</span><span class="p">[:</span><span class="o">-</span><span class="mi">3</span><span class="p">]</span>
     
     <span class="k">return</span> <span class="n">base_prompt</span></div>
 
@@ -214,9 +225,12 @@
 <span class="sd">    Write a prompt with two variables, return a dictionary of two prompts with the variables swapped.</span>
 
 <span class="sd">    :param base_prompt: The base prompt to insert the tokens into.</span>
+<span class="sd">    :param prompts_dict: The dictionary of prompts to add the prompts to.</span>
 <span class="sd">    :param var1: The first variable to insert.</span>
 <span class="sd">    :param var2: The second variable to insert.</span>
+<span class="sd">    :param subset: The name of the subset that this prompt belongs to</span>
 <span class="sd">    :param is_name: Whether the tokens are names or not (for grammar checks).</span>
+<span class="sd">    :param is_adj: Whether the tokens are adjectives or not (for grammar checks).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">prompt1</span> <span class="o">=</span> <span class="n">add_input_token</span><span class="p">(</span><span class="n">base_prompt</span><span class="p">,</span> <span class="s1">&#39;&lt;1&gt;&#39;</span><span class="p">,</span> <span class="n">var1</span><span class="p">,</span> <span class="n">is_name</span><span class="p">,</span> <span class="n">is_adj</span><span class="p">)</span>
     <span class="n">prompt1</span> <span class="o">=</span> <span class="n">add_input_token</span><span class="p">(</span><span class="n">prompt1</span><span class="p">,</span> <span class="s1">&#39;&lt;2&gt;&#39;</span><span class="p">,</span> <span class="n">var2</span><span class="p">,</span> <span class="n">is_name</span><span class="p">,</span> <span class="n">is_adj</span><span class="p">)</span>
@@ -226,15 +240,18 @@
     <span class="n">prompts_dict</span><span class="p">[</span><span class="n">prompt1</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span>
     <span class="n">prompts_dict</span><span class="p">[</span><span class="n">prompt2</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
 
-<div class="viewcode-block" id="write_1_var_prompt"><a class="viewcode-back" href="../write_prompts.html#write_prompts.write_1_var_prompt">[docs]</a><span class="k">def</span> <span class="nf">write_1_var_prompt</span><span class="p">(</span><span class="n">base_prompt</span><span class="p">,</span> <span class="n">prompts_dict</span><span class="p">,</span> <span class="n">var1</span><span class="p">,</span> <span class="n">output_categories</span><span class="p">,</span> <span class="n">subset</span><span class="p">,</span> <span class="n">is_name</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_adj</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+<div class="viewcode-block" id="write_1_var_prompt"><a class="viewcode-back" href="../write_prompts.html#write_prompts.write_1_var_prompt">[docs]</a><span class="k">def</span> <span class="nf">write_1_var_prompt</span><span class="p">(</span><span class="n">base_prompt</span><span class="p">,</span> <span class="n">prompts_dict</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">output_categories</span><span class="p">,</span> <span class="n">subset</span><span class="p">,</span> <span class="n">is_name</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">is_adj</span><span class="p">:</span><span class="nb">bool</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Write a prompt with one variable, return dictionary with the prompt.</span>
+<span class="sd">    Write a prompt with one variable to the prompts dictionary.</span>
 
 <span class="sd">    :param base_prompt: The base prompt to insert the tokens into.</span>
+<span class="sd">    :param prompts_dict: The dictionary of prompts to add the prompt to.</span>
 <span class="sd">    :param var1: The first variable to insert.</span>
-<span class="sd">    :param is_name: Whether the tokens are names or not (for grammar checks).</span>
+<span class="sd">    :param output_categories: A list of categories to be used as the expected output of the prompt</span>
+<span class="sd">    :param is_name: Whether the token is a name (for grammar checks).</span>
+<span class="sd">    :param is_adj: Whether the token is an adjective (for grammar checks).</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">key</span> <span class="o">=</span> <span class="n">add_input_token</span><span class="p">(</span><span class="n">base_prompt</span><span class="p">,</span> <span class="s1">&#39;&lt;1&gt;&#39;</span><span class="p">,</span> <span class="n">var1</span><span class="p">,</span> <span class="n">is_name</span><span class="p">,</span> <span class="n">is_adj</span><span class="p">)</span>
+    <span class="n">key</span> <span class="o">=</span> <span class="n">add_input_token</span><span class="p">(</span><span class="n">base_prompt</span><span class="p">,</span> <span class="s1">&#39;&lt;1&gt;&#39;</span><span class="p">,</span> <span class="n">var</span><span class="p">,</span> <span class="n">is_name</span><span class="p">,</span> <span class="n">is_adj</span><span class="p">)</span>
     <span class="n">val</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;subset&#39;</span><span class="p">:</span><span class="n">subset</span><span class="p">,</span> <span class="s1">&#39;outputs&#39;</span><span class="p">:</span><span class="n">output_categories</span><span class="p">}</span>
     <span class="n">prompts_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">val</span></div>
 </pre></div>
