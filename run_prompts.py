@@ -163,14 +163,14 @@ def write_sequences_out(output_sequences, input_set, filename:str):
         is_title_row = True
         for index, sequences_for_prompt in tqdm(enumerate(output_sequences)):
             prompt = input_set[index]
-            output_categories = input_set[prompt].get('output_categories', '')
+            output_categories = input_set.get_expected_outputs(prompt)
             row = [prompt, output_categories]
     
             if is_title_row:
                 title_row = ['prompt', 'output_categories']
                 for index, seq in enumerate(sequences_for_prompt):
                     title_row.append('sequence_'+str(index+1))
-                    row.append('sequence_'+str(index+1))
+                    row.append(seq['generated_text'])
                 w.writerow(title_row)
                 w.writerow(row)
                 is_title_row = False
