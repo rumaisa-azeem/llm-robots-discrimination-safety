@@ -120,19 +120,21 @@
             <span class="n">subset</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;subset&#39;</span><span class="p">]</span>
             <span class="k">if</span> <span class="n">subset</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">subset_names</span><span class="p">:</span>
                 <span class="n">subset_names</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span>
-
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">subset_names</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> <span class="c1"># if only one subset name found, no need to create subsets_dict</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="k">return</span>
         <span class="k">for</span> <span class="n">subset_name</span> <span class="ow">in</span> <span class="n">subset_names</span><span class="p">:</span>
-            <span class="n">subset</span> <span class="o">=</span> <span class="n">Subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="o">.</span><span class="n">values</span><span class="p">())</span> <span class="k">if</span> <span class="n">val</span><span class="p">[</span><span class="s1">&#39;subset&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">subset_name</span><span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">subset</span>
+            <span class="n">subset_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">prompt</span> <span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="p">[</span><span class="n">prompt</span><span class="p">]</span> <span class="k">for</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="p">[</span><span class="n">prompt</span><span class="p">][</span><span class="s1">&#39;subset&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">subset_name</span><span class="p">}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span> <span class="o">=</span> <span class="n">PromptSet</span><span class="p">(</span><span class="n">subset_dict</span><span class="p">)</span>
     
 <div class="viewcode-block" id="PromptSet.get_subset"><a class="viewcode-back" href="../prompt_set.html#prompt_set.PromptSet.get_subset">[docs]</a>    <span class="k">def</span> <span class="nf">get_subset</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset_name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get a subset of prompts from the prompt set.</span>
 
 <span class="sd">        :param subset_name: The name of the subset to get</span>
-<span class="sd">        :return: A Subset object containing the prompts in the specified subset</span>
+<span class="sd">        :return: A PromptSet object containing the prompts in the specified subset</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">subset_name</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span></div>
     
 <div class="viewcode-block" id="PromptSet.get_subsets_dict"><a class="viewcode-back" href="../prompt_set.html#prompt_set.PromptSet.get_subsets_dict">[docs]</a>    <span class="k">def</span> <span class="nf">get_subsets_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
