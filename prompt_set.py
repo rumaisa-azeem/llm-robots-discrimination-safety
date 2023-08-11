@@ -64,7 +64,7 @@ class PromptSet(Dataset):
     
     def get_subsets_dict(self):
         """
-        Get all subsets in the prompt set, as a dictionary of subset names and Subset objects.
+        Get all subsets in the prompt set, as a dictionary of subset names and PromptSet objects.
         """
         return self.subsets_dict
     

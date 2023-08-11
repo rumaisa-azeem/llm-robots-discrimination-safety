@@ -216,6 +216,9 @@
 <span class="k">def</span> <span class="nf">write_sequences_out</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">,</span> <span class="n">input_set</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Write output sequences to a csv file.</span>
+
+<span class="sd">    Format: prompt, output_categories, sequence1, sequence2, ... sequencen</span>
+
 <span class="sd">    :param output_sequences: Output sequences to write to file.</span>
 <span class="sd">    :param input_set: PromptSet used to generate the output sequences.</span>
 <span class="sd">    :param filename: Name of the file to write to.</span>
@@ -232,7 +235,7 @@
             <span class="k">if</span> <span class="n">is_title_row</span><span class="p">:</span>
                 <span class="n">title_row</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;prompt&#39;</span><span class="p">,</span> <span class="s1">&#39;output_categories&#39;</span><span class="p">]</span>
                 <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">seq</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">sequences_for_prompt</span><span class="p">):</span>
-                    <span class="n">title_row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;sequence_&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">title_row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">&#39;sequence&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">index</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
                     <span class="n">row</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">seq</span><span class="p">[</span><span class="s1">&#39;generated_text&#39;</span><span class="p">])</span>
                 <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">title_row</span><span class="p">)</span>
                 <span class="n">w</span><span class="o">.</span><span class="n">writerow</span><span class="p">(</span><span class="n">row</span><span class="p">)</span>
@@ -246,7 +249,8 @@
 <span class="k">def</span> <span class="nf">write_scores_out</span><span class="p">(</span><span class="n">scores_dict</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Take a dictionary of prompts and their top_n most likely tokens with probabilities, and write to a csv file.</span>
-<span class="sd">    Format: Prompt, Word 1, Probability 1, Word 2, Probability 2, ..., Word n, Probability n</span>
+<span class="sd">    </span>
+<span class="sd">    Format: prompt, word1, probability1, word2, probability2, ..., wordn, probabilityn</span>
 
 <span class="sd">    :param scores_dict: Dictionary of prompts and their top_n most likely tokens with probabilities</span>
 <span class="sd">    :param filename: Name of file to write to</span>
