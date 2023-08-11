@@ -46,7 +46,7 @@ class PromptSet(Dataset):
             subset = val['subset']
             if subset not in subset_names:
                 subset_names.append(subset)
-        if len(subset_names) == 1:
+        if len(subset_names) == 1: # if only one subset name found, no need to create subsets_dict
             self.subsets_dict = None
             return
         for subset_name in subset_names:
@@ -58,9 +58,9 @@ class PromptSet(Dataset):
         Get a subset of prompts from the prompt set.
 
         :param subset_name: The name of the subset to get
-        :return: A Subset object containing the prompts in the specified subset
+        :return: A PromptSet object containing the prompts in the specified subset
         """
-        return self.subsets_dict[subset_name]
+        return self.subsets_dict.get(subset_name, None)
     
     def get_subsets_dict(self):
         """

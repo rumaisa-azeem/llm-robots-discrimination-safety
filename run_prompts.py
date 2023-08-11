@@ -139,24 +139,16 @@ def use_pipeline(inp, model_name:str, **kwargs):
     )
 
 
-# def write_sequences_out(sequences, input_set, filename:str):
-#     """
-#     Write output sequences to a file.
-
-#     :param sequences: Output sequences
-#     :param input_set: Input prompts dataset corresponding to the output sequences
-#     :param filename: Name of file to write to
-#     """
-#     print('Writing to file: ' + filename)
-#     with open(filename+'.txt', 'w') as f:
-#         for index, out in tqdm(enumerate(sequences)):
-#             f.write('>>'+input_set[index])
-#             for i in out:
-#                 f.write('\n>' + i['generated_text'])
-#             f.write('\n\n')
-
-
 def write_sequences_out(output_sequences, input_set, filename:str):
+    """
+    Write output sequences to a csv file.
+
+    Format: prompt, output_categories, sequence1, sequence2, ... sequencen
+
+    :param output_sequences: Output sequences to write to file.
+    :param input_set: PromptSet used to generate the output sequences.
+    :param filename: Name of the file to write to.
+    """
     print(f'Writing to file: {filename}.csv')
     with open(filename+'.csv', 'w', newline='') as f:
         w = writer(f)
@@ -169,7 +161,7 @@ def write_sequences_out(output_sequences, input_set, filename:str):
             if is_title_row:
                 title_row = ['prompt', 'output_categories']
                 for index, seq in enumerate(sequences_for_prompt):
-                    title_row.append('sequence_'+str(index+1))
+                    title_row.append('sequence'+str(index+1))
                     row.append(seq['generated_text'])
                 w.writerow(title_row)
                 w.writerow(row)
@@ -179,10 +171,12 @@ def write_sequences_out(output_sequences, input_set, filename:str):
                     row.append(seq['generated_text'])
                 w.writerow(row)
 
+
 def write_scores_out(scores_dict, filename:str):
     """
     Take a dictionary of prompts and their top_n most likely tokens with probabilities, and write to a csv file.
-    Format: Prompt, Word 1, Probability 1, Word 2, Probability 2, ..., Word n, Probability n
+    
+    Format: prompt, word1, probability1, word2, probability2, ..., wordn, probabilityn
 
     :param scores_dict: Dictionary of prompts and their top_n most likely tokens with probabilities
     :param filename: Name of file to write to
