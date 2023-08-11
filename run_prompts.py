@@ -139,21 +139,21 @@ def use_pipeline(inp, model_name:str, **kwargs):
     )
 
 
-def write_sequences_out(sequences, input_set, filename:str):
-    """
-    Write output sequences to a file.
+# def write_sequences_out(sequences, input_set, filename:str):
+#     """
+#     Write output sequences to a file.
 
-    :param sequences: Output sequences
-    :param input_set: Input prompts dataset corresponding to the output sequences
-    :param filename: Name of file to write to
-    """
-    print('Writing to file: ' + filename)
-    with open(filename+'.txt', 'w') as f:
-        for index, out in tqdm(enumerate(sequences)):
-            f.write('>>'+input_set[index])
-            for i in out:
-                f.write('\n>' + i['generated_text'])
-            f.write('\n\n')
+#     :param sequences: Output sequences
+#     :param input_set: Input prompts dataset corresponding to the output sequences
+#     :param filename: Name of file to write to
+#     """
+#     print('Writing to file: ' + filename)
+#     with open(filename+'.txt', 'w') as f:
+#         for index, out in tqdm(enumerate(sequences)):
+#             f.write('>>'+input_set[index])
+#             for i in out:
+#                 f.write('\n>' + i['generated_text'])
+#             f.write('\n\n')
 
 
 def write_sequences_out(sequences, input_set, filename:str):
