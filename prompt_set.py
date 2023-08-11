@@ -46,10 +46,15 @@ class PromptSet(Dataset):
             subset = val['subset']
             if subset not in subset_names:
                 subset_names.append(subset)
-
+        if len(subset_names) == 1:
+            self.subsets_dict = None
+            return
         for subset_name in subset_names:
-            subset = Subset(self, [i for i, val in enumerate(self.prompts_dict.values()) if val['subset'] == subset_name])
-            self.subsets_dict[subset_name] = subset
+            # subset = Subset(self, [i for i, val in enumerate(self.prompts_dict.values()) if val['subset'] == subset_name])
+            # self.subsets_dict[subset_name] = subset
+            subset_dict = {item : self.prompts_dict[item] for item in self.prompts_dict if self.prompts_dict[item]['subset'] == subset_name}
+            self.subsets_dict[subset_name] = PromptSet(subset_dict)
+            
     
     def get_subset(self, subset_name:str):
         """
