@@ -44,8 +44,7 @@ def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', 
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
     :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
     """
-    model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
+    model, tokenizer = load_model(model_name)
 
     scores_dict = {}
     for prompt in tqdm(prompt_set):
@@ -62,8 +61,7 @@ def test_for_scores(prompt:str, model_name:str="tiiuae/falcon-7b", top_n:int=10)
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
     :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
     """
-    model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
-    tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True, use_cache=True)
+    model, tokenizer = load_model(model_name)
 
     scores = get_scores_for_prompt(prompt, model, tokenizer, top_n)
     print('>> ' + prompt)
@@ -228,3 +226,16 @@ def gen_filename(prefix:str=''):
         next_filename = os.path.join(output_dir, f'{prefix}{next_number}')
 
     return next_filename
+
+
+def load_model(model_name:str, **kwargs):
+    """
+    Load a model and matching tokenizer from HuggingFace.
+
+    :param model_name: Name of the model to load. Must be able to load with AutoModelForCausalLM.
+    :return: model and tokenizer objects.
+    """
+    print('Loading model: ' + model_name)
+    tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True, use_cache=True, **kwargs)
+    model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True, **kwargs)
+    return model, tokenizer
