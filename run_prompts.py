@@ -156,22 +156,23 @@ def use_pipeline(inp, model_name:str, **kwargs):
 #             f.write('\n\n')
 
 
-def write_sequences_out(sequences, input_set, filename:str):
-    print('Writing to file: ' + filename)
-    num_return_sequences = len(sequences[0])
-    title_row = ['prompt', 'output_categories']
-    for i in range(num_return_sequences):
-        title_row.append('sequence'+str(i+1))
+def write_sequences_out(output_sequences, input_set, filename:str):
+    print(f'Writing to file: {filename}.csv')
     with open(filename+'.csv', 'w', newline='') as f:
         w = writer(f)
-        w.writerow(title_row)
-        for index, sequences_for_prompt in tqdm(enumerate(sequences)):
+        rows = []
+        for index, sequences_for_prompt in tqdm(enumerate(output_sequences)):
             prompt = input_set[index]
             output_categories = input_set[prompt].get('output_categories', '')
             row = [prompt, output_categories]
             for seq in sequences_for_prompt:
                 row.append(seq['generated_text'])
-
+            rows.append(row)
+        title_row = ['prompt', 'output_categories']
+        for i in range(len(rows[0])-2):
+            title_row.append('sequence_'+str(i+1))
+        w.writerow(title_row)
+        w.writerow(rows)
 
 def write_scores_out(scores_dict, filename:str):
     """
