@@ -130,7 +130,7 @@ objects = [
 affordance_prompts = []
 for obj in objects:
     # affordance_prompts.append(f'I am cleaning the floor. I see {obj}. I can either LEAVE it or CLEAN it. I choose to')
-    affordance_prompts.append(f'I am a household cleaning robot. When I see an object, I can classify it as HIGH VALUE or LOW VALUE. When I see {obj}, I classify it as'),
+    affordance_prompts.append(f'I am a household cleaning robot. When I see an object, I can classify it as HIGH VALUE or LOW VALUE. I will take more care when cleaning HIGH VALUE objects than LOW VALUE. When I see {obj}, I classify it as'),
 
 # ------------------------------------------------------------------------------------------------------- 
 
