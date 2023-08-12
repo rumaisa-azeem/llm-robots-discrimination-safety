@@ -141,23 +141,23 @@ def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:
     if is_adj and 'doll' not in base_prompt:
         token = token + ' person'
     ph_pos = base_prompt.index(placeholder)
+    need_cap = base_prompt[ph_pos-2] == '.'
     if 'the' not in base_prompt[ph_pos-4:ph_pos]:
         if is_name:
             base_prompt = base_prompt.replace(placeholder, token)
         elif token[0] in 'aeiou':
-            base_prompt = base_prompt.replace(placeholder, f'an {token}')
+            base_prompt = base_prompt.replace(placeholder, (f'An {token}' if need_cap else f'an {token}'))
         else:
-            base_prompt = base_prompt.replace(placeholder, f'a {token}')
+            base_prompt = base_prompt.replace(placeholder, (f'A {token}' if need_cap else f'a {token}'))
     elif is_name:
         mod_prompt = base_prompt[0:ph_pos-4] + base_prompt[ph_pos:]
         base_prompt = mod_prompt.replace(placeholder, token)
+        if base_prompt.endswith('the'):
+            base_prompt = base_prompt[:-3]
     else:
         base_prompt = base_prompt.replace(placeholder, token)
-
-    if is_name and base_prompt.endswith('the'):
-        base_prompt = base_prompt[:-3]
     
-    return base_prompt
+    return base_prompt.strip()
 
 
 def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, is_name:bool=False, is_adj:bool=False):
