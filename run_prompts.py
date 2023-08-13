@@ -2,12 +2,12 @@
 Module containing methods to run prompts on a model.
 '''
 
-from transformers import AutoTokenizer, AutoModelForCausalLM, pipeline
+from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer, LlamaForCausalLM, pipeline
 from tqdm import tqdm
 from csv import writer
 import os, torch
 
-def run(input_set, output_filename:str, model_name:str="tiiuae/falcon-7b", **kwargs):
+def run_for_seqs(input_set, output_filename:str, model_name:str="tiiuae/falcon-7b", **kwargs):
     """
     Run prompts through a model, where sequences are generated for each prompt and written to a file.
 
@@ -20,7 +20,7 @@ def run(input_set, output_filename:str, model_name:str="tiiuae/falcon-7b", **kwa
     write_sequences_out(output_sequences, input_set, output_filename)
 
 
-def test(prompt:str, model_name:str="tiiuae/falcon-7b", **kwargs):
+def test_for_seqs(prompt:str, model_name:str="tiiuae/falcon-7b", **kwargs):
     """
     Run a single prompt on a model and print the output sequences.
 
@@ -112,7 +112,10 @@ def use_pipeline(inp, model_name:str, **kwargs):
     :return: Pipeline object for the specified model.
     """
     print('Loading model: ' + model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True)
+    if model_name == 'openlm-research/open_llama_7b':
+        tokenizer = tokenizer = LlamaTokenizer.from_pretrained(model_name, padding_side='left')
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True)
     pipe = pipeline(
         "text-generation",
         model=model_name,
@@ -179,6 +182,7 @@ def write_scores_out(scores_dict, filename:str):
     :param scores_dict: Dictionary of prompts and their top_n most likely tokens with probabilities
     :param filename: Name of file to write to
     """
+    print(f'Writing to file: {filename}.csv')
     top_n = len(list(scores_dict.values())[0])
     title_row = ['prompt']
     for n in range(top_n):
@@ -196,7 +200,7 @@ def write_scores_out(scores_dict, filename:str):
             w.writerow(row)
 
 
-def gen_filename(prefix:str=''):
+def gen_filename(prefix:str='', output_dir:str='outputs'):
     """
     Generate a filename for the output file (doesn't include file extension). 
     If prefix is specified, filename will start with that prefix and end with a number (e.g. 'outputs/prefix1' if no other files with that prefix exist)
@@ -205,7 +209,6 @@ def gen_filename(prefix:str=''):
     :param prefix: Prefix to use for the filename. (Optional)
     :return: Filename to use for the output file.
     """
-    output_dir = 'outputs'
     next_filename = None
 
     if not os.path.exists(output_dir):
@@ -236,6 +239,10 @@ def load_model(model_name:str, **kwargs):
     :return: model and tokenizer objects.
     """
     print('Loading model: ' + model_name)
-    tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True, use_cache=True, **kwargs)
-    model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True, **kwargs)
+    if model_name == 'openlm-research/open_llama_7b':
+        tokenizer = tokenizer = LlamaTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True,)
+        model = LlamaForCausalLM.from_pretrained(model_name, use_cache=True, **kwargs)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True, use_cache=True, **kwargs)
+        model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True, **kwargs)
     return model, tokenizer

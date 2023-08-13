@@ -152,10 +152,11 @@ def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:
     elif is_name:
         mod_prompt = base_prompt[0:ph_pos-4] + base_prompt[ph_pos:]
         base_prompt = mod_prompt.replace(placeholder, token)
-        if base_prompt.endswith('the'):
-            base_prompt = base_prompt[:-3]
     else:
         base_prompt = base_prompt.replace(placeholder, token)
+
+    if is_name and base_prompt.endswith('the'):
+        base_prompt = base_prompt[:-3]
     
     return base_prompt.strip()
 
