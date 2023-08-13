@@ -45,9 +45,7 @@
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="main.html">main.py</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">run_prompts module</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#run_prompts.run"><code class="docutils literal notranslate"><span class="pre">run()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.run_for_scores"><code class="docutils literal notranslate"><span class="pre">run_for_scores()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run_prompts.test"><code class="docutils literal notranslate"><span class="pre">test()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.test_for_scores"><code class="docutils literal notranslate"><span class="pre">test_for_scores()</span></code></a></li>
 </ul>
 </li>
@@ -84,24 +82,6 @@
 <span id="run-prompts-module"></span><h1>run_prompts module<a class="headerlink" href="#module-run_prompts" title="Permalink to this heading"></a></h1>
 <p>Module containing methods to run prompts on a model.</p>
 <dl class="py function">
-<dt class="sig sig-object py" id="run_prompts.run">
-<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#run"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.run" title="Permalink to this definition"></a></dt>
-<dd><p>Run prompts through a model, where sequences are generated for each prompt and written to a file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>input_set</strong> – Dataset of prompts to run through the model.</p></li>
-<li><p><strong>model_name</strong> – Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</p></li>
-<li><p><strong>kwargs</strong> – Keyword arguments to pass to the pipeline function.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Output sequences from running the prompts through the model.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="run_prompts.run_for_scores">
 <span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">run_for_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#run_for_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.run_for_scores" title="Permalink to this definition"></a></dt>
 <dd><p>Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt,
@@ -113,21 +93,6 @@ then written to a csv file.</p>
 <li><p><strong>filename</strong> – Name of the file to write the scores to.</p></li>
 <li><p><strong>model_name</strong> – Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</p></li>
 <li><p><strong>top_n</strong> – The number of words to get the highest probabilities for. Defaults to 10.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="run_prompts.test">
-<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">test</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#test"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.test" title="Permalink to this definition"></a></dt>
-<dd><p>Run a single prompt on a model and print the output sequences.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>prompt</strong> – Prompt to run through the model.</p></li>
-<li><p><strong>model_name</strong> – Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</p></li>
-<li><p><strong>kwargs</strong> – Keyword arguments to pass to the pipeline function.</p></li>
 </ul>
 </dd>
 </dl>

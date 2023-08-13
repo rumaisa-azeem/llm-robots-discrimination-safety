@@ -86,16 +86,31 @@ also to get top n most likely output words for each prompts alongside their prob
 <span class="kn">from</span> <span class="nn">create_prompt_set</span> <span class="kn">import</span> <span class="n">prompt_set</span>
 <span class="kn">import</span> <span class="nn">run_prompts</span>
 
-<span class="c1"># run prompts to analyse frequency of outputs</span>
+<span class="n">wizardLM</span> <span class="o">=</span> <span class="s1">&#39;WizardLM/WizardLM-13B-V1.2&#39;</span>
+<span class="n">falcon</span> <span class="o">=</span> <span class="s1">&#39;tiiuae/falcon-7b&#39;</span>
+<span class="n">open_llama</span> <span class="o">=</span> <span class="s1">&#39;openlm-research/open_llama_7b&#39;</span>
+
+<span class="n">output_dir</span> <span class="o">=</span> <span class="s1">&#39;outputs/wizard&#39;</span>
+<span class="n">model_name</span> <span class="o">=</span> <span class="n">wizardLM</span>
 <span class="n">subsets_dict</span> <span class="o">=</span> <span class="n">prompt_set</span><span class="o">.</span><span class="n">get_subsets_dict</span><span class="p">()</span>
-<span class="k">for</span> <span class="n">subset_name</span> <span class="ow">in</span> <span class="n">subsets_dict</span><span class="p">:</span>
-    <span class="n">run_prompts</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">],</span> <span class="n">run_prompts</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">subset_name</span> <span class="o">+</span> <span class="s1">&#39;_seqs&#39;</span><span class="p">))</span>
+
+<span class="c1"># run prompts to analyse frequency of outputs</span>
+<span class="k">for</span> <span class="n">subset_name</span><span class="p">,</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">subsets_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running prompts for &#39;</span> <span class="o">+</span> <span class="n">subset_name</span><span class="p">)</span>
+    <span class="n">run_prompts</span><span class="o">.</span><span class="n">run_for_seqs</span><span class="p">(</span>
+        <span class="n">subset</span><span class="p">,</span> 
+        <span class="n">run_prompts</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">subset_name</span> <span class="o">+</span> <span class="s1">&#39;_seqs&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">),</span> 
+        <span class="n">model_name</span>
+        <span class="p">)</span>
 
 <span class="c1"># run prompts to get confidence scores of possible outputs</span>
-<span class="k">for</span> <span class="n">subset_name</span> <span class="ow">in</span> <span class="n">subsets_dict</span><span class="p">:</span>
+<span class="k">for</span> <span class="n">subset_name</span><span class="p">,</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">subsets_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running prompts for &#39;</span> <span class="o">+</span> <span class="n">subset_name</span><span class="p">)</span>
-    <span class="n">subset</span> <span class="o">=</span> <span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span>
-    <span class="n">run_prompts</span><span class="o">.</span><span class="n">run_for_scores</span><span class="p">(</span><span class="n">subset</span><span class="p">,</span> <span class="n">run_prompts</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">subset_name</span> <span class="o">+</span> <span class="s1">&#39;_scores&#39;</span><span class="p">))</span>
+    <span class="n">run_prompts</span><span class="o">.</span><span class="n">run_for_scores</span><span class="p">(</span>
+        <span class="n">subset</span><span class="p">,</span> 
+        <span class="n">run_prompts</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">subset_name</span> <span class="o">+</span> <span class="s1">&#39;_scores&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">),</span> 
+        <span class="n">model_name</span>
+        <span class="p">)</span>
 </pre></div>
 </div>
 </section>
