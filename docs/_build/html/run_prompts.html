@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="write_prompts module" href="write_prompts.html" />
-    <link rel="prev" title="main.py" href="main.html" /> 
+    <link rel="prev" title="main module" href="main.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,10 +43,12 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="main.html">main.py</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">run_prompts module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.run_for_scores"><code class="docutils literal notranslate"><span class="pre">run_for_scores()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run_prompts.run_for_seqs"><code class="docutils literal notranslate"><span class="pre">run_for_seqs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.test_for_scores"><code class="docutils literal notranslate"><span class="pre">test_for_scores()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run_prompts.test_for_seqs"><code class="docutils literal notranslate"><span class="pre">test_for_seqs()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="write_prompts.html">write_prompts module</a></li>
@@ -99,6 +101,24 @@ then written to a csv file.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt class="sig sig-object py" id="run_prompts.run_for_seqs">
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">run_for_seqs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#run_for_seqs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.run_for_seqs" title="Permalink to this definition"></a></dt>
+<dd><p>Run prompts through a model, where sequences are generated for each prompt and written to a file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_set</strong> – Dataset of prompts to run through the model.</p></li>
+<li><p><strong>model_name</strong> – Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments to pass to the pipeline function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Output sequences from running the prompts through the model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="run_prompts.test_for_scores">
 <span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">test_for_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#test_for_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.test_for_scores" title="Permalink to this definition"></a></dt>
 <dd><p>Run a single prompt through a model and print the top_n most likely next tokens and their probabilities.</p>
@@ -113,13 +133,28 @@ then written to a csv file.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt class="sig sig-object py" id="run_prompts.test_for_seqs">
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">test_for_seqs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#test_for_seqs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.test_for_seqs" title="Permalink to this definition"></a></dt>
+<dd><p>Run a single prompt on a model and print the output sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> – Prompt to run through the model.</p></li>
+<li><p><strong>model_name</strong> – Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments to pass to the pipeline function.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="main.html" class="btn btn-neutral float-left" title="main.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="main.html" class="btn btn-neutral float-left" title="main module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="write_prompts.html" class="btn btn-neutral float-right" title="write_prompts module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
