@@ -2,7 +2,7 @@
 Module for the PromptSet class used to represent prompts in a dataset (allows for maximum efficiency when running on model).
 '''
 
-from torch.utils.data import Dataset, Subset
+from torch.utils.data import Dataset
 
 class PromptSet(Dataset):
     """
@@ -39,7 +39,7 @@ class PromptSet(Dataset):
         """
         Create a dictionary of subsets within the full prompt set.
             - key: name of the subset
-            - value: Subset object
+            - value: PromptSet object to represent the subset
         """
         subset_names = []
         for val in self.prompts_dict.values():
