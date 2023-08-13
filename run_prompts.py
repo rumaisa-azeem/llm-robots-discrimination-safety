@@ -240,7 +240,7 @@ def load_model(model_name:str, **kwargs):
     """
     print('Loading model: ' + model_name)
     if model_name == 'openlm-research/open_llama_7b':
-        tokenizer = tokenizer = LlamaTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True,)
+        tokenizer = tokenizer = LlamaTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True, **kwargs)
         model = LlamaForCausalLM.from_pretrained(model_name, use_cache=True, **kwargs)
     else:
         tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True, use_cache=True, **kwargs)
