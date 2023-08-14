@@ -72,7 +72,7 @@ def test_for_scores(prompt:str, model_name:str="tiiuae/falcon-7b", top_n:int=10)
 # helper functions -----------------------------------------------------------------------------------------------------
 
 
-def get_scores_for_prompt(prompt, model, tokenizer, top_n:int=10):
+def get_scores_for_prompt(prompt, model, tokenizer, top_n:int=10, selected_outputs:list=None):
     '''
     For a given prompt, return the top_n most likely next tokens and their probabilities.
     
@@ -80,7 +80,8 @@ def get_scores_for_prompt(prompt, model, tokenizer, top_n:int=10):
     :param model: The model to use.
     :param tokenizer: The tokenizer to use (should match the model).
     :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
-    :return: A list of tuples of the form (word, probability) for the top_n most likely next tokens.
+    :param selected_outputs: A list of words to get the probabilities for. If specified, top_n is ignored. Defaults to None.
+    :return: A list of tuples of the form (word, probability). If selected_outputs is specified, the list will only contain tuples for those words. Otherwise, the list will contain the top_n most likely words.
     '''
     input_ids = tokenizer.encode(prompt, return_tensors='pt')
     output = model(input_ids, return_dict=True, use_cache=True)
@@ -97,9 +98,12 @@ def get_scores_for_prompt(prompt, model, tokenizer, top_n:int=10):
     for index, prob in enumerate(probs): 
         word_probs.append((vocab_list[index], prob))
 
-    # get top n most probable words
-    sorted_probs = sorted(word_probs, reverse=True, key=lambda x: x[1])[:top_n]
-    return sorted_probs[:top_n]
+    if selected_outputs: # get probabilities for specific words
+        selected_probs = [(word, prob) for word, prob in word_probs if word in selected_outputs]
+        return selected_probs
+    else: # get top n most probable words
+        sorted_probs = sorted(word_probs, reverse=True, key=lambda x: x[1])[:top_n]
+        return sorted_probs[:top_n]
 
 
 def use_pipeline(inp, model_name:str, **kwargs):
