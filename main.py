@@ -1,6 +1,6 @@
 """
-Run this script - runs the prompt set through the model to get mutliple output sequences per model, 
-also to get top n most likely output words for each prompts alongside their probabilities.
+Run this script - runs the prompt set through the model to get n output sequences per prompt, 
+also to get top n most likely output tokens for each prompt alongside their probabilities.
 """
 
 from create_prompt_set import prompt_set

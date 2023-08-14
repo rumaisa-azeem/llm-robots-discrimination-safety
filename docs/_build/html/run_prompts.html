@@ -20,7 +20,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="write_prompts module" href="write_prompts.html" />
-    <link rel="prev" title="main module" href="main.html" /> 
+    <link rel="prev" title="main.py" href="main.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -43,12 +43,21 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main.py</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">run_prompts module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.run_for_scores"><code class="docutils literal notranslate"><span class="pre">run_for_scores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.run_for_seqs"><code class="docutils literal notranslate"><span class="pre">run_for_seqs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.test_for_scores"><code class="docutils literal notranslate"><span class="pre">test_for_scores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.test_for_seqs"><code class="docutils literal notranslate"><span class="pre">test_for_seqs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#helper-functions">helper functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#run_prompts.get_scores_for_prompt"><code class="docutils literal notranslate"><span class="pre">get_scores_for_prompt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run_prompts.use_pipeline"><code class="docutils literal notranslate"><span class="pre">use_pipeline()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run_prompts.load_model"><code class="docutils literal notranslate"><span class="pre">load_model()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run_prompts.write_sequences_out"><code class="docutils literal notranslate"><span class="pre">write_sequences_out()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run_prompts.write_scores_out"><code class="docutils literal notranslate"><span class="pre">write_scores_out()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run_prompts.gen_filename"><code class="docutils literal notranslate"><span class="pre">gen_filename()</span></code></a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="write_prompts.html">write_prompts module</a></li>
@@ -148,13 +157,118 @@ then written to a csv file.</p>
 </dl>
 </dd></dl>
 
+<section id="helper-functions">
+<h2>helper functions<a class="headerlink" href="#helper-functions" title="Permalink to this heading"></a></h2>
+<p>The above functions are built using these internal helper functions.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="run_prompts.get_scores_for_prompt">
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">get_scores_for_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#get_scores_for_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.get_scores_for_prompt" title="Permalink to this definition"></a></dt>
+<dd><p>For a given prompt, return the top_n most likely next tokens and their probabilities.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prompt</strong> – The input sequence to get the most likely next tokens for.</p></li>
+<li><p><strong>model</strong> – The model to use.</p></li>
+<li><p><strong>tokenizer</strong> – The tokenizer to use (should match the model).</p></li>
+<li><p><strong>top_n</strong> – The number of words to get the highest probabilities for. Defaults to 10.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>A list of tuples of the form (word, probability) for the top_n most likely next tokens.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="run_prompts.use_pipeline">
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">use_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#use_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.use_pipeline" title="Permalink to this definition"></a></dt>
+<dd><p>Use a pipeline to run a prompt/prompts through a model, returning the output sequences.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>inp</strong> – Input for the pipeline.</p></li>
+<li><p><strong>model_name</strong> – Name of model to use, must be able to load with AutoModelForCausalLM.</p></li>
+<li><p><strong>kwargs</strong> – Keyword arguments to pass to the pipeline function.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Pipeline object for the specified model.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="run_prompts.load_model">
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#load_model"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.load_model" title="Permalink to this definition"></a></dt>
+<dd><p>Load a model and matching tokenizer from HuggingFace.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model_name</strong> – Name of the model to load. Must be able to load with AutoModelForCausalLM.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>model and tokenizer objects.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="run_prompts.write_sequences_out">
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">write_sequences_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_sequences</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#write_sequences_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.write_sequences_out" title="Permalink to this definition"></a></dt>
+<dd><p>Write output sequences to a csv file.</p>
+<p>Format: prompt, output_categories, sequence1, sequence2, … sequencen</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>output_sequences</strong> – Output sequences to write to file.</p></li>
+<li><p><strong>input_set</strong> – PromptSet used to generate the output sequences.</p></li>
+<li><p><strong>filename</strong> – Name of the file to write to.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="run_prompts.write_scores_out">
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">write_scores_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scores_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#write_scores_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.write_scores_out" title="Permalink to this definition"></a></dt>
+<dd><p>Take a dictionary of prompts and their top_n most likely tokens with probabilities, and write to a csv file.</p>
+<p>Format: prompt, word1, probability1, word2, probability2, …, wordn, probabilityn</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scores_dict</strong> – Dictionary of prompts and their top_n most likely tokens with probabilities</p></li>
+<li><p><strong>filename</strong> – Name of file to write to</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="run_prompts.gen_filename">
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">gen_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'outputs'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#gen_filename"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.gen_filename" title="Permalink to this definition"></a></dt>
+<dd><p>Generate a filename for the output file (doesn’t include file extension).</p>
+<p>If prefix is specified, filename will start with that prefix and end with a number (e.g. ‘outputs/prefix1’ if no other files with that prefix exist)
+Otherwise filename will be a number (e.g. ‘outputs/1’ if no other files exist, or ‘outputs/2’ if ‘outputs/1’ already exists, etc)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>prefix</strong> – Prefix to use for the filename. (Optional)</p></li>
+<li><p><strong>output_dir</strong> – Directory to save the output file in. Defaults to ‘outputs’. (Optional)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Filename to use for the output file, including the directory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
 </section>
 
 
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="main.html" class="btn btn-neutral float-left" title="main module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="main.html" class="btn btn-neutral float-left" title="main.py" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="write_prompts.html" class="btn btn-neutral float-right" title="write_prompts module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

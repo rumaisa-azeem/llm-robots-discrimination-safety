@@ -203,11 +203,13 @@ def write_scores_out(scores_dict, filename:str):
 def gen_filename(prefix:str='', output_dir:str='outputs'):
     """
     Generate a filename for the output file (doesn't include file extension). 
+    
     If prefix is specified, filename will start with that prefix and end with a number (e.g. 'outputs/prefix1' if no other files with that prefix exist)
     Otherwise filename will be a number (e.g. 'outputs/1' if no other files exist, or 'outputs/2' if 'outputs/1' already exists, etc)
 
     :param prefix: Prefix to use for the filename. (Optional)
-    :return: Filename to use for the output file.
+    :param output_dir: Directory to save the output file in. Defaults to 'outputs'. (Optional)
+    :return: Filename to use for the output file, including the directory.
     """
     next_filename = None
 
