@@ -1,6 +1,6 @@
 # kurf
 
-Open `docs/_build/html/index.html` in a browser for detailed docs
+details docs: https://github.kcl.ac.uk/pages/K22021022/kurf/
 
 ## overview
 
