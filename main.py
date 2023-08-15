@@ -10,8 +10,8 @@ wizardLM = 'WizardLM/WizardLM-13B-V1.2'
 falcon = 'tiiuae/falcon-7b'
 open_llama = 'openlm-research/open_llama_7b'
 
-output_dir = 'outputs/wizard'
-model_name = wizardLM
+output_dir = 'outputs/falcon'
+model_name = falcon
 subsets_dict = prompt_set.get_subsets_dict()
 
 # run prompts to analyse frequency of outputs

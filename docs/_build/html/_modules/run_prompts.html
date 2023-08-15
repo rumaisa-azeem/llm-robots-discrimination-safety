@@ -94,6 +94,31 @@
     <span class="n">write_sequences_out</span><span class="p">(</span><span class="n">output_sequences</span><span class="p">,</span> <span class="n">input_set</span><span class="p">,</span> <span class="n">output_filename</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="run_for_scores"><a class="viewcode-back" href="../run_prompts.html#run_prompts.run_for_scores">[docs]</a><span class="k">def</span> <span class="nf">run_for_scores</span><span class="p">(</span><span class="n">prompt_set</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;tiiuae/falcon-7b&#39;</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">selected_outputs</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt, </span>
+<span class="sd">    then written to a csv file.</span>
+
+<span class="sd">    :param prompt_set: Dataset of prompts to run through the model.</span>
+<span class="sd">    :param filename: Name of the file to write the scores to.</span>
+<span class="sd">    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</span>
+<span class="sd">    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.</span>
+<span class="sd">    :param selected_outputs: (Optional) A specific list of tokens to get confidence scores for. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+
+    <span class="n">scores_dict</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">prompt_set</span><span class="p">):</span>
+        <span class="n">scores</span> <span class="o">=</span> <span class="n">get_scores_for_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">selected_outputs</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">selected_outputs</span><span class="p">:</span>
+            <span class="n">scores</span> <span class="o">=</span> <span class="n">scores</span><span class="p">[:</span><span class="n">top_n</span><span class="p">]</span>
+        <span class="n">scores_dict</span><span class="p">[</span><span class="n">prompt</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span>
+    <span class="n">write_scores_out</span><span class="p">(</span><span class="n">scores_dict</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
+
+
+<span class="c1"># testing functions ----------------------------------------------------------------------------------------------------------</span>
+
+
 <div class="viewcode-block" id="test_for_seqs"><a class="viewcode-back" href="../run_prompts.html#run_prompts.test_for_seqs">[docs]</a><span class="k">def</span> <span class="nf">test_for_seqs</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;tiiuae/falcon-7b&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run a single prompt on a model and print the output sequences.</span>
@@ -108,53 +133,39 @@
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt; &#39;</span> <span class="o">+</span> <span class="n">seq</span><span class="p">[</span><span class="s1">&#39;generated_text&#39;</span><span class="p">])</span></div>
 
 
-<div class="viewcode-block" id="run_for_scores"><a class="viewcode-back" href="../run_prompts.html#run_prompts.run_for_scores">[docs]</a><span class="k">def</span> <span class="nf">run_for_scores</span><span class="p">(</span><span class="n">prompt_set</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s1">&#39;tiiuae/falcon-7b&#39;</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt, </span>
-<span class="sd">    then written to a csv file.</span>
-
-<span class="sd">    :param prompt_set: Dataset of prompts to run through the model.</span>
-<span class="sd">    :param filename: Name of the file to write the scores to.</span>
-<span class="sd">    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</span>
-<span class="sd">    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
-
-    <span class="n">scores_dict</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="k">for</span> <span class="n">prompt</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">prompt_set</span><span class="p">):</span>
-        <span class="n">scores</span> <span class="o">=</span> <span class="n">get_scores_for_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">top_n</span><span class="p">)</span>
-        <span class="n">scores_dict</span><span class="p">[</span><span class="n">prompt</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores</span>
-    <span class="n">write_scores_out</span><span class="p">(</span><span class="n">scores_dict</span><span class="p">,</span> <span class="n">filename</span><span class="p">)</span></div>
-
-
-<div class="viewcode-block" id="test_for_scores"><a class="viewcode-back" href="../run_prompts.html#run_prompts.test_for_scores">[docs]</a><span class="k">def</span> <span class="nf">test_for_scores</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;tiiuae/falcon-7b&quot;</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">test_top_n_scores</span><span class="p">(</span><span class="n">prompt</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="s2">&quot;tiiuae/falcon-7b&quot;</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">tokenizer</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Run a single prompt through a model and print the top_n most likely next tokens and their probabilities.</span>
 
+<span class="sd">    Either enter a model_name to load a model for the test, or pass in a preloaded model AND tokenizer (saves time when running multiple tests).</span>
+
 <span class="sd">    :param prompt: Prompt to run through the model.</span>
 <span class="sd">    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</span>
+<span class="sd">    :param model: Optional - a preloaded model object to test the prompt on. Must also include tokenizer. </span>
+<span class="sd">    :param tokenizer: Optional - a preloaded tokenizer to test the prompt with. Must also include model.</span>
 <span class="sd">    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">model</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">tokenizer</span><span class="p">:</span>
+        <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">load_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">)</span>
 
-    <span class="n">scores</span> <span class="o">=</span> <span class="n">get_scores_for_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">top_n</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;&gt;&gt; &#39;</span> <span class="o">+</span> <span class="n">prompt</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">scores</span><span class="p">:</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">prob</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span></div>
+    <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">get_scores_for_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">)[:</span><span class="n">top_n</span><span class="p">]:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="n">word</span><span class="si">}</span><span class="s1">: </span><span class="si">{</span><span class="n">prob</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
 
 
 <span class="c1"># helper functions -----------------------------------------------------------------------------------------------------</span>
 
 
-<div class="viewcode-block" id="get_scores_for_prompt"><a class="viewcode-back" href="../run_prompts.html#run_prompts.get_scores_for_prompt">[docs]</a><span class="k">def</span> <span class="nf">get_scores_for_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">top_n</span><span class="p">:</span><span class="nb">int</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+<div class="viewcode-block" id="get_scores_for_prompt"><a class="viewcode-back" href="../run_prompts.html#run_prompts.get_scores_for_prompt">[docs]</a><span class="k">def</span> <span class="nf">get_scores_for_prompt</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span><span class="p">,</span> <span class="n">selected_outputs</span><span class="p">:</span><span class="nb">list</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    For a given prompt, return the top_n most likely next tokens and their probabilities.</span>
+<span class="sd">    For a given prompt, return next possible tokens and their probabilities in order from highest to lowest. </span>
+<span class="sd">    Returns (token, probability) pairs for all tokens in the model&#39;s vocbulary.</span>
 <span class="sd">    </span>
 <span class="sd">    :param prompt: The input sequence to get the most likely next tokens for.</span>
 <span class="sd">    :param model: The model to use.</span>
 <span class="sd">    :param tokenizer: The tokenizer to use (should match the model).</span>
-<span class="sd">    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.</span>
-<span class="sd">    :return: A list of tuples of the form (word, probability) for the top_n most likely next tokens.</span>
+<span class="sd">    :param selected_outputs: A specific list of tokens to get the probabilities for. Defaults to None.</span>
+<span class="sd">    :return: A list of tuples of the form (token, probability) sorted from highest to lowest probability. If selected_outputs is specified, the list will only contain tuples for those words. </span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="n">input_ids</span> <span class="o">=</span> <span class="n">tokenizer</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="n">prompt</span><span class="p">,</span> <span class="n">return_tensors</span><span class="o">=</span><span class="s1">&#39;pt&#39;</span><span class="p">)</span>
     <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">input_ids</span><span class="p">,</span> <span class="n">return_dict</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -171,14 +182,36 @@
     <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">probs</span><span class="p">):</span> 
         <span class="n">word_probs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">vocab_list</span><span class="p">[</span><span class="n">index</span><span class="p">],</span> <span class="n">prob</span><span class="p">))</span>
 
-    <span class="c1"># get top n most probable words</span>
-    <span class="n">sorted_probs</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">word_probs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[:</span><span class="n">top_n</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">sorted_probs</span><span class="p">[:</span><span class="n">top_n</span><span class="p">]</span></div>
+
+    <span class="k">if</span> <span class="n">selected_outputs</span><span class="p">:</span> <span class="c1"># get probabilities for specific words</span>
+        <span class="n">word_probs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">word</span><span class="o">.</span><span class="n">strip</span><span class="p">(),</span> <span class="n">prob</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">word_probs</span><span class="p">]</span>
+        <span class="n">selected_word_probs</span> <span class="o">=</span> <span class="p">[(</span><span class="n">word</span><span class="p">,</span> <span class="n">prob</span><span class="p">)</span> <span class="k">for</span> <span class="n">word</span><span class="p">,</span> <span class="n">prob</span> <span class="ow">in</span> <span class="n">word_probs</span> <span class="k">if</span> <span class="n">word</span> <span class="ow">in</span> <span class="n">selected_outputs</span><span class="p">]</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">selected_word_probs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])[:</span><span class="nb">len</span><span class="p">(</span><span class="n">selected_outputs</span><span class="p">)]</span>
+    <span class="k">else</span><span class="p">:</span> <span class="c1"># get top n most probable words</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">word_probs</span><span class="p">,</span> <span class="n">reverse</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="load_model"><a class="viewcode-back" href="../run_prompts.html#run_prompts.load_model">[docs]</a><span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Load a model and matching tokenizer from HuggingFace.</span>
+
+<span class="sd">    :param model_name: Name of the model to load. Must be able to load with AutoModelForCausalLM.</span>
+<span class="sd">    :param **kwargs: Keyword arguments to pass in when loading the model and tokenizer.</span>
+<span class="sd">    :return: model and tokenizer objects.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading model: &#39;</span> <span class="o">+</span> <span class="n">model_name</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;openlm-research/open_llama_7b&#39;</span><span class="p">:</span>
+        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">LlamaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">padding_side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">LlamaForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">padding_side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span></div>
 
 
 <div class="viewcode-block" id="use_pipeline"><a class="viewcode-back" href="../run_prompts.html#run_prompts.use_pipeline">[docs]</a><span class="k">def</span> <span class="nf">use_pipeline</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Use a pipeline to run a prompt/prompts through a model, returning the output sequences.</span>
+<span class="sd">    Load and use a pipeline to run a prompt/prompts through a model, returning the output sequences.</span>
 
 <span class="sd">    :param inp: Input for the pipeline.</span>
 <span class="sd">    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM.</span>
@@ -307,21 +340,6 @@
     <span class="k">return</span> <span class="n">next_filename</span></div>
 
 
-<div class="viewcode-block" id="load_model"><a class="viewcode-back" href="../run_prompts.html#run_prompts.load_model">[docs]</a><span class="k">def</span> <span class="nf">load_model</span><span class="p">(</span><span class="n">model_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Load a model and matching tokenizer from HuggingFace.</span>
-
-<span class="sd">    :param model_name: Name of the model to load. Must be able to load with AutoModelForCausalLM.</span>
-<span class="sd">    :return: model and tokenizer objects.</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Loading model: &#39;</span> <span class="o">+</span> <span class="n">model_name</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">model_name</span> <span class="o">==</span> <span class="s1">&#39;openlm-research/open_llama_7b&#39;</span><span class="p">:</span>
-        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">LlamaTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">padding_side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">LlamaForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">tokenizer</span> <span class="o">=</span> <span class="n">AutoTokenizer</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">padding_side</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span> <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">AutoModelForCausalLM</span><span class="o">.</span><span class="n">from_pretrained</span><span class="p">(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">trust_remote_code</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">use_cache</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">model</span><span class="p">,</span> <span class="n">tokenizer</span></div>
 </pre></div>
 
            </div>

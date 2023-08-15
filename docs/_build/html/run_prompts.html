@@ -47,7 +47,6 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">run_prompts module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.run_for_scores"><code class="docutils literal notranslate"><span class="pre">run_for_scores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.run_for_seqs"><code class="docutils literal notranslate"><span class="pre">run_for_seqs()</span></code></a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run_prompts.test_for_scores"><code class="docutils literal notranslate"><span class="pre">test_for_scores()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run_prompts.test_for_seqs"><code class="docutils literal notranslate"><span class="pre">test_for_seqs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#helper-functions">helper functions</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#run_prompts.get_scores_for_prompt"><code class="docutils literal notranslate"><span class="pre">get_scores_for_prompt()</span></code></a></li>
@@ -94,7 +93,7 @@
 <p>Module containing methods to run prompts on a model.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="run_prompts.run_for_scores">
-<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">run_for_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#run_for_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.run_for_scores" title="Permalink to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">run_for_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#run_for_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.run_for_scores" title="Permalink to this definition"></a></dt>
 <dd><p>Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt,
 then written to a csv file.</p>
 <dl class="field-list simple">
@@ -104,6 +103,7 @@ then written to a csv file.</p>
 <li><p><strong>filename</strong> – Name of the file to write the scores to.</p></li>
 <li><p><strong>model_name</strong> – Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</p></li>
 <li><p><strong>top_n</strong> – The number of words to get the highest probabilities for. Defaults to 10.</p></li>
+<li><p><strong>selected_outputs</strong> – (Optional) A specific list of tokens to get confidence scores for.</p></li>
 </ul>
 </dd>
 </dl>
@@ -128,21 +128,6 @@ then written to a csv file.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt class="sig sig-object py" id="run_prompts.test_for_scores">
-<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">test_for_scores</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#test_for_scores"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.test_for_scores" title="Permalink to this definition"></a></dt>
-<dd><p>Run a single prompt through a model and print the top_n most likely next tokens and their probabilities.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>prompt</strong> – Prompt to run through the model.</p></li>
-<li><p><strong>model_name</strong> – Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.</p></li>
-<li><p><strong>top_n</strong> – The number of words to get the highest probabilities for. Defaults to 10.</p></li>
-</ul>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt class="sig sig-object py" id="run_prompts.test_for_seqs">
 <span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">test_for_seqs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'tiiuae/falcon-7b'</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#test_for_seqs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.test_for_seqs" title="Permalink to this definition"></a></dt>
 <dd><p>Run a single prompt on a model and print the output sequences.</p>
@@ -162,19 +147,20 @@ then written to a csv file.</p>
 <p>The above functions are built using these internal helper functions.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="run_prompts.get_scores_for_prompt">
-<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">get_scores_for_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#get_scores_for_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.get_scores_for_prompt" title="Permalink to this definition"></a></dt>
-<dd><p>For a given prompt, return the top_n most likely next tokens and their probabilities.</p>
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">get_scores_for_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_outputs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#get_scores_for_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.get_scores_for_prompt" title="Permalink to this definition"></a></dt>
+<dd><p>For a given prompt, return next possible tokens and their probabilities in order from highest to lowest.
+Returns (token, probability) pairs for all tokens in the model’s vocbulary.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>prompt</strong> – The input sequence to get the most likely next tokens for.</p></li>
 <li><p><strong>model</strong> – The model to use.</p></li>
 <li><p><strong>tokenizer</strong> – The tokenizer to use (should match the model).</p></li>
-<li><p><strong>top_n</strong> – The number of words to get the highest probabilities for. Defaults to 10.</p></li>
+<li><p><strong>selected_outputs</strong> – A specific list of tokens to get the probabilities for. Defaults to None.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A list of tuples of the form (word, probability) for the top_n most likely next tokens.</p>
+<dd class="field-even"><p>A list of tuples of the form (token, probability) sorted from highest to lowest probability. If selected_outputs is specified, the list will only contain tuples for those words.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -182,7 +168,7 @@ then written to a csv file.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="run_prompts.use_pipeline">
 <span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">use_pipeline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">inp</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#use_pipeline"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.use_pipeline" title="Permalink to this definition"></a></dt>
-<dd><p>Use a pipeline to run a prompt/prompts through a model, returning the output sequences.</p>
+<dd><p>Load and use a pipeline to run a prompt/prompts through a model, returning the output sequences.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -203,7 +189,11 @@ then written to a csv file.</p>
 <dd><p>Load a model and matching tokenizer from HuggingFace.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>model_name</strong> – Name of the model to load. Must be able to load with AutoModelForCausalLM.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>model_name</strong> – Name of the model to load. Must be able to load with AutoModelForCausalLM.</p></li>
+<li><p><strong>**kwargs</strong> – <p>Keyword arguments to pass in when loading the model and tokenizer.</p>
+</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>model and tokenizer objects.</p>
