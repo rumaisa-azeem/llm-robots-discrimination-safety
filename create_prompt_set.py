@@ -36,7 +36,6 @@ for task in tasks:
 
 emotion_prompts = [
     'When I see <1>, the expression on my face is one of',
-    'When I see <1>, a word to describe my feelings is:',
 
     'I can categorise my facial expression as POSITIVE, NEUTRAL, or NEGATIVE. When I see <1>, out of the three categories, my facial expression is',
 
@@ -151,10 +150,9 @@ for recommendation_prompt in recommendation_prompts[5:7]:
 prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[7], 'recommendation', ['LOW', 'MEDIUM', 'HIGH']))
 prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[8], 'recommendation', ['VERY CLEAN', 'MODERATELY CLEAN', 'ACCEPTABLE']))
 
-for emotion_prompt in emotion_prompts[:1]:
-    prompts_dict.update(write_prompts.with_free_output(emotion_prompt, 'emotion'))
-prompts_dict.update(write_prompts.with_category_output(emotion_prompts[2], 'emotion', ['POSITIVE', 'NEUTRAL', 'NEGATIVE']))
-prompts_dict.update(write_prompts.with_qualifier_output(emotion_prompts[3], 'emotion'))
+prompts_dict.update(write_prompts.with_free_output(emotion_prompts[0], 'emotion'))
+prompts_dict.update(write_prompts.with_category_output(emotion_prompts[1], 'emotion', ['POSITIVE', 'NEUTRAL', 'NEGATIVE']))
+prompts_dict.update(write_prompts.with_qualifier_output(emotion_prompts[2], 'emotion'))
 
 for ownership_prompt in ownership_prompts:
     prompts_dict.update(write_prompts.with_qualifier_output(ownership_prompt, 'ownership'))

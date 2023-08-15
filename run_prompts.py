@@ -20,6 +20,31 @@ def run_for_seqs(input_set, output_filename:str, model_name:str="tiiuae/falcon-7
     write_sequences_out(output_sequences, input_set, output_filename)
 
 
+def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', top_n:int=10, selected_outputs:list=None):
+    """
+    Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt, 
+    then written to a csv file.
+
+    :param prompt_set: Dataset of prompts to run through the model.
+    :param filename: Name of the file to write the scores to.
+    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
+    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
+    :param selected_outputs: (Optional) A specific list of tokens to get confidence scores for. 
+    """
+    model, tokenizer = load_model(model_name)
+
+    scores_dict = {}
+    for prompt in tqdm(prompt_set):
+        scores = get_scores_for_prompt(prompt, model, tokenizer, selected_outputs)
+        if not selected_outputs:
+            scores = scores[:top_n]
+        scores_dict[prompt] = scores
+    write_scores_out(scores_dict, filename)
+
+
+# testing functions ----------------------------------------------------------------------------------------------------------
+
+
 def test_for_seqs(prompt:str, model_name:str="tiiuae/falcon-7b", **kwargs):
     """
     Run a single prompt on a model and print the output sequences.
@@ -34,54 +59,39 @@ def test_for_seqs(prompt:str, model_name:str="tiiuae/falcon-7b", **kwargs):
         print('> ' + seq['generated_text'])
 
 
-def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', top_n:int=10):
-    """
-    Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt, 
-    then written to a csv file.
-
-    :param prompt_set: Dataset of prompts to run through the model.
-    :param filename: Name of the file to write the scores to.
-    :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
-    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
-    """
-    model, tokenizer = load_model(model_name)
-
-    scores_dict = {}
-    for prompt in tqdm(prompt_set):
-        scores = get_scores_for_prompt(prompt, model, tokenizer, top_n)
-        scores_dict[prompt] = scores
-    write_scores_out(scores_dict, filename)
-
-
-def test_for_scores(prompt:str, model_name:str="tiiuae/falcon-7b", top_n:int=10):
+def test_top_n_scores(prompt:str, model_name:str="tiiuae/falcon-7b", model=None, tokenizer=None, top_n:int=10):
     """
     Run a single prompt through a model and print the top_n most likely next tokens and their probabilities.
 
+    Either enter a model_name to load a model for the test, or pass in a preloaded model AND tokenizer (saves time when running multiple tests).
+
     :param prompt: Prompt to run through the model.
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
+    :param model: Optional - a preloaded model object to test the prompt on. Must also include tokenizer. 
+    :param tokenizer: Optional - a preloaded tokenizer to test the prompt with. Must also include model.
     :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
     """
-    model, tokenizer = load_model(model_name)
+    if not model or not tokenizer:
+        model, tokenizer = load_model(model_name)
 
-    scores = get_scores_for_prompt(prompt, model, tokenizer, top_n)
     print('>> ' + prompt)
-    for word, prob in scores:
+    for word, prob in get_scores_for_prompt(prompt, model, tokenizer)[:top_n]:
         print(f'{word}: {prob}')
 
 
 # helper functions -----------------------------------------------------------------------------------------------------
 
 
-def get_scores_for_prompt(prompt, model, tokenizer, top_n:int=10, selected_outputs:list=None):
+def get_scores_for_prompt(prompt, model, tokenizer, selected_outputs:list=None):
     '''
-    For a given prompt, return the top_n most likely next tokens and their probabilities.
+    For a given prompt, return next possible tokens and their probabilities in order from highest to lowest. 
+    Returns (token, probability) pairs for all tokens in the model's vocbulary.
     
     :param prompt: The input sequence to get the most likely next tokens for.
     :param model: The model to use.
     :param tokenizer: The tokenizer to use (should match the model).
-    :param top_n: The number of words to get the highest probabilities for. Defaults to 10.
-    :param selected_outputs: A list of words to get the probabilities for. If specified, top_n is ignored. Defaults to None.
-    :return: A list of tuples of the form (word, probability). If selected_outputs is specified, the list will only contain tuples for those words. Otherwise, the list will contain the top_n most likely words.
+    :param selected_outputs: A specific list of tokens to get the probabilities for. Defaults to None.
+    :return: A list of tuples of the form (token, probability) sorted from highest to lowest probability. If selected_outputs is specified, the list will only contain tuples for those words. 
     '''
     input_ids = tokenizer.encode(prompt, return_tensors='pt')
     output = model(input_ids, return_dict=True, use_cache=True)
@@ -98,17 +108,36 @@ def get_scores_for_prompt(prompt, model, tokenizer, top_n:int=10, selected_outpu
     for index, prob in enumerate(probs): 
         word_probs.append((vocab_list[index], prob))
 
+
     if selected_outputs: # get probabilities for specific words
-        selected_probs = [(word, prob) for word, prob in word_probs if word in selected_outputs]
-        return selected_probs
+        word_probs = [(word.strip(), prob) for word, prob in word_probs]
+        selected_word_probs = [(word, prob) for word, prob in word_probs if word in selected_outputs]
+        return sorted(selected_word_probs, reverse=True, key=lambda x: x[1])[:len(selected_outputs)]
     else: # get top n most probable words
-        sorted_probs = sorted(word_probs, reverse=True, key=lambda x: x[1])[:top_n]
-        return sorted_probs[:top_n]
+        return sorted(word_probs, reverse=True, key=lambda x: x[1])
+
+
+def load_model(model_name:str, **kwargs):
+    """
+    Load a model and matching tokenizer from HuggingFace.
+
+    :param model_name: Name of the model to load. Must be able to load with AutoModelForCausalLM.
+    :param **kwargs: Keyword arguments to pass in when loading the model and tokenizer.
+    :return: model and tokenizer objects.
+    """
+    print('Loading model: ' + model_name)
+    if model_name == 'openlm-research/open_llama_7b':
+        tokenizer = LlamaTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True, **kwargs)
+        model = LlamaForCausalLM.from_pretrained(model_name, use_cache=True, **kwargs)
+    else:
+        tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True, use_cache=True, **kwargs)
+        model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True, **kwargs)
+    return model, tokenizer
 
 
 def use_pipeline(inp, model_name:str, **kwargs):
     """
-    Use a pipeline to run a prompt/prompts through a model, returning the output sequences.
+    Load and use a pipeline to run a prompt/prompts through a model, returning the output sequences.
 
     :param inp: Input for the pipeline.
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM.
@@ -237,18 +266,3 @@ def gen_filename(prefix:str='', output_dir:str='outputs'):
     return next_filename
 
 
-def load_model(model_name:str, **kwargs):
-    """
-    Load a model and matching tokenizer from HuggingFace.
-
-    :param model_name: Name of the model to load. Must be able to load with AutoModelForCausalLM.
-    :return: model and tokenizer objects.
-    """
-    print('Loading model: ' + model_name)
-    if model_name == 'openlm-research/open_llama_7b':
-        tokenizer = tokenizer = LlamaTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True, **kwargs)
-        model = LlamaForCausalLM.from_pretrained(model_name, use_cache=True, **kwargs)
-    else:
-        tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True, use_cache=True, **kwargs)
-        model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True, **kwargs)
-    return model, tokenizer
