@@ -1,6 +1,6 @@
 # kurf
 
-details docs: https://github.kcl.ac.uk/pages/K22021022/kurf/
+detailed docs: https://github.kcl.ac.uk/pages/K22021022/kurf/
 
 ## overview
 
@@ -27,6 +27,4 @@ Example of dictionary used to create a PromptSet:
 ```
 The dictionary of prompts and the PromptSet used with the model are in `create_prompt_set.py` 
 
-> TO DO: Add your prompts to `prompts_dict` in `create_prompt_set.py`
-
-To actually run prompts through the model and generate outputs, run `main.py`
+> TO DO: Create a prompts_dict of the format described above, use that to create a `PromptSet`, then run this through the model using functions in `run_prompts.py`, look at `main.py` for example.
