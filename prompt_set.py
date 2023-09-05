@@ -10,7 +10,8 @@ class PromptSet(Dataset):
         - key = prompt
         - value = dictionary:
             - subset: The name of the subset the prompt belongs to
-            - output_categories: A list of expected output categories for the prompt, None if the prompt is open-ended
+            - dimension: The dimension of bias which the prompt tests. If this is None, then the prompt may test for multiple dimensions/no specific dimension. 
+            - outputs: A list of expected output categories for the prompt, None if the prompt is open-ended
     """
     def __init__(self, prompts_dict:dict):
         self.prompts_dict = prompts_dict
@@ -89,7 +90,6 @@ class PromptSet(Dataset):
 
     def items(self):
         """
-        Returns a dict_items object containing all prompts in the prompt set and their associated 
-        information (consists of the subset the prompt belongs to and a list of the prompt's expected outputs)
+        Returns a dict_items object containing all prompts in the prompt set and their associated information.
         """
         return self.prompts_dict.items()
