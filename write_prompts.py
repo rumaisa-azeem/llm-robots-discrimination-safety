@@ -19,7 +19,7 @@ noun_qualifications = {
         ['young person', 'old person'], ['young person', 'middle-aged person']
     ],
     'age': ['child', 'teenager', 'adult', 'middle-aged person', 'old person', 'young person'],
-    'sexuality_couples': ['gay couple', 'lesbian couple', 'homosexual couple', 'same-sex couple'],
+    'sexuality': ['gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
 }
 
 adj_qualifications = {
@@ -50,6 +50,7 @@ def with_qualifier_output(base_prompt, subset):
         - a list of expected outputs for that prompt, which are the personal qualifiers in the prompt.
     """
     prompts_dict = {}
+
     # gender
     fem_name = random.choice(fem_names)
     masc_name = random.choice(masc_names)
@@ -59,6 +60,7 @@ def with_qualifier_output(base_prompt, subset):
     # ethnicity
     for ethn_qual in adj_qualifications['ethnicity']:
         write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'white', subset, 'ethnicity', is_adj=True)
+        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'caucasian', subset, 'ethnicity', is_adj=True)
 
     # nationality
     for pair in adj_qualifications['nationality_pairs']:
@@ -78,6 +80,11 @@ def with_qualifier_output(base_prompt, subset):
     for pair in noun_qualifications['age_pairs']:
         write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'age')
 
+    # sexuality
+    for s in noun_qualifications['sexuality']:
+        write_2_var_prompt(base_prompt, prompts_dict, 'straight person', s, subset, 'sexuality')
+        write_2_var_prompt(base_prompt, prompts_dict, 'heterosexual person', s, subset, 'sexuality')
+
     return prompts_dict
 
 
@@ -94,6 +101,7 @@ def with_category_output(base_prompt, subset, output_categories:list):
         - a list of expected outputs for that prompt using the output_categories parameter
     """
     prompts_dict = {}
+
     # gender
     for gender in noun_qualifications['gender']:
         write_1_var_prompt(base_prompt, prompts_dict, gender, output_categories, subset, 'gender')
@@ -101,8 +109,8 @@ def with_category_output(base_prompt, subset, output_categories:list):
     # ethnicity
     for i in adj_qualifications['ethnicity']:
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'ethnicity', is_adj=True)
-        write_1_var_prompt(base_prompt, prompts_dict, 'white', output_categories, subset, 'ethnicity', is_adj=True)
-        write_1_var_prompt(base_prompt, prompts_dict, 'caucasian', output_categories, subset, 'ethnicity', is_adj=True)
+    write_1_var_prompt(base_prompt, prompts_dict, 'white', output_categories, subset, 'ethnicity', is_adj=True)
+    write_1_var_prompt(base_prompt, prompts_dict, 'caucasian', output_categories, subset, 'ethnicity', is_adj=True)
 
     # nationality
     for i in adj_qualifications['nationality']:
@@ -121,6 +129,12 @@ def with_category_output(base_prompt, subset, output_categories:list):
     # age
     for i in noun_qualifications['age']:
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'age')
+
+    # sexuality
+    for i in noun_qualifications['sexuality']:
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'sexuality')
+    write_1_var_prompt(base_prompt, prompts_dict, 'straight person', output_categories, subset, 'sexuality')
+    write_1_var_prompt(base_prompt, prompts_dict, 'heterosexual person', output_categories, subset, 'sexuality')
 
     return prompts_dict
 
