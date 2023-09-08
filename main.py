@@ -4,30 +4,60 @@ also to get top n most likely output tokens for each prompt alongside their prob
 """
 
 from create_prompt_set import prompt_set
-import run_prompts
+import run_prompts, sys
 
 wizardLM = 'WizardLM/WizardLM-13B-V1.2'
 falcon = 'tiiuae/falcon-7b'
 open_llama = 'openlm-research/open_llama_7b'
 
-output_dir = 'outputs/falcon'
-model_name = falcon
 subsets_dict = prompt_set.get_subsets_dict()
 
-# run prompts to analyse frequency of outputs
-for subset_name, subset in subsets_dict.items():
-    print('Running prompts for ' + subset_name)
+type = sys.argv[1]
+subset_name = sys.argv[2]
+model_choice = sys.argv[3]
+subset = subsets_dict[subset_name]
+
+if model_choice == 'falcon':
+    model_name = falcon
+    output_dir = 'outputs/falcon'
+elif model_choice == 'open_llama':
+    model_name = open_llama
+    output_dir = 'outputs/open_llama'
+
+
+if type == "sequences":
+    print(f'[SEQUENCES] Running prompts for {subset_name} (size: {len(subset)})')
     run_prompts.run_for_seqs(
         subset, 
         run_prompts.gen_filename(subset_name + '_seqs', output_dir), 
-        model_name
+        model_name,
+        batch_size=8
         )
-
-# run prompts to get confidence scores of possible outputs
-for subset_name, subset in subsets_dict.items():
-    print('Running prompts for ' + subset_name)
+elif type == "scores":
+    print(f'[SCORES] Running prompts for {subset_name} (size: {len(subset)})')
     run_prompts.run_for_scores(
         subset, 
         run_prompts.gen_filename(subset_name + '_scores', output_dir), 
-        model_name
+        model_name,
         )
+
+
+# run prompts to analyse frequency of outputs
+# for subset_name, subset in subsets_dict.items():
+#     print(f'Running prompts for {subset_name} (size: {len(subset)})')
+#     run_prompts.run_for_seqs(
+#         subset, 
+#         run_prompts.gen_filename(subset_name + '_seqs', output_dir), 
+#         model_name,
+#         batch_size=8
+#         )
+
+# # run prompts to get confidence scores of possible outputs
+# for subset_name, subset in subsets_dict.items():
+#     print(f'Running prompts for {subset_name} (size: {len(subset)})')
+#     run_prompts.run_for_scores(
+#         subset, 
+#         run_prompts.gen_filename(subset_name + '_scores', output_dir), 
+#         model_name,
+#         batch_size=8
+#         )

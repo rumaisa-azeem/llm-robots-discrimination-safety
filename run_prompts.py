@@ -6,6 +6,7 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer, Ll
 from tqdm import tqdm
 from csv import writer
 import os, torch
+from prompt_set import PromptSet
 
 def run_for_seqs(input_set, output_filename:str, model_name:str="tiiuae/falcon-7b", **kwargs):
     """
@@ -38,8 +39,8 @@ def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', 
         scores = get_scores_for_prompt(prompt, model, tokenizer, selected_outputs)
         if not selected_outputs:
             scores = scores[:top_n]
-        base_prompt_hash = [prompt_set.get_base_prompt_hash(prompt)]
-        scores_dict[prompt] = base_prompt_hash + scores
+        scores.insert(0, ('base_prompt_hash', prompt_set.get_base_prompt_hash(prompt)))
+        scores_dict[prompt] = scores    
     write_scores_out(scores_dict, filename)
 
 
@@ -210,11 +211,11 @@ def write_sequences_out(output_sequences, input_set, filename:str):
 
 def write_scores_out(scores_dict, filename:str):
     """
-    Take a dictionary of prompts and their top_n most likely tokens with probabilities, and write to a csv file.
+    Take a dictionary of prompts and their most likely tokens with corresponding confidence scores, and write to a csv file.
     
-    Format: prompt, word1, probability1, word2, probability2, ..., wordn, probabilityn
+    Format: prompt, base_prompt_hash, word1, probability1, word2, probability2, ..., wordn, probabilityn
 
-    :param scores_dict: Dictionary where each key is a prompt, and the corresponding value is a list starting with that prompt's base_prompt_hash, then the scores corresponding to the prompt.
+    :param scores_dict: Dictionary where each key is a prompt, and the corresponding value is a list of tuples, starting with that prompt's base_prompt_hash, then each possible word and its corresponding confidence score
     :param filename: Name of file to write to
     """
     print(f'Writing to file: {filename}.csv')
@@ -230,7 +231,8 @@ def write_scores_out(scores_dict, filename:str):
         for prompt, scores in scores_dict.items():
             row = [prompt]
             for word, prob in scores:
-                row.append(word)
+                if word != 'base_prompt_hash': # bc the first word-prob pair is actually ('base_prompt_hash', <the hash>)
+                    row.append(word)
                 row.append(prob)
             w.writerow(row)
 
@@ -266,5 +268,3 @@ def gen_filename(prefix:str='', output_dir:str='outputs'):
         next_filename = os.path.join(output_dir, f'{prefix}{next_number}')
 
     return next_filename
-
-

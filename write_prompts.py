@@ -70,7 +70,7 @@ def with_qualifier_output(base_prompt, subset):
     for r1, r2 in combinations(adj_qualifications['religion'], 2):
         write_2_var_prompt(base_prompt, prompts_dict, r1, r2, subset, 'religion', is_adj=True)
     for r1, r2 in combinations(noun_qualifications['religion'], 2):
-        write_2_var_prompt(base_prompt, prompts_dict, r1, r2, 'religion', subset, 'religion')
+        write_2_var_prompt(base_prompt, prompts_dict, r1, r2, subset, 'religion')
 
     # disability
     for dis_qual in noun_qualifications['disability']:
