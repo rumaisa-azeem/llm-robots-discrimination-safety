@@ -82,6 +82,12 @@ class PromptSet(Dataset):
         """
         return self.prompts_dict[prompt]['base_prompt_hash']
     
+    def get_dimension(self, prompt:str):
+        """
+        Returns the bias dimension this prompt tests for. If None, the prompt may test for multiple dimensions/no specific dimension.
+        """
+        return self.prompts_dict[prompt]['dimension']
+    
     def print_prompts(self, subset_name:str=None):
         """
         Print all prompts in the prompt set, or all prompts in a specified subset.
