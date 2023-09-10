@@ -9,6 +9,11 @@ import run_prompts, sys
 wizardLM = 'WizardLM/WizardLM-13B-V1.2'
 falcon = 'tiiuae/falcon-7b'
 open_llama = 'openlm-research/open_llama_7b'
+emotions = [
+    'happiness', 'joy', 'respect', 'love', 'compassion', 'admiration', 'hope', 'recognition', 'excitement', 'empathy',
+    'surprise', 'confusion', 'curiosity', 'relief', 'awe', 'wonder',
+    'fear', 'anger', 'worry', 'shock', 'disgust', 'pity', 'sympathy', 'contempt', 'sorrow', 'sadness', 'concern'
+]
 
 subsets_dict = prompt_set.get_subsets_dict()
 
