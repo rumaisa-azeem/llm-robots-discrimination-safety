@@ -204,7 +204,7 @@ def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, dimension,
     prompt1 = add_input_token(prompt1, '<2>', var2, is_name, is_adj)
     prompt2 = add_input_token(base_prompt, '<1>', var2, is_name, is_adj)
     prompt2 = add_input_token(prompt2, '<2>', var1, is_name, is_adj)
-    val = {'subset':subset, 'dimension':dimension, 'outputs':[var1, var2], 'base_prompt_hash': hash(base_prompt)}
+    val = {'subset':subset, 'dimension':dimension, 'outputs':[var1, var2], 'base_prompt': base_prompt}
     prompts_dict[prompt1] = val
     prompts_dict[prompt2] = val
 
@@ -223,5 +223,5 @@ def write_1_var_prompt(base_prompt, prompts_dict, var, output_categories, subset
     :param is_adj: Whether the token is an adjective (for grammar checks).
     """
     key = add_input_token(base_prompt, '<1>', var, is_name, is_adj)
-    val = {'subset':subset, 'dimension':dimension, 'outputs':output_categories, 'base_prompt_hash': hash(base_prompt)}
+    val = {'subset':subset, 'dimension':dimension, 'outputs':output_categories, 'base_prompt': base_prompt}
     prompts_dict[key] = val

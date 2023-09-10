@@ -12,7 +12,7 @@ class PromptSet(Dataset):
             - subset: The name of the subset the prompt belongs to
             - dimension: The dimension of bias which the prompt tests. If this is None, then the prompt may test for multiple dimensions/no specific dimension. 
             - outputs: A list of expected output categories for the prompt, None if the prompt is open-ended
-            - base_prompt_hash: A hash of the base prompt that this prompt was derived from. Hash obtained using Python's built in hash() function.
+            - base_prompt: The base prompt that this prompt was derived from.
     """
     def __init__(self, prompts_dict:dict):
         self.prompts_dict = prompts_dict # should probably write something to validate the prompts_dict
@@ -76,11 +76,11 @@ class PromptSet(Dataset):
         """
         return self.prompts_dict[prompt]['outputs']
     
-    def get_base_prompt_hash(self, prompt:str):
+    def get_base_prompt(self, prompt:str):
         """
-        Returns the base_prompt_hash for the specified prompt.
+        Returns the base_prompt for the specified prompt.
         """
-        return self.prompts_dict[prompt]['base_prompt_hash']
+        return self.prompts_dict[prompt]['base_prompt']
     
     def print_prompts(self, subset_name:str=None):
         """

@@ -39,7 +39,7 @@ def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', 
         scores = get_scores_for_prompt(prompt, model, tokenizer, selected_outputs)
         if not selected_outputs:
             scores = scores[:top_n]
-        scores.insert(0, ('base_prompt_hash', prompt_set.get_base_prompt_hash(prompt)))
+        scores.insert(0, ('base_prompt', prompt_set.get_base_prompt(prompt)))
         scores_dict[prompt] = scores    
     write_scores_out(scores_dict, filename)
 
@@ -191,12 +191,13 @@ def write_sequences_out(output_sequences, input_set, filename:str):
         is_first_row = True
         for index, sequences_for_prompt in tqdm(enumerate(output_sequences)):
             prompt = input_set[index]
-            base_prompt_hash = input_set.get_base_prompt_hash(prompt)
+            base_prompt = input_set.get_base_prompt(prompt)
             output_categories = input_set.get_expected_outputs(prompt)
-            row = [prompt, base_prompt_hash, output_categories]
+            row = [prompt, base_prompt, output_categories]
+            print('\n\n' + prompt + ' : ' + str(base_prompt) + '\n\n')
     
             if is_first_row: # add title row then first row
-                title_row = ['prompt', 'base_prompt_hash', 'output_categories']
+                title_row = ['prompt', 'base_prompt', 'output_categories']
                 for index, seq in enumerate(sequences_for_prompt):
                     title_row.append('sequence'+str(index+1))
                     row.append(seq['generated_text'])
@@ -213,14 +214,14 @@ def write_scores_out(scores_dict, filename:str):
     """
     Take a dictionary of prompts and their most likely tokens with corresponding confidence scores, and write to a csv file.
     
-    Format: prompt, base_prompt_hash, word1, probability1, word2, probability2, ..., wordn, probabilityn
+    Format: prompt, base_prompt, word1, probability1, word2, probability2, ..., wordn, probabilityn
 
-    :param scores_dict: Dictionary where each key is a prompt, and the corresponding value is a list of tuples, starting with that prompt's base_prompt_hash, then each possible word and its corresponding confidence score
+    :param scores_dict: Dictionary where each key is a prompt, and the corresponding value is a list of tuples, starting with that prompt's base_prompt, then each possible word and its corresponding confidence score
     :param filename: Name of file to write to
     """
     print(f'Writing to file: {filename}.csv')
     top_n = len(list(scores_dict.values())[0])
-    title_row = ['prompt', 'base_prompt_hash']
+    title_row = ['prompt', 'base_prompt']
     for n in range(top_n):
         title_row.append('word' + str(n+1))
         title_row.append('probability' + str(n+1))
@@ -231,7 +232,7 @@ def write_scores_out(scores_dict, filename:str):
         for prompt, scores in scores_dict.items():
             row = [prompt]
             for word, prob in scores:
-                if word != 'base_prompt_hash': # bc the first word-prob pair is actually ('base_prompt_hash', <the hash>)
+                if word != 'base_prompt': # bc the first word-prob pair is actually ('base_prompt', <the hash>)
                     row.append(word)
                 row.append(prob)
             w.writerow(row)
