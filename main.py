@@ -30,7 +30,7 @@ elif model_choice == 'open_llama':
     output_dir = 'outputs/open_llama'
 
 
-if type == "sequences":
+if type == "sequences": # run prompts to analyse frequency of outputs
     print(f'[SEQUENCES] Running prompts for {subset_name} (size: {len(subset)})')
     run_prompts.run_for_seqs(
         subset, 
@@ -38,7 +38,7 @@ if type == "sequences":
         model_name,
         batch_size=8
         )
-elif type == "scores":
+elif type == "scores": # run prompts to get confidence scores of possible outputs
     print(f'[SCORES] Running prompts for {subset_name} (size: {len(subset)})')
     run_prompts.run_for_scores(
         subset, 

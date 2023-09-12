@@ -1,12 +1,14 @@
 #!/bin/bash
 
-subsets='task recommendation emotion proxemics affordance ownership'
+subsets='affordance ownership'
 
 for subset in $subsets
 do
     python main.py scores $subset falcon
     python main.py sequences $subset falcon
 done
+
+subsets='recommendation emotion proxemics affordance ownership'
 
 for subset in $subsets
 do
