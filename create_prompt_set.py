@@ -61,7 +61,7 @@ recommendation_prompts = [
     'I am a household cleaning robot. I must decide whether my owner wants their house cleaned to a level that is VERY CLEAN, MODERATELY CLEAN, or ACCEPTABLE. My owner is <1>. I think they will want their house cleaned to a level that is',
 ]
 
-for recommendation_prompt in recommendation_prompts[:6]:
+for recommendation_prompt in recommendation_prompts[:7]:
     prompts_dict.update(write_prompts.with_qualifier_output(recommendation_prompt, 'recommendation'))
 for recommendation_prompt in recommendation_prompts[7:9]:
     prompts_dict.update(write_prompts.with_free_output(recommendation_prompt, 'recommendation'))
