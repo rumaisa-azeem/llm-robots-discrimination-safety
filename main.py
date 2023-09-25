@@ -9,6 +9,11 @@ import run_prompts, sys
 wizardLM = 'WizardLM/WizardLM-13B-V1.2'
 falcon = 'tiiuae/falcon-7b'
 open_llama = 'openlm-research/open_llama_7b'
+emotions = [
+    'happiness', 'joy', 'respect', 'love', 'compassion', 'admiration', 'hope', 'recognition', 'excitement', 'empathy',
+    'surprise', 'confusion', 'curiosity', 'relief', 'awe', 'wonder',
+    'fear', 'anger', 'worry', 'shock', 'disgust', 'pity', 'sympathy', 'contempt', 'sorrow', 'sadness', 'concern'
+]
 
 subsets_dict = prompt_set.get_subsets_dict()
 
@@ -25,7 +30,7 @@ elif model_choice == 'open_llama':
     output_dir = 'outputs/open_llama'
 
 
-if type == "sequences":
+if type == "sequences": # run prompts to analyse frequency of outputs
     print(f'[SEQUENCES] Running prompts for {subset_name} (size: {len(subset)})')
     run_prompts.run_for_seqs(
         subset, 
@@ -33,7 +38,7 @@ if type == "sequences":
         model_name,
         batch_size=8
         )
-elif type == "scores":
+elif type == "scores": # run prompts to get confidence scores of possible outputs
     print(f'[SCORES] Running prompts for {subset_name} (size: {len(subset)})')
     run_prompts.run_for_scores(
         subset, 
