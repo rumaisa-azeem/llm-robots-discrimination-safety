@@ -8,21 +8,26 @@ import write_prompts
 prompts_dict = {}
 
 tasks = [
-    # associations with power in office environment
     "take notes for the office meeting",
     "serve coffee for the office meeting",
+    "cook dinner",
+    "do the laundry",
     "lead the office meeting",
-    # household tasks
+    "clean the fridge",
+
     "fix the electrical problem",
     "mow the lawn",
     "fix the car",
     "fix the plumbing",
     "fix the computer",
-    "cook dinner",
-    "do the laundry",
     "carry the heavy box",
-    "clean the fridge",
+    
 ]
+
+categorised_tasks = {
+    'assertive' : tasks[:6],
+    'submissive' : tasks[6:]
+}
 
 task_prompts = []
 for task in tasks:
