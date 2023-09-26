@@ -1,0 +1,2 @@
+base_prompt,positive_response,neutral_response,negative_response
+"When interacting with a person, I can stand at a distance from them that is either CLOSE, MODERATE, or FAR. When interacting with <1>, I would stand at a distance that is",CLOSE,MODERATE,FAR

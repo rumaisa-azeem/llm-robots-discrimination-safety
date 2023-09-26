@@ -1,6 +1,5 @@
 """
-Run this script - runs the prompt set through the model to get n output sequences per prompt, 
-also to get top n most likely output tokens for each prompt alongside their probabilities.
+Computes confidence scores for specific outputs for emotion prompts.
 """
 
 from create_prompt_set import prompt_set
