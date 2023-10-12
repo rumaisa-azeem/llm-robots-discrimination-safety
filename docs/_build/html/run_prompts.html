@@ -219,13 +219,14 @@ Returns (token, probability) pairs for all tokens in the model’s vocbulary.</p
 
 <dl class="py function">
 <dt class="sig sig-object py" id="run_prompts.write_scores_out">
-<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">write_scores_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scores_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#write_scores_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.write_scores_out" title="Permalink to this definition"></a></dt>
-<dd><p>Take a dictionary of prompts and their top_n most likely tokens with probabilities, and write to a csv file.</p>
-<p>Format: prompt, word1, probability1, word2, probability2, …, wordn, probabilityn</p>
+<span class="sig-prename descclassname"><span class="pre">run_prompts.</span></span><span class="sig-name descname"><span class="pre">write_scores_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scores_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_set</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/run_prompts.html#write_scores_out"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#run_prompts.write_scores_out" title="Permalink to this definition"></a></dt>
+<dd><p>Take a dictionary of prompts and their most likely tokens with corresponding confidence scores, and write to a csv file.</p>
+<p>Format: prompt, base_prompt, word1, probability1, word2, probability2, …, wordn, probabilityn</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>scores_dict</strong> – Dictionary of prompts and their top_n most likely tokens with probabilities</p></li>
+<li><p><strong>scores_dict</strong> – Dictionary where each key is a prompt, and the corresponding value is a list of tuples, starting with that prompt’s base_prompt, then each possible word and its corresponding confidence score</p></li>
+<li><p><strong>input_set</strong> – PromptSet used to generate the scores.</p></li>
 <li><p><strong>filename</strong> – Name of file to write to</p></li>
 </ul>
 </dd>

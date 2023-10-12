@@ -17,6 +17,7 @@ Contents
    write_prompts
    prompt_set
    create_prompt_set
+   data_loader
 
 Modules
 =======
@@ -28,6 +29,7 @@ Modules
    write_prompts
    prompt_set
    create_prompt_set
+   data_loader
 
 
 Indices and tables

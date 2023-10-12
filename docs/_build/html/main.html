@@ -48,6 +48,7 @@
 <li class="toctree-l1"><a class="reference internal" href="write_prompts.html">write_prompts module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="prompt_set.html">prompt_set module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="create_prompt_set.html">create_prompt_set module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_loader.html">data_loader module</a></li>
 </ul>
 
         </div>
@@ -84,33 +85,68 @@ also to get top n most likely output tokens for each prompt alongside their prob
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">from</span> <span class="nn">create_prompt_set</span> <span class="kn">import</span> <span class="n">prompt_set</span>
-<span class="kn">import</span> <span class="nn">run_prompts</span>
+<span class="kn">import</span> <span class="nn">run_prompts</span><span class="o">,</span> <span class="nn">sys</span>
 
 <span class="n">wizardLM</span> <span class="o">=</span> <span class="s1">&#39;WizardLM/WizardLM-13B-V1.2&#39;</span>
 <span class="n">falcon</span> <span class="o">=</span> <span class="s1">&#39;tiiuae/falcon-7b&#39;</span>
 <span class="n">open_llama</span> <span class="o">=</span> <span class="s1">&#39;openlm-research/open_llama_7b&#39;</span>
+<span class="n">emotions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;happiness&#39;</span><span class="p">,</span> <span class="s1">&#39;joy&#39;</span><span class="p">,</span> <span class="s1">&#39;respect&#39;</span><span class="p">,</span> <span class="s1">&#39;love&#39;</span><span class="p">,</span> <span class="s1">&#39;compassion&#39;</span><span class="p">,</span> <span class="s1">&#39;admiration&#39;</span><span class="p">,</span> <span class="s1">&#39;hope&#39;</span><span class="p">,</span> <span class="s1">&#39;recognition&#39;</span><span class="p">,</span> <span class="s1">&#39;excitement&#39;</span><span class="p">,</span> <span class="s1">&#39;empathy&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;surprise&#39;</span><span class="p">,</span> <span class="s1">&#39;confusion&#39;</span><span class="p">,</span> <span class="s1">&#39;curiosity&#39;</span><span class="p">,</span> <span class="s1">&#39;relief&#39;</span><span class="p">,</span> <span class="s1">&#39;awe&#39;</span><span class="p">,</span> <span class="s1">&#39;wonder&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;fear&#39;</span><span class="p">,</span> <span class="s1">&#39;anger&#39;</span><span class="p">,</span> <span class="s1">&#39;worry&#39;</span><span class="p">,</span> <span class="s1">&#39;shock&#39;</span><span class="p">,</span> <span class="s1">&#39;disgust&#39;</span><span class="p">,</span> <span class="s1">&#39;pity&#39;</span><span class="p">,</span> <span class="s1">&#39;sympathy&#39;</span><span class="p">,</span> <span class="s1">&#39;contempt&#39;</span><span class="p">,</span> <span class="s1">&#39;sorrow&#39;</span><span class="p">,</span> <span class="s1">&#39;sadness&#39;</span><span class="p">,</span> <span class="s1">&#39;concern&#39;</span>
+<span class="p">]</span>
 
-<span class="n">output_dir</span> <span class="o">=</span> <span class="s1">&#39;outputs/falcon&#39;</span>
-<span class="n">model_name</span> <span class="o">=</span> <span class="n">falcon</span>
 <span class="n">subsets_dict</span> <span class="o">=</span> <span class="n">prompt_set</span><span class="o">.</span><span class="n">get_subsets_dict</span><span class="p">()</span>
 
-<span class="c1"># run prompts to analyse frequency of outputs</span>
-<span class="k">for</span> <span class="n">subset_name</span><span class="p">,</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">subsets_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running prompts for &#39;</span> <span class="o">+</span> <span class="n">subset_name</span><span class="p">)</span>
+<span class="nb">type</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="n">subset_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">model_choice</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+<span class="n">subset</span> <span class="o">=</span> <span class="n">subsets_dict</span><span class="p">[</span><span class="n">subset_name</span><span class="p">]</span>
+
+<span class="k">if</span> <span class="n">model_choice</span> <span class="o">==</span> <span class="s1">&#39;falcon&#39;</span><span class="p">:</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">falcon</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="s1">&#39;outputs/falcon&#39;</span>
+<span class="k">elif</span> <span class="n">model_choice</span> <span class="o">==</span> <span class="s1">&#39;open_llama&#39;</span><span class="p">:</span>
+    <span class="n">model_name</span> <span class="o">=</span> <span class="n">open_llama</span>
+    <span class="n">output_dir</span> <span class="o">=</span> <span class="s1">&#39;outputs/open_llama&#39;</span>
+
+
+<span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;sequences&quot;</span><span class="p">:</span> <span class="c1"># run prompts to analyse frequency of outputs</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;[SEQUENCES] Running prompts for </span><span class="si">{</span><span class="n">subset_name</span><span class="si">}</span><span class="s1"> (size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
     <span class="n">run_prompts</span><span class="o">.</span><span class="n">run_for_seqs</span><span class="p">(</span>
         <span class="n">subset</span><span class="p">,</span> 
         <span class="n">run_prompts</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">subset_name</span> <span class="o">+</span> <span class="s1">&#39;_seqs&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">),</span> 
-        <span class="n">model_name</span>
+        <span class="n">model_name</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="mi">8</span>
         <span class="p">)</span>
-
-<span class="c1"># run prompts to get confidence scores of possible outputs</span>
-<span class="k">for</span> <span class="n">subset_name</span><span class="p">,</span> <span class="n">subset</span> <span class="ow">in</span> <span class="n">subsets_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Running prompts for &#39;</span> <span class="o">+</span> <span class="n">subset_name</span><span class="p">)</span>
+<span class="k">elif</span> <span class="nb">type</span> <span class="o">==</span> <span class="s2">&quot;scores&quot;</span><span class="p">:</span> <span class="c1"># run prompts to get confidence scores of possible outputs</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;[SCORES] Running prompts for </span><span class="si">{</span><span class="n">subset_name</span><span class="si">}</span><span class="s1"> (size: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">subset</span><span class="p">)</span><span class="si">}</span><span class="s1">)&#39;</span><span class="p">)</span>
     <span class="n">run_prompts</span><span class="o">.</span><span class="n">run_for_scores</span><span class="p">(</span>
         <span class="n">subset</span><span class="p">,</span> 
         <span class="n">run_prompts</span><span class="o">.</span><span class="n">gen_filename</span><span class="p">(</span><span class="n">subset_name</span> <span class="o">+</span> <span class="s1">&#39;_scores&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">),</span> 
-        <span class="n">model_name</span>
+        <span class="n">model_name</span><span class="p">,</span>
         <span class="p">)</span>
+
+
+<span class="c1"># run prompts to analyse frequency of outputs</span>
+<span class="c1"># for subset_name, subset in subsets_dict.items():</span>
+<span class="c1">#     print(f&#39;Running prompts for {subset_name} (size: {len(subset)})&#39;)</span>
+<span class="c1">#     run_prompts.run_for_seqs(</span>
+<span class="c1">#         subset, </span>
+<span class="c1">#         run_prompts.gen_filename(subset_name + &#39;_seqs&#39;, output_dir), </span>
+<span class="c1">#         model_name,</span>
+<span class="c1">#         batch_size=8</span>
+<span class="c1">#         )</span>
+
+<span class="c1"># # run prompts to get confidence scores of possible outputs</span>
+<span class="c1"># for subset_name, subset in subsets_dict.items():</span>
+<span class="c1">#     print(f&#39;Running prompts for {subset_name} (size: {len(subset)})&#39;)</span>
+<span class="c1">#     run_prompts.run_for_scores(</span>
+<span class="c1">#         subset, </span>
+<span class="c1">#         run_prompts.gen_filename(subset_name + &#39;_scores&#39;, output_dir), </span>
+<span class="c1">#         model_name,</span>
+<span class="c1">#         batch_size=8</span>
+<span class="c1">#         )</span>
 </pre></div>
 </div>
 </section>

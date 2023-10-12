@@ -1,3 +1,8 @@
+"""
+Module to load results and group them by prompt category (comparison, generation, or categorisation).
+"""
+
+
 import pandas as pd
 import os
 from create_prompt_set import recommendation_prompts, emotion_prompts, proxemics_prompts, categorised_tasks
@@ -6,6 +11,7 @@ def load_all(model):
     """
     Load all results for a given model, group them by prompt category (comparison, generation, or categorisation),
     and write them to CSV files in the grouped_prompts folder.
+
     :param model: The name of the model to load results for (should be same as folder name)
     """
     types = ['seqs', 'scores']
@@ -24,6 +30,7 @@ def write_grouped_prompts(model, type, subset, dict):
 def load_from_csv(model, subset, type):
     """
     Load a CSV file of results into a Pandas dataframe and return it.
+
     :param model: The name of the model to load results for (should be same as folder name)
     :param subset: The name of the subset to load results for (either task, recommendation, emotion, ownership, proxemics, or affordance)
     :param type: the type of results to load (either seqs or scores)

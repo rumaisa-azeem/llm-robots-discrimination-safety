@@ -84,10 +84,12 @@
 <span class="sd">        - key = prompt</span>
 <span class="sd">        - value = dictionary:</span>
 <span class="sd">            - subset: The name of the subset the prompt belongs to</span>
-<span class="sd">            - output_categories: A list of expected output categories for the prompt, None if the prompt is open-ended</span>
+<span class="sd">            - dimension: The dimension of bias which the prompt tests. If this is None, then the prompt may test for multiple dimensions/no specific dimension. </span>
+<span class="sd">            - outputs: A list of expected output categories for the prompt, None if the prompt is open-ended</span>
+<span class="sd">            - base_prompt: The base prompt that this prompt was derived from.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompts_dict</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span> <span class="o">=</span> <span class="n">prompts_dict</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span> <span class="o">=</span> <span class="n">prompts_dict</span> <span class="c1"># should probably write something to validate the prompts_dict</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">subsets_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">__init_subsets_dict</span><span class="p">()</span>
     
@@ -148,6 +150,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="p">[</span><span class="n">prompt</span><span class="p">][</span><span class="s1">&#39;outputs&#39;</span><span class="p">]</span></div>
     
+<div class="viewcode-block" id="PromptSet.get_base_prompt"><a class="viewcode-back" href="../prompt_set.html#prompt_set.PromptSet.get_base_prompt">[docs]</a>    <span class="k">def</span> <span class="nf">get_base_prompt</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the base_prompt for the specified prompt.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="p">[</span><span class="n">prompt</span><span class="p">][</span><span class="s1">&#39;base_prompt&#39;</span><span class="p">]</span></div>
+    
+<div class="viewcode-block" id="PromptSet.get_dimension"><a class="viewcode-back" href="../prompt_set.html#prompt_set.PromptSet.get_dimension">[docs]</a>    <span class="k">def</span> <span class="nf">get_dimension</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">prompt</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns the bias dimension this prompt tests for. If None, the prompt may test for multiple dimensions/no specific dimension.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="p">[</span><span class="n">prompt</span><span class="p">][</span><span class="s1">&#39;dimension&#39;</span><span class="p">]</span></div>
+    
 <div class="viewcode-block" id="PromptSet.print_prompts"><a class="viewcode-back" href="../prompt_set.html#prompt_set.PromptSet.print_prompts">[docs]</a>    <span class="k">def</span> <span class="nf">print_prompts</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">subset_name</span><span class="p">:</span><span class="nb">str</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Print all prompts in the prompt set, or all prompts in a specified subset.</span>
@@ -163,8 +177,7 @@
 
 <div class="viewcode-block" id="PromptSet.items"><a class="viewcode-back" href="../prompt_set.html#prompt_set.PromptSet.items">[docs]</a>    <span class="k">def</span> <span class="nf">items</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Returns a dict_items object containing all prompts in the prompt set and their associated </span>
-<span class="sd">        information (consists of the subset the prompt belongs to and a list of the prompt&#39;s expected outputs)</span>
+<span class="sd">        Returns a dict_items object containing all prompts in the prompt set and their associated information.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">prompts_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span></div></div>
 </pre></div>

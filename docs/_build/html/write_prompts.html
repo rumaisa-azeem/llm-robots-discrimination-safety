@@ -43,7 +43,7 @@
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="main.html">main module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="main.html">main.py</a></li>
 <li class="toctree-l1"><a class="reference internal" href="run_prompts.html">run_prompts module</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">write_prompts module</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#write_prompts.add_input_token"><code class="docutils literal notranslate"><span class="pre">add_input_token()</span></code></a></li>
@@ -106,7 +106,7 @@
 <dt class="sig sig-object py" id="write_prompts.with_category_output">
 <span class="sig-prename descclassname"><span class="pre">write_prompts.</span></span><span class="sig-name descname"><span class="pre">with_category_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_categories</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/write_prompts.html#with_category_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#write_prompts.with_category_output" title="Permalink to this definition"></a></dt>
 <dd><p>Take a base prompt and return a dictionary of prompts filled with different personal qualifiers.
-The expected outputs of the prompts are the categories written in capital letters in the prompts,</p>
+The expected outputs of the prompts are the supplied to this function as a list.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -146,7 +146,7 @@ The prompts are open-ended so have no definite expected outputs.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="write_prompts.with_qualifier_output">
 <span class="sig-prename descclassname"><span class="pre">write_prompts.</span></span><span class="sig-name descname"><span class="pre">with_qualifier_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/write_prompts.html#with_qualifier_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#write_prompts.with_qualifier_output" title="Permalink to this definition"></a></dt>
-<dd><p>Take a base prompt and return a dictionary of prompts filled with different personal qualifiers.
+<dd><p>Take a base prompt and return a dictionary of prompts filled with different pairs of personal qualifiers.
 The expected outputs of the prompts are the personal qualifiers in the prompts.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -165,15 +165,17 @@ The expected outputs of the prompts are the personal qualifiers in the prompts.<
 
 <dl class="py function">
 <dt class="sig sig-object py" id="write_prompts.write_1_var_prompt">
-<span class="sig-prename descclassname"><span class="pre">write_prompts.</span></span><span class="sig-name descname"><span class="pre">write_1_var_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompts_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_adj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/write_prompts.html#write_1_var_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#write_prompts.write_1_var_prompt" title="Permalink to this definition"></a></dt>
-<dd><p>Write a prompt with one variable to the prompts dictionary.</p>
+<span class="sig-prename descclassname"><span class="pre">write_prompts.</span></span><span class="sig-name descname"><span class="pre">write_1_var_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompts_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_categories</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_adj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/write_prompts.html#write_1_var_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#write_prompts.write_1_var_prompt" title="Permalink to this definition"></a></dt>
+<dd><p>Write a prompt with one variable to the given prompts_dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>base_prompt</strong> – The base prompt to insert the tokens into.</p></li>
 <li><p><strong>prompts_dict</strong> – The dictionary of prompts to add the prompt to.</p></li>
-<li><p><strong>var1</strong> – The first variable to insert.</p></li>
+<li><p><strong>var</strong> – The variable to insert.</p></li>
 <li><p><strong>output_categories</strong> – A list of categories to be used as the expected output of the prompt</p></li>
+<li><p><strong>subset</strong> – The name of the subset that this prompt belongs to, e.g. recommendation, task, etc</p></li>
+<li><p><strong>dimension</strong> – The dimension of bias that this prompt tests, e.g. gender, race, etc. If this is None, then the prompt may test for multiple dimensions/no specific dimension.</p></li>
 <li><p><strong>is_name</strong> – Whether the token is a name (for grammar checks).</p></li>
 <li><p><strong>is_adj</strong> – Whether the token is an adjective (for grammar checks).</p></li>
 </ul>
@@ -183,8 +185,9 @@ The expected outputs of the prompts are the personal qualifiers in the prompts.<
 
 <dl class="py function">
 <dt class="sig sig-object py" id="write_prompts.write_2_var_prompt">
-<span class="sig-prename descclassname"><span class="pre">write_prompts.</span></span><span class="sig-name descname"><span class="pre">write_2_var_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompts_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_adj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/write_prompts.html#write_2_var_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#write_prompts.write_2_var_prompt" title="Permalink to this definition"></a></dt>
-<dd><p>Write a prompt with two variables, return a dictionary of two prompts with the variables swapped.</p>
+<span class="sig-prename descclassname"><span class="pre">write_prompts.</span></span><span class="sig-name descname"><span class="pre">write_2_var_prompt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">base_prompt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prompts_dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">var2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dimension</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_adj</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/write_prompts.html#write_2_var_prompt"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#write_prompts.write_2_var_prompt" title="Permalink to this definition"></a></dt>
+<dd><p>Write a prompt with two variables. Two versions of the prompt are written with the variables swapped. Both prompts
+are added to the given prompts_dict.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -192,7 +195,8 @@ The expected outputs of the prompts are the personal qualifiers in the prompts.<
 <li><p><strong>prompts_dict</strong> – The dictionary of prompts to add the prompts to.</p></li>
 <li><p><strong>var1</strong> – The first variable to insert.</p></li>
 <li><p><strong>var2</strong> – The second variable to insert.</p></li>
-<li><p><strong>subset</strong> – The name of the subset that this prompt belongs to</p></li>
+<li><p><strong>subset</strong> – The name of the subset that this prompt belongs to, e.g. recommendation, task, etc</p></li>
+<li><p><strong>dimension</strong> – The dimension of bias that this prompt tests, e.g. gender, race, etc. If this is None, then the prompt may test for multiple dimensions/no specific dimension.</p></li>
 <li><p><strong>is_name</strong> – Whether the tokens are names or not (for grammar checks).</p></li>
 <li><p><strong>is_adj</strong> – Whether the tokens are adjectives or not (for grammar checks).</p></li>
 </ul>
