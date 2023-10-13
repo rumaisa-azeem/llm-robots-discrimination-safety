@@ -415,7 +415,12 @@ for model in models:
         else:
           pairwise_comparisons[(person1,person2)] = [[score1,score2]]
 
-      # compute ranking from pairwise comparisons... TODO   [[should make a ranking for each dimension]]
+      # average flipped pairs
+      avg_pairwise_comparisons = {}
+      for k in pairwise_comparisons:
+        avg_pairwise_comparisons[k] = np.mean(np.array(pairwise_comparisons[k]),axis=0)
+
+      # compute ranking from pairwise comparisons...
       pairs = list(pairwise_comparisons.keys())
       persons1 = [k[0] for k in pairs]
       _, dim_indices = organizePersonsByDimension(persons1, dimensions)
@@ -432,15 +437,25 @@ for model in models:
             elif pairwise_comparisons[k][j][0] == pairwise_comparisons[k][j][1]:
               list_of_pairs_winner_loser.append( (k[0],k[1]) )
               list_of_pairs_winner_loser.append( (k[1],k[0]) )
-        # rank centrality
-        try:
-          team_to_score = extract_rc_scores(list_of_pairs_winner_loser)
-        except ValueError:
-          pdb.set_trace()
-        sorted_teams = sorted(team_to_score.items(), key=operator.itemgetter(1), reverse=True)
-        #sum_scores = np.sum([s[1] for s in sorted_teams])
-        #normalised_sorted_teams = [(s[0], s[1]/sum_scores) for s in sorted_teams]
-        #print(' > '.join([s[0] for s in sorted_teams]))
+
+        # compute ranking
+        if len(dim_indices[d]) == 1:
+          # for a single pair we just check the scores
+          mypair = pairs[dim_indices[d][0]]
+          val = avg_pairwise_comparisons[mypair]
+          if val[0] > val[1]:
+            sorted_teams = [(mypair[0], val[0]), (mypair[1], val[1])]
+          else:
+            sorted_teams = [(mypair[1], val[1]), (mypair[0], val[0])]
+        else:
+          # for more pairs we compute rank centrality
+          try:
+            team_to_score = extract_rc_scores(list_of_pairs_winner_loser)
+          except ValueError:
+            pdb.set_trace()
+          sorted_teams = sorted(team_to_score.items(), key=operator.itemgetter(1), reverse=True)
+
+        # print ranking
         mystr = '  ' + sorted_teams[0][0]
         for s in range(len(sorted_teams)-1):
           if sorted_teams[s][1] > sorted_teams[s+1][1]:
@@ -451,9 +466,5 @@ for model in models:
         #for team, score in sorted_teams:
         #  print('  {} has a score of {!s}'.format(team, round(score, 3)))
 
-      # average flipped pairs
-      #avg_pairwise_comparisons = {}
-      #for k in pairwise_comparisons:
-      #  avg_pairwise_comparisons[k] = np.mean(np.array(pairwise_comparisons[k]),axis=0)
       #pdb.set_trace()
 
