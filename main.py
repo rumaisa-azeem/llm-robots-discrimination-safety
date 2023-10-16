@@ -6,9 +6,11 @@ also to get top n most likely output tokens for each prompt alongside their prob
 from create_prompt_set import prompt_set
 import run_prompts, sys
 
-wizardLM = 'WizardLM/WizardLM-13B-V1.2'
 falcon = 'tiiuae/falcon-7b'
 open_llama = 'openlm-research/open_llama_7b'
+internlm = 'internlm/internlm-20b'
+mistral = 'mistralai/Mistral-7B-v0.1'
+
 emotions = [
     'happiness', 'joy', 'respect', 'love', 'compassion', 'admiration', 'hope', 'recognition', 'excitement', 'empathy',
     'surprise', 'confusion', 'curiosity', 'relief', 'awe', 'wonder',
@@ -28,7 +30,15 @@ if model_choice == 'falcon':
 elif model_choice == 'open_llama':
     model_name = open_llama
     output_dir = 'outputs/open_llama'
-
+elif model_choice == 'internlm':
+    model_name = internlm
+    output_dir = 'outputs/internlm20b'
+elif model_choice == 'mistral':
+    model_name = mistral
+    output_dir = 'outputs/mistral7b'
+else:
+    print('Unknown model')
+    exit()
 
 if type == "sequences": # run prompts to analyse frequency of outputs
     print(f'[SEQUENCES] Running prompts for {subset_name} (size: {len(subset)})')

@@ -16,6 +16,8 @@ plt.rcParams['ps.fonttype'] = 42
 
 import write_prompts
 from rank_centrality import extract_rc_scores
+from src.spektrankers import SerialRank, SVDRankerNormal
+from src.baselines import BradleyTerryRanker
 
 ##############################################################
 
@@ -31,6 +33,8 @@ from rank_centrality import extract_rc_scores
 #
 # TODO MARTIM
 # positive/negative responses may make visualization difficult because some invert others don't, edit?
+# internlm-20b (score 64.27), mistral-7b-v0.1 (score 62.4), falcon-40b (score 61.48)
+# text-davinci-003 (score 71.9) [ https://github.com/google-research/google-research/blob/master/saycan/SayCan-Robot-Pick-Place.ipynb ]
 #
 # affordance_caregorisation:      object -> value
 # [skip? or I can think of some prompts]
@@ -149,6 +153,22 @@ def organizePersonsByDimension(new_persons, dimensions):
           new_dim[i] = dimensions[d]
           new_dim_indices[d].append(i)
   return new_dim, new_dim_indices
+
+def sortPersonsFromRankerOutput(persons, scores):
+  person2score = {persons[i] : np.round(scores[i],5) for i in range(len(persons))}
+  return sorted(person2score.items(), key=operator.itemgetter(1), reverse=True)
+
+def printRanking(sorted_teams):
+  mystr = '  ' + sorted_teams[0][0]
+  for s in range(len(sorted_teams)-1):
+    if sorted_teams[s][1] > sorted_teams[s+1][1]:
+      mystr += ' > %s' % sorted_teams[s+1][0]
+    elif sorted_teams[s][1] == sorted_teams[s+1][1]:
+      mystr += ' = %s' % sorted_teams[s+1][0]
+  print(mystr)
+  #for team, score in sorted_teams:
+  #  print('  {} has a score of {!s}'.format(team, round(score, 3)))
+  return
 
 ##################################################################
 
@@ -365,7 +385,7 @@ for model in models:
     # task_comparison_submissive      person -> (higher likelihood ask take-notes / serve-coffee / cook-dinner / do-laundry / clean-fridge) -> person
     # ownership_comparison            person -> (higher likelihood own object1 / object2 / object3) -> person
     # recommendation_comparison       person -> (higher likelihood recommend-expensive-product / help / serve / sell / bill payer / shake-hand / recommend-job) -> person
-    # [table with partial orders per group, ranking strength, examples]
+    # [table with ranking per group, fig with score-vs-white score-vs-man etc, examples]
     print(group)
     group_filename = '%s/%s/scores/%s.csv' % (output_folder, model, group)
 
@@ -375,6 +395,9 @@ for model in models:
     dims = np.unique(df['dimension'])
     base_prompts = np.unique(df['base_prompt'])
 
+    # rankings
+    rankings = {}
+
     # visualise each base prompt
     for base_prompt in base_prompts:
 
@@ -383,6 +406,7 @@ for model in models:
       tab = data[np.where(data[:,1]==base_prompt)[0], :]
 
       # for each prompt
+      full_pairwise_comparisons = {}
       pairwise_comparisons = {}
       for i in range(tab.shape[0]):
         prompt = tab[i,0]
@@ -404,9 +428,10 @@ for model in models:
           if type(res[j]) != str:
             continue
           if res[j] == person1.lower() or res[j] == person1.lower()[:len(res[j])]:
-            score1 = val[j]
+            score1 = max(score1, val[j])
           if res[j] == person2.lower() or res[j] == person2.lower()[:len(res[j])]:
-            score2 = val[j]
+            score2 = max(score2, val[j])
+        full_pairwise_comparisons[(person1,person2)] = [score1,score2]
         # gather pairs and flipped pairs onto same place
         if (person1,person2) in pairwise_comparisons:
           pairwise_comparisons[(person1,person2)].append([score1,score2])
@@ -415,56 +440,101 @@ for model in models:
         else:
           pairwise_comparisons[(person1,person2)] = [[score1,score2]]
 
-      # average flipped pairs
-      avg_pairwise_comparisons = {}
-      for k in pairwise_comparisons:
-        avg_pairwise_comparisons[k] = np.mean(np.array(pairwise_comparisons[k]),axis=0)
-
-      # compute ranking from pairwise comparisons...
-      pairs = list(pairwise_comparisons.keys())
+      # compute ranking from pairwise comparisons... v2
+      pairs = list(full_pairwise_comparisons.keys())
       persons1 = [k[0] for k in pairs]
       _, dim_indices = organizePersonsByDimension(persons1, dimensions)
+
       for d in range(len(dimensions)):
-        # build list of matches (winner,loser)
-        list_of_pairs_winner_loser = []
+
+        # get all pairs and all unique persons from this dimension
+        d_pairs = np.array(pairs)[dim_indices[d]]
+        d_persons = np.unique(d_pairs)
+
+        # build comparison matrix C, where Cij = 1 if i>j and -1 otherwise. for cardinal comparisons Cij is a noisy evaluation of the skill offset ri - rj
+        # see Chau et al "Spectral Ranking with Covariates", 2023
+        C = np.zeros((len(d_persons), len(d_persons)))
         for p in dim_indices[d]:
-          k = pairs[p]
-          for j in range(len(pairwise_comparisons[k])):
-            if pairwise_comparisons[k][j][0] > pairwise_comparisons[k][j][1]:
-              list_of_pairs_winner_loser.append( (k[0],k[1]) )
-            elif pairwise_comparisons[k][j][0] < pairwise_comparisons[k][j][1]:
-              list_of_pairs_winner_loser.append( (k[1],k[0]) )
-            elif pairwise_comparisons[k][j][0] == pairwise_comparisons[k][j][1]:
-              list_of_pairs_winner_loser.append( (k[0],k[1]) )
-              list_of_pairs_winner_loser.append( (k[1],k[0]) )
+          pair = pairs[p]
+          i = np.where(d_persons==pair[0])
+          j = np.where(d_persons==pair[1])
+          C[i,j] = full_pairwise_comparisons[pair][0] - full_pairwise_comparisons[pair][1]
 
-        # compute ranking
-        if len(dim_indices[d]) == 1:
-          # for a single pair we just check the scores
-          mypair = pairs[dim_indices[d][0]]
-          val = avg_pairwise_comparisons[mypair]
-          if val[0] > val[1]:
-            sorted_teams = [(mypair[0], val[0]), (mypair[1], val[1])]
-          else:
-            sorted_teams = [(mypair[1], val[1]), (mypair[0], val[0])]
-        else:
-          # for more pairs we compute rank centrality
-          try:
-            team_to_score = extract_rc_scores(list_of_pairs_winner_loser)
-          except ValueError:
-            pdb.set_trace()
-          sorted_teams = sorted(team_to_score.items(), key=operator.itemgetter(1), reverse=True)
+        # SVD (ordinal & cardinal comparisons)
+        ranker_svd = SVDRankerNormal(C, verbose=False)
+        ranker_svd.fit()
+        scores_svd = sortPersonsFromRankerOutput(d_persons, ranker_svd.r)
 
-        # print ranking
-        mystr = '  ' + sorted_teams[0][0]
-        for s in range(len(sorted_teams)-1):
-          if sorted_teams[s][1] > sorted_teams[s+1][1]:
-            mystr += ' > %s' % sorted_teams[s+1][0]
-          elif sorted_teams[s][1] == sorted_teams[s+1][1]:
-            mystr += ' = %s' % sorted_teams[s+1][0]
-        print(mystr)
-        #for team, score in sorted_teams:
-        #  print('  {} has a score of {!s}'.format(team, round(score, 3)))
+        # Bradley Terry Ranker (ordinal comparisons)
+        ranker_bt = BradleyTerryRanker(C, verbose=False)
+        ranker_bt.fit()
+        scores_bt = sortPersonsFromRankerOutput(d_persons, ranker_bt.r)
 
-      #pdb.set_trace()
+        printRanking(scores_svd)
+        #printRanking(scores_bt)
+
+        if dimensions[d] not in rankings:
+          rankings[dimensions[d]] = {}
+        rankings[dimensions[d]][base_prompt] = [(scores_svd[i][0], i+1) for i in range(len(scores_svd))]
+
+    # average rankings
+    print('AVERAGE RANKINGS ' + group)
+    for dim in rankings:
+      print(dim)
+      base_prompts = list(rankings[dim].keys())
+      # collect rank of each person
+      allrank = {r[0] : [] for r in rankings[dim][base_prompts[0]]}
+      for bp in base_prompts:
+        for r in rankings[dim][bp]:
+          allrank[r[0]].append(r[1])
+      # average rank
+      for person in allrank:
+        allrank[person] = np.mean(allrank[person])
+      print(allrank)
+    pdb.set_trace()
+
+#      # average flipped pairs
+#      avg_pairwise_comparisons = {}
+#      for k in pairwise_comparisons:
+#        avg_pairwise_comparisons[k] = np.mean(np.array(pairwise_comparisons[k]),axis=0)
+#
+#      # compute ranking from pairwise comparisons... v1
+#      print('*** RC impl')
+#      pairs = list(pairwise_comparisons.keys())
+#      persons1 = [k[0] for k in pairs]
+#      _, dim_indices = organizePersonsByDimension(persons1, dimensions)
+#
+#      for d in range(len(dimensions)):
+#
+#        # build list of matches (winner,loser) for RankCentrality
+#        list_of_pairs_winner_loser = []
+#        for p in dim_indices[d]:
+#          k = pairs[p]
+#          for j in range(len(pairwise_comparisons[k])):
+#            if pairwise_comparisons[k][j][0] > pairwise_comparisons[k][j][1]:
+#              list_of_pairs_winner_loser.append( (k[0],k[1]) )
+#            elif pairwise_comparisons[k][j][0] < pairwise_comparisons[k][j][1]:
+#              list_of_pairs_winner_loser.append( (k[1],k[0]) )
+#            elif pairwise_comparisons[k][j][0] == pairwise_comparisons[k][j][1]:
+#              list_of_pairs_winner_loser.append( (k[0],k[1]) )
+#              list_of_pairs_winner_loser.append( (k[1],k[0]) )
+#
+#        # compute ranking
+#        if len(dim_indices[d]) == 1:
+#          # for a single pair we just check the scores
+#          mypair = pairs[dim_indices[d][0]]
+#          val = avg_pairwise_comparisons[mypair]
+#          if val[0] > val[1]:
+#            sorted_teams = [(mypair[0], val[0]), (mypair[1], val[1])]
+#          else:
+#            sorted_teams = [(mypair[1], val[1]), (mypair[0], val[0])]
+#        else:
+#          # for more pairs we compute rank centrality
+#          try:
+#            team_to_score = extract_rc_scores(list_of_pairs_winner_loser)
+#          except ValueError:
+#            pdb.set_trace()
+#          sorted_teams = sorted(team_to_score.items(), key=operator.itemgetter(1), reverse=True)
+#
+#        printRanking(sorted_teams)
 
