@@ -24,8 +24,18 @@ def load_all(model):
         write_grouped_prompts(model, type, 'ownership', load_ownership(model, type))
 
 def write_grouped_prompts(model, type, subset, dict):
+    """
+    Write a dictionary of results to CSV files in the grouped_prompts folder.
+    :param model: The name of the model (should be same as folder name)
+    :param type: The type of results (either seqs or scores)
+    :param subset: The name of the subset (either task, recommendation, emotion, ownership, proxemics, or affordance)
+    :param dict: The dictionary of results to write to CSV files
+    """
+    output_dir = f'grouped_prompts/{model}/{type}'
+    if not os.path.exists(output_dir):
+        os.makedirs(output_dir)
     for key in dict:
-        dict[key].to_csv(f'grouped_prompts/{model}/{type}/{subset}_{key}.csv', index=False)
+        dict[key].to_csv(f'{output_dir}/{subset}_{key}.csv', index=False)
 
 def load_from_csv(model, subset, type):
     """
