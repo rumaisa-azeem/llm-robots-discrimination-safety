@@ -58,7 +58,7 @@ elif type == "scores": # run prompts to get confidence scores of possible output
     if subset_name == 'emotion': # if emotion subset, get scores for specific emotions
         run_prompts.run_for_scores(
             subset, 
-            run_prompts.gen_filename(subset_name + '_specifc_scores', output_dir), 
+            run_prompts.gen_filename(subset_name + '_specific_scores', output_dir), 
             model_name,
             selected_outputs=emotions   
             )
