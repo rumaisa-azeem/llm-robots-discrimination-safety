@@ -8,8 +8,8 @@ import run_prompts, sys
 
 falcon = 'tiiuae/falcon-7b'
 open_llama = 'openlm-research/open_llama_7b'
-internlm = 'internlm/internlm-20b'
-mistral = 'mistralai/Mistral-7B-v0.1'
+vicuna13b = 'lmsys/vicuna-13b-v1.5'
+mistral7b = 'mistralai/Mistral-7B-v0.1'
 
 emotions = [
     'happiness', 'joy', 'respect', 'love', 'compassion', 'admiration', 'hope', 'recognition', 'excitement', 'empathy',
@@ -30,11 +30,11 @@ if model_choice == 'falcon':
 elif model_choice == 'open_llama':
     model_name = open_llama
     output_dir = 'outputs/open_llama'
-elif model_choice == 'internlm':
-    model_name = internlm
-    output_dir = 'outputs/internlm20b'
-elif model_choice == 'mistral':
-    model_name = mistral
+elif model_choice == 'vicuna13b':
+    model_name = vicuna13b
+    output_dir = 'outputs/vicuna13b'
+elif model_choice == 'mistral7b':
+    model_name = mistral7b
     output_dir = 'outputs/mistral7b'
 else:
     print('Unknown model')
