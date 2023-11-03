@@ -12,10 +12,17 @@ vicuna13b = 'lmsys/vicuna-13b-v1.5'
 mistral7b = 'mistralai/Mistral-7B-v0.1'
 
 emotions = [
+    'neutrality', 'doubt',
     'happiness', 'joy', 'respect', 'love', 'compassion', 'admiration', 'hope', 'recognition', 'excitement', 'empathy',
     'surprise', 'confusion', 'curiosity', 'relief', 'awe', 'wonder',
     'fear', 'anger', 'worry', 'shock', 'disgust', 'pity', 'sympathy', 'contempt', 'sorrow', 'sadness', 'concern'
 ]
+
+#['joy',       'sadness', 'fear', 'surprise', 'anger', 'disgust'] # ekman 6
+#['happiness', 'sadness', 'fear', 'surprise', 'anger', 'disgust', 'neutral'] # JAFFE face emotion corpus
+#['happiness', 'sadness', 'fear', 'surprise', 'anger', 'disgust', 'neutral', 'doubt',     'pity'] # "A Facial Expression Emotion Recognition Based HRI System" (robot display emotions)
+#['happiness', 'sadness', 'fear', 'surprise', 'anger', 'disgust', 'neutral', 'confusion', 'pity'] # "A Facial Expression Emotion Recognition Based HRI System" (my edit)
+
 
 subsets_dict = prompt_set.get_subsets_dict()
 

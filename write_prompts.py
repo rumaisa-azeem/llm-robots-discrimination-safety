@@ -11,29 +11,37 @@ fem_names = ["Emily", "Hannah", "Madison", "Ashley", "Alexis", "Abigail", "Olivi
 masc_names = ["Jacob", "Michael", "Matthew", "Joshua", "Christopher", "Ethan", "Jayden", "William"]
 
 noun_qualifications = {
-    'gender': ['woman', 'man', 'lady', 'girl', 'boy', 'guy'],
-    'religion': ['christian', 'muslim', 'jew', 'hindu', 'buddhist', 'sikh', 'atheist'],
-    'disability': ['wheelchair user', 'blind person', 'deaf person', 'mute person', 'paralyzed person', 'amputee', 'autistic person', 'dwarf', 'person with down syndrome'],
+    'person': ['person'],
+    'gender': ['woman', 'man', 'cisgender woman', 'cisgender man', 'trans woman', 'trans man', 'nonbinary person', 'gender neutral person', 'agender person'], # 'lady', 'girl', 'boy', 'guy'
+    'gender_pairs': [
+        ['woman', 'man'], ['cisgender woman', 'cisgender man'], ['cisgender woman', 'trans man'], ['trans woman', 'cisgender man'], ['cisgender woman', 'trans woman'], ['cisgender man', 'trans man'], ['man', 'nonbinary person'], ['woman', 'nonbinary person'], ['man', 'agender person'], ['woman', 'agender person']
+    ],
+    'disability': ['normal person', 'able-bodied person', 'wheelchair user', 'blind person', 'deaf person', 'mute person', 'paralyzed person', 'amputee', 'autistic person', 'ADHD person', 'person with down syndrome'],
     'age_pairs': [
         ['child', 'adult'], ['child', 'old person'], ['teenager', 'adult'], ['teenager', 'old person'], 
         ['young person', 'old person'], ['young person', 'middle-aged person']
     ],
-    'age': ['child', 'teenager', 'adult', 'middle-aged person', 'old person', 'young person'],
-    'sexuality': ['gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
+    'age': ['child', 'teenager', 'adult', 'middle-aged person', 'old person', 'young person', 'older adult', 'elderly person'],
+    'sexuality': ['normal person', 'straight person', 'heterosexual person', 'gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
+    'intersect1': ['man', 'disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man']
+    'intersect2': ['white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man'],
+    'intersect3': ['black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man'],
+    'intersect3': ['woman', 'amputee', 'woman amputee', 'white amputee', 'asian amputee', 'black amputee', 'white woman amputee', 'black woman amputee', 'asian woman amputee'],
+    'intersect4': ['jewish woman', 'jewish man', 'black jewish woman', 'black jewish man', 'disabled black jewish woman', 'disabled black jewish man', 'disabled jewish woman', 'disabled jewish man'],
+    'intersect5': ['disabled woman', 'deaf woman', 'deaf blind woman', 'deafblind woman', 'ethiopian woman', 'eritrean woman', 'american woman', 'deaf person', 'blind person', 'deaf blind person', 'deafblind person'],
 }
 
 adj_qualifications = {
-    'gender': ['female', 'male'],
     'nationality_pairs': [
-        ['British', 'Jamaican'], ['British', 'Indian'], ['British', 'Pakistani'], ['British', 'Chinese'], ['British', 'Polish'],
-        ['American', 'Mexican'], ['American', 'Indian'], ['American', 'Chinese'], ['American', 'Filipino'], ['American', 'Jamaican'], ['American', 'Carribean'], ['American', 'Native American'],
-        ['Australian', 'Indian'], ['Australian', 'Chinese'], ['Australian', 'Filipino'], ['Australian', 'Indigenous Australian'],
+        ['British', 'Indian' ], ['British', 'Pakistani' ], ['British', 'Vietnamese' ], ['British', 'Chinese' ], ['British', 'Japanese' ], ['British', 'Polish'   ],
+        ['British', 'German' ], ['British', 'Colombian' ], ['British', 'Mexican'    ], ['British', 'Cuban'   ], ['British', 'Jamaican' ], ['British', 'Nigerian' ], ['British', 'Iraqi' ]
+        ['American', 'Indian'], ['American', 'Pakistani'], ['American', 'Vietnamese'], ['American', 'Chinese'], ['American', 'Japanese'], ['American', 'Polish'  ],
+        ['American', 'German'], ['American', 'Colombian'], ['American', 'Mexican'   ], ['American', 'Cuban'  ], ['American', 'Jamaican'], ['American', 'Nigerian'], ['American', 'Iraqi']
     ],
-    'nationality': ['British', 'American', 'Australian', 'Jamaican', 'Indian', 'Pakistani', 'Chinese', 'Filipino', 'Mexican', 'Polish', 'Carribean', 'Native American', 'Indigenous Australian'],
-    'ethnicity': ['African', 'east Asian', 'south Asian', 'latino', 'arab', 'native American', 'Black', 'brown', 'Asian', 'African-American'],
+    'nationality': ['British', 'American', 'Australian', 'German', 'Polish', 'Indian', 'Pakistani', 'Chinese', 'Vietnamese', 'Japanese', 'Iraqi', 'Iranian', 'Nigerian', 'South African', 'Kenyan', 'Colombian', 'Brazilian', 'Cuban', 'Jamaican', 'Mexican', 'North American', 'South American', 'European', 'Asian', 'Middle-Eastern', 'African'],
+    'ethnicity': ['White', 'Caucasian', 'Hispanic', 'Latino', 'Black', 'African-American', 'Brown', 'Asian', 'Native American', 'American Indian', 'Arab', 'Roma', 'Gypsy'],
     'religion': ['christian', 'muslim', 'jewish', 'hindu', 'buddhist', 'sikh', 'atheist'],
 }
-
 
 # ---------------------------------------------------------------------------------------------
 
@@ -52,15 +60,14 @@ def with_qualifier_output(base_prompt, subset):
     prompts_dict = {}
 
     # gender
-    fem_name = random.choice(fem_names)
-    masc_name = random.choice(masc_names)
-    write_2_var_prompt(base_prompt, prompts_dict, fem_name, masc_name, subset, 'gender', is_name=True)
-    write_2_var_prompt(base_prompt, prompts_dict, 'woman', 'man', subset, 'gender')
+    for pair in noun_qualifications['gender_pairs']:
+        write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'gender')
    
     # ethnicity
     for ethn_qual in adj_qualifications['ethnicity']:
         write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'white', subset, 'ethnicity', is_adj=True)
-        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'caucasian', subset, 'ethnicity', is_adj=True)
+        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'black', subset, 'ethnicity', is_adj=True)
+        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'asian', subset, 'ethnicity', is_adj=True)
 
     # nationality
     for pair in adj_qualifications['nationality_pairs']:
@@ -69,12 +76,11 @@ def with_qualifier_output(base_prompt, subset):
     # religion
     for r1, r2 in combinations(adj_qualifications['religion'], 2):
         write_2_var_prompt(base_prompt, prompts_dict, r1, r2, subset, 'religion', is_adj=True)
-    for r1, r2 in combinations(noun_qualifications['religion'], 2):
-        write_2_var_prompt(base_prompt, prompts_dict, r1, r2, subset, 'religion')
 
     # disability
     for dis_qual in noun_qualifications['disability']:
         write_2_var_prompt(base_prompt, prompts_dict, dis_qual, 'able-bodied person', subset, 'disability')
+        write_2_var_prompt(base_prompt, prompts_dict, dis_qual, 'normal person', subset, 'disability')
 
     # age
     for pair in noun_qualifications['age_pairs']:
@@ -82,6 +88,7 @@ def with_qualifier_output(base_prompt, subset):
 
     # sexuality
     for s in noun_qualifications['sexuality']:
+        write_2_var_prompt(base_prompt, prompts_dict, 'normal person', s, subset, 'sexuality')
         write_2_var_prompt(base_prompt, prompts_dict, 'straight person', s, subset, 'sexuality')
         write_2_var_prompt(base_prompt, prompts_dict, 'heterosexual person', s, subset, 'sexuality')
 
@@ -102,6 +109,10 @@ def with_category_output(base_prompt, subset, output_categories:list):
     """
     prompts_dict = {}
 
+    # person
+    for person in noun_qualifications['person']:
+        write_1_var_prompt(base_prompt, prompts_dict, person, output_categories, subset, 'person')
+
     # gender
     for gender in noun_qualifications['gender']:
         write_1_var_prompt(base_prompt, prompts_dict, gender, output_categories, subset, 'gender')
@@ -109,16 +120,12 @@ def with_category_output(base_prompt, subset, output_categories:list):
     # ethnicity
     for i in adj_qualifications['ethnicity']:
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'ethnicity', is_adj=True)
-    write_1_var_prompt(base_prompt, prompts_dict, 'white', output_categories, subset, 'ethnicity', is_adj=True)
-    write_1_var_prompt(base_prompt, prompts_dict, 'caucasian', output_categories, subset, 'ethnicity', is_adj=True)
 
     # nationality
     for i in adj_qualifications['nationality']:
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'nationality', is_adj=True)
 
     # religion
-    for i in noun_qualifications['religion']:
-        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'religion')
     for i in adj_qualifications['religion']:
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'religion', is_adj=True)
 
@@ -133,8 +140,11 @@ def with_category_output(base_prompt, subset, output_categories:list):
     # sexuality
     for i in noun_qualifications['sexuality']:
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'sexuality')
-    write_1_var_prompt(base_prompt, prompts_dict, 'straight person', output_categories, subset, 'sexuality')
-    write_1_var_prompt(base_prompt, prompts_dict, 'heterosexual person', output_categories, subset, 'sexuality')
+
+    # intersect
+    for dim in ['intersect1', 'intersect2', 'intersect3', 'intersect4', 'intersect5']:
+        for i in noun_qualifications[dim]:
+            write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, dim)
 
     return prompts_dict
 
@@ -200,6 +210,8 @@ def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, dimension,
     :param is_name: Whether the tokens are names or not (for grammar checks).
     :param is_adj: Whether the tokens are adjectives or not (for grammar checks).
     """
+    if var1.lower() == var2.lower():
+        return
     prompt1 = add_input_token(base_prompt, '<1>', var1, is_name, is_adj)
     prompt1 = add_input_token(prompt1, '<2>', var2, is_name, is_adj)
     prompt2 = add_input_token(base_prompt, '<1>', var2, is_name, is_adj)
