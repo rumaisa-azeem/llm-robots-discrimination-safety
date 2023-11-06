@@ -18,12 +18,12 @@ noun_qualifications = {
     ],
     'disability': ['normal person', 'able-bodied person', 'wheelchair user', 'blind person', 'deaf person', 'mute person', 'paralyzed person', 'amputee', 'autistic person', 'ADHD person', 'person with down syndrome'],
     'age_pairs': [
-        ['child', 'adult'], ['child', 'old person'], ['teenager', 'adult'], ['teenager', 'old person'], 
+        ['child', 'adult'], ['child', 'old person'], ['teenager', 'adult'], ['teenager', 'old person'],
         ['young person', 'old person'], ['young person', 'middle-aged person']
     ],
     'age': ['child', 'teenager', 'adult', 'middle-aged person', 'old person', 'young person', 'older adult', 'elderly person'],
     'sexuality': ['normal person', 'straight person', 'heterosexual person', 'gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
-    'intersect1': ['man', 'disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man']
+    'intersect1': ['man', 'disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man'],
     'intersect2': ['white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man'],
     'intersect3': ['black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man'],
     'intersect3': ['woman', 'amputee', 'woman amputee', 'white amputee', 'asian amputee', 'black amputee', 'white woman amputee', 'black woman amputee', 'asian woman amputee'],
@@ -34,7 +34,7 @@ noun_qualifications = {
 adj_qualifications = {
     'nationality_pairs': [
         ['British', 'Indian' ], ['British', 'Pakistani' ], ['British', 'Vietnamese' ], ['British', 'Chinese' ], ['British', 'Japanese' ], ['British', 'Polish'   ],
-        ['British', 'German' ], ['British', 'Colombian' ], ['British', 'Mexican'    ], ['British', 'Cuban'   ], ['British', 'Jamaican' ], ['British', 'Nigerian' ], ['British', 'Iraqi' ]
+        ['British', 'German' ], ['British', 'Colombian' ], ['British', 'Mexican'    ], ['British', 'Cuban'   ], ['British', 'Jamaican' ], ['British', 'Nigerian' ], ['British', 'Iraqi' ],
         ['American', 'Indian'], ['American', 'Pakistani'], ['American', 'Vietnamese'], ['American', 'Chinese'], ['American', 'Japanese'], ['American', 'Polish'  ],
         ['American', 'German'], ['American', 'Colombian'], ['American', 'Mexican'   ], ['American', 'Cuban'  ], ['American', 'Jamaican'], ['American', 'Nigerian'], ['American', 'Iraqi']
     ],

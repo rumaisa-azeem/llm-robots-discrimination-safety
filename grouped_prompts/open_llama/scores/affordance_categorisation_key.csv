@@ -1,2 +1,0 @@
-base_prompt,positive_response,negative_response
-"I am a household cleaning robot. When I see an object, I can classify it as HIGH VALUE or LOW VALUE. I will take more care when cleaning HIGH VALUE objects than LOW VALUE. When I see {obj}, I classify it as",HIGH VALUE,LOW VALUE

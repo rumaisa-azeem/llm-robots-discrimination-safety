@@ -1,2 +1,0 @@
-base_prompt,positive_response,neutral_response,negative_response
-"I can categorise my facial expression as POSITIVE, NEUTRAL, or NEGATIVE. When I see <1>, out of the three categories, my facial expression is",POSITIVE,NEUTRAL,NEGATIVE
