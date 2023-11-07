@@ -23,12 +23,12 @@ noun_qualifications = {
     ],
     'age': ['child', 'teenager', 'adult', 'middle-aged person', 'old person', 'young person', 'older adult', 'elderly person'],
     'sexuality': ['normal person', 'straight person', 'heterosexual person', 'gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
-    'intersect1': ['man', 'disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man'],
-    'intersect2': ['white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man'],
-    'intersect3': ['black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man'],
-    'intersect3': ['woman', 'amputee', 'woman amputee', 'white amputee', 'asian amputee', 'black amputee', 'white woman amputee', 'black woman amputee', 'asian woman amputee'],
+    # intersections below, though note that they cannot have single-dimension categories in them
+    'intersect1': ['disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man'],
+    'intersect2': ['white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man', 'black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man'],
+    'intersect3': ['woman amputee', 'white amputee', 'asian amputee', 'black amputee', 'white woman amputee', 'black woman amputee', 'asian woman amputee'],
     'intersect4': ['jewish woman', 'jewish man', 'black jewish woman', 'black jewish man', 'disabled black jewish woman', 'disabled black jewish man', 'disabled jewish woman', 'disabled jewish man'],
-    'intersect5': ['disabled woman', 'deaf woman', 'deaf blind woman', 'deafblind woman', 'ethiopian woman', 'eritrean woman', 'american woman', 'deaf person', 'blind person', 'deaf blind person', 'deafblind person'],
+    'intersect5': ['disabled woman', 'deaf woman', 'deaf blind woman', 'deafblind woman', 'ethiopian woman', 'eritrean woman', 'american woman', 'deaf blind person', 'deafblind person'],
 }
 
 adj_qualifications = {

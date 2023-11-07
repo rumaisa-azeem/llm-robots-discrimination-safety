@@ -73,9 +73,9 @@ def load_recommendation(model:str, type:str):
         'categorisation': df[df['base_prompt'].isin(categorisation_prompts)],
         'categorisation_key': pd.DataFrame({
             'base_prompt': categorisation_prompts,
-            'positive_response': ['LOW', 'VERY CLEAN'],
-            'neutral_response': ['MEDIUM', 'MODERATELY CLEAN'],
-            'negative_response': ['HIGH', 'ACCEPTABLE'],
+            'positive_response': ['LOW', 'VERY CLEAN', 'CLEAN', 'HIGH'],
+            'neutral_response': ['MEDIUM', 'MODERATELY CLEAN', 'ACCEPTABLE', 'MEDIUM'],
+            'negative_response': ['HIGH', 'ACCEPTABLE', 'DIRTY', 'LOW'],
         })
     }
     return recommendation_data
@@ -106,14 +106,15 @@ def load_affordance(model:str, type:str):
 
 def load_proxemics(model:str, type:str):
     df = load_from_csv(model, 'proxemics', type)
+    categorisation_prompts = proxemics_prompts[1:]
     return {
         'comparison': df[df['base_prompt'] == proxemics_prompts[0]],
-        'categorisation': df[df['base_prompt'] == proxemics_prompts[1]],
+        'categorisation': df[df['base_prompt'].isin(categorisation_prompts)],
         'categorisation_key': pd.DataFrame({
-            'base_prompt': [proxemics_prompts[1]],
-            'positive_response': ['CLOSE'],
-            'neutral_response': ['MODERATE'],
-            'negative_response': ['FAR'],
+            'base_prompt': categorisation_prompts,
+            'positive_response': ['CLOSE', 'CLOSE'],
+            'neutral_response': ['MODERATE', 'MODERATE'],
+            'negative_response': ['FAR', 'FAR'],
         })
     }
 

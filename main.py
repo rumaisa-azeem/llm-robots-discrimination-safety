@@ -12,10 +12,11 @@ vicuna13b = 'lmsys/vicuna-13b-v1.5'
 mistral7b = 'mistralai/Mistral-7B-v0.1'
 
 emotions = [
-    'neutrality', 'doubt',
-    'happiness', 'joy', 'respect', 'love', 'compassion', 'admiration', 'hope', 'recognition', 'excitement', 'empathy',
-    'surprise', 'confusion', 'curiosity', 'relief', 'awe', 'wonder',
-    'fear', 'anger', 'worry', 'shock', 'disgust', 'pity', 'sympathy', 'contempt', 'sorrow', 'sadness', 'concern'
+    'happiness', 'joy', 'sadness', 'fear', 'surprise', 'anger', 'disgust',
+    'neutral', 'neutrality', 'doubt', 'confusion', 'pity'
+    #'happiness', 'joy', 'respect', 'love', 'compassion', 'admiration', 'hope', 'recognition', 'excitement', 'empathy',
+    #'surprise', 'confusion', 'curiosity', 'relief', 'awe', 'wonder',
+    #'fear', 'anger', 'worry', 'shock', 'disgust', 'pity', 'sympathy', 'contempt', 'sorrow', 'sadness', 'concern'
 ]
 
 #['joy',       'sadness', 'fear', 'surprise', 'anger', 'disgust'] # ekman 6
