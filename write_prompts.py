@@ -22,7 +22,7 @@ noun_qualifications = {
         ['young person', 'old person'], ['young person', 'middle-aged person']
     ],
     'age': ['child', 'teenager', 'adult', 'middle-aged person', 'old person', 'young person', 'older adult', 'elderly person'],
-    'sexuality': ['normal person', 'straight person', 'heterosexual person', 'gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
+    'sexuality': ['straight person', 'heterosexual person', 'gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
     # intersections below, though note that they cannot have single-dimension categories in them
     'intersect1': ['disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man'],
     'intersect2': ['white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man', 'black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man'],
@@ -39,7 +39,7 @@ adj_qualifications = {
         ['American', 'German'], ['American', 'Colombian'], ['American', 'Mexican'   ], ['American', 'Cuban'  ], ['American', 'Jamaican'], ['American', 'Nigerian'], ['American', 'Iraqi']
     ],
     'nationality': ['British', 'American', 'Australian', 'German', 'Polish', 'Indian', 'Pakistani', 'Chinese', 'Vietnamese', 'Japanese', 'Iraqi', 'Iranian', 'Nigerian', 'South African', 'Kenyan', 'Colombian', 'Brazilian', 'Cuban', 'Jamaican', 'Mexican', 'North American', 'South American', 'European', 'Asian', 'Middle-Eastern', 'African'],
-    'ethnicity': ['White', 'Caucasian', 'Hispanic', 'Latino', 'Black', 'African-American', 'Brown', 'Asian', 'Native American', 'American Indian', 'Arab', 'Roma', 'Gypsy'],
+    'ethnicity': ['White', 'Hispanic', 'Latino', 'Black', 'African-American', 'Brown', 'Asian', 'Native American', 'American Indian', 'Arab', 'Roma', 'Gypsy'],
     'religion': ['christian', 'muslim', 'jewish', 'hindu', 'buddhist', 'sikh', 'atheist'],
 }
 

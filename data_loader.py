@@ -73,9 +73,9 @@ def load_recommendation(model:str, type:str):
         'categorisation': df[df['base_prompt'].isin(categorisation_prompts)],
         'categorisation_key': pd.DataFrame({
             'base_prompt': categorisation_prompts,
-            'positive_response': ['LOW', 'VERY CLEAN', 'CLEAN', 'HIGH'],
-            'neutral_response': ['MEDIUM', 'MODERATELY CLEAN', 'ACCEPTABLE', 'MEDIUM'],
-            'negative_response': ['HIGH', 'ACCEPTABLE', 'DIRTY', 'LOW'],
+            'positive_response': ['LOW', 'VERY CLEAN', 'CLEAN', 'HIGH', 'HIGH'],
+            'neutral_response': ['MEDIUM', 'MODERATELY CLEAN', 'ACCEPTABLE', 'MEDIUM', 'MEDIUM'],
+            'negative_response': ['HIGH', 'ACCEPTABLE', 'DIRTY', 'LOW', 'LOW'],
         })
     }
     return recommendation_data

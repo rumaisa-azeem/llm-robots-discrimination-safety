@@ -14,8 +14,9 @@ plt.rcParams['axes.labelweight'] = 'bold'
 plt.rcParams['pdf.fonttype'] = 42
 plt.rcParams['ps.fonttype'] = 42
 
-FIG_SIZE_W_WIDE, FIG_SIZE_H_WIDE = 8, 1.2
-FIG_SIZE_W, FIG_SIZE_H = 3, 2.8
+#FIG_SIZE_W_WIDE, FIG_SIZE_H_WIDE = 8, 1.2
+#FIG_SIZE_W, FIG_SIZE_H = 3, 2.8
+FIG_SIZE_W_PER_PERSON, FIG_SIZE_H = 0.2, 2
 FIG_FONT_SIZE_WIDE = 7
 FIG_FONT_SIZE = 11
 FIG_SAVE = True
@@ -67,7 +68,7 @@ min_val = 0.
 
 dimensions = ['gender', 'ethnicity', 'nationality', 'religion', 'disability', 'age'] #, 'sexuality']
 
-dominant_persons = ['man', 'white', 'caucasian', 'british', 'american', 'australian', 'christian', 'able-bodied', 'adult', 'young', 'heterosexual', 'straight']
+dominant_persons = ['man', 'cisgender man', 'woman', 'cisgender woman', 'white', 'british', 'american', 'australian', 'christian', 'able-bodied', 'normal', 'adult', 'young', 'heterosexual', 'straight']
 
 emotion_models = {
   'Ekman' : ['happiness', 'sadness', 'fear', 'surprise', 'anger', 'disgust'], # ekman 6
@@ -278,7 +279,8 @@ if __name__ == '__main__':
     # balance and ranking stats
     balance_stats = {}
     task_rankings = {}
-    task_assignments = {}
+    task_assignment_dominance = {}
+    task_assignment_difference = {}
 
     #############################
     for group in ['recommendation_categorisation', 'emotion_categorisation', 'proxemics_categorisation']:
@@ -425,11 +427,11 @@ if __name__ == '__main__':
           ax.set_ylim(min_val, max_val)
           ax.set_ylabel('P(' + negative_response + ')')
           ax.yaxis.grid(True)
-          ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.median(new_values),np.median(new_values)], color='red', linestyle='--')
+          ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(new_values),np.mean(new_values)], color='red', linestyle='--')
           plt.tight_layout(rect=[0,0,1,1])
-          fig.set_size_inches(FIG_SIZE_W_WIDE, FIG_SIZE_H_WIDE)
+          fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(new_values), FIG_SIZE_H)
           if FIG_SAVE:
-            plt.savefig('%s-%s-%s-%s.png' % (model, group, short_base_prompt, graph_dim_name), bbox_inches='tight', dpi=300)
+            plt.savefig('%s-%s-%s-%s.png' % (model, graph_dim_name, group, short_base_prompt), bbox_inches='tight', dpi=300)
           if FIG_SHOW:
             plt.show()
 
@@ -537,14 +539,14 @@ if __name__ == '__main__':
           set_title(ax, model, base_prompt)
           ax.yaxis.grid(True)
           plt.tight_layout(rect=[0,0,1,1])
-          fig.set_size_inches(FIG_SIZE_W_WIDE, FIG_SIZE_H_WIDE+1)
+          fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(persons), FIG_SIZE_H)
           if FIG_SAVE:
             plt.savefig('%s-%s-%s-%s.png' % (model, group, short_base_prompt, emotion_model), bbox_inches='tight', dpi=300)
           if FIG_SHOW:
             plt.show()
 
           # visualise single dimension...
-          if True:
+          if False:
             for dim in range(len(new_dim_indices)):
               x_pos = np.arange(1,len(new_dim_indices[dim])+1)
               per = np.array(persons)[new_dim_indices[dim]]
@@ -565,7 +567,7 @@ if __name__ == '__main__':
               #ax.set_ylim(min_val, max_val)
               ax.yaxis.grid(True)
               plt.tight_layout(rect=[0,0,1,1])
-              fig.set_size_inches(FIG_SIZE_W, FIG_SIZE_H)
+              fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(x_pos), FIG_SIZE_H)
               if FIG_SAVE:
                 plt.savefig('%s-%s-%s-%s-%s.png' % (model, group, short_base_prompt, emotion_model, dimensions[dim]), bbox_inches='tight', dpi=300)
               if FIG_SHOW:
@@ -649,46 +651,46 @@ if __name__ == '__main__':
             pairwise_comparisons[(person1,person2)] = [[score1,score2]]
 
         # compute ranking from pairwise comparisons... v2
-        pairs = list(full_pairwise_comparisons.keys())
-        persons1 = [k[0] for k in pairs]
-        _, dim_indices = organizePersonsByDimension(persons1, dimensions)
+        if False:
+          pairs = list(full_pairwise_comparisons.keys())
+          persons1 = [k[0] for k in pairs]
+          _, dim_indices = organizePersonsByDimension(persons1, dimensions)
 
-        for d in range(len(dimensions)):
+          for d in range(len(dimensions)):
 
-          # get all pairs and all unique persons from this dimension
-          d_pairs = np.array(pairs)[dim_indices[d]]
-          d_persons = np.unique(d_pairs)
+            # get all pairs and all unique persons from this dimension
+            d_pairs = np.array(pairs)[dim_indices[d]]
+            d_persons = np.unique(d_pairs)
 
-          # build comparison matrix C, where Cij = 1 if i>j and -1 otherwise. for cardinal comparisons Cij is a noisy evaluation of the skill offset ri - rj
-          # see Chau et al "Spectral Ranking with Covariates", 2023
-          C = np.zeros((len(d_persons), len(d_persons)))
-          for p in dim_indices[d]:
-            pair = pairs[p]
-            i = np.where(d_persons==pair[0])
-            j = np.where(d_persons==pair[1])
-            C[i,j] = full_pairwise_comparisons[pair][0] - full_pairwise_comparisons[pair][1]
+            # build comparison matrix C, where Cij = 1 if i>j and -1 otherwise. for cardinal comparisons Cij is a noisy evaluation of the skill offset ri - rj
+            # see Chau et al "Spectral Ranking with Covariates", 2023
+            C = np.zeros((len(d_persons), len(d_persons)))
+            for p in dim_indices[d]:
+              pair = pairs[p]
+              i = np.where(d_persons==pair[0])
+              j = np.where(d_persons==pair[1])
+              C[i,j] = full_pairwise_comparisons[pair][0] - full_pairwise_comparisons[pair][1]
 
-          # SVD (ordinal & cardinal comparisons)
-          ranker_svd = SVDRankerNormal(C, verbose=False)
-          ranker_svd.fit()
-          scores_svd = sortPersonsFromRankerOutput(d_persons, ranker_svd.r)
+            # SVD (ordinal & cardinal comparisons)
+            ranker_svd = SVDRankerNormal(C, verbose=False)
+            ranker_svd.fit()
+            scores_svd = sortPersonsFromRankerOutput(d_persons, ranker_svd.r)
 
-          # Bradley Terry Ranker (ordinal comparisons)
-          ranker_bt = BradleyTerryRanker(C, verbose=False)
-          ranker_bt.fit()
-          scores_bt = sortPersonsFromRankerOutput(d_persons, ranker_bt.r)
+            # Bradley Terry Ranker (ordinal comparisons)
+            ranker_bt = BradleyTerryRanker(C, verbose=False)
+            ranker_bt.fit()
+            scores_bt = sortPersonsFromRankerOutput(d_persons, ranker_bt.r)
 
-          print(strRanking(scores_svd))
-          #print(strRanking(scores_bt))
+            print(strRanking(scores_svd))
+            #print(strRanking(scores_bt))
 
-          if dimensions[d] not in dim_rankings:
-            dim_rankings[dimensions[d]] = {}
-          dim_rankings[dimensions[d]][base_prompt] = [(scores_svd[i][0], i+1) for i in range(len(scores_svd))]
+            if dimensions[d] not in dim_rankings:
+              dim_rankings[dimensions[d]] = {}
+            dim_rankings[dimensions[d]][base_prompt] = [(scores_svd[i][0], i+1) for i in range(len(scores_svd))]
 
-          if short_base_prompt not in task_rankings:
-            task_rankings[short_base_prompt] = [0]*len(dimensions)
-          task_rankings[short_base_prompt][d] = strRanking2(scores_svd)
-
+            if short_base_prompt not in task_rankings:
+              task_rankings[short_base_prompt] = [0]*len(dimensions)
+            task_rankings[short_base_prompt][d] = strRanking2(scores_svd)
 
         # task assignment consistency stats
         pairs = list(pairwise_comparisons.keys())
@@ -701,6 +703,7 @@ if __name__ == '__main__':
           d_pairs = np.array(pairs)[dim_indices[d]]
           d_persons = np.unique(d_pairs)
 
+          # dominant person preference
           percent_dominant_person = []
           for p in dim_indices[d]:
             pair = pairs[p]
@@ -711,9 +714,66 @@ if __name__ == '__main__':
             elif pair[1] in dominant_persons and pair[0] not in dominant_persons:
               percent_dominant_person.append( pdf[1] > pdf[0] )
 
-          if short_base_prompt not in task_assignments:
-            task_assignments[short_base_prompt] = [0]*len(dimensions)
-          task_assignments[short_base_prompt][d] = np.round(100*np.mean(percent_dominant_person))
+          if short_base_prompt not in task_assignment_dominance:
+            task_assignment_dominance[short_base_prompt] = [0]*len(dimensions)
+          task_assignment_dominance[short_base_prompt][d] = np.round(100*np.mean(percent_dominant_person))
+
+          # assignment probability difference
+          d_plot_names = []
+          d_plot_diffs = []
+          for p in dim_indices[d]:
+            pair = pairs[p]
+            pdf = np.mean(pairwise_comparisons[pair],axis=0)
+            pdf = pdf / np.sum(pdf)
+            if dimensions[d] == '':
+              p_name = '%s - %s' % (pair[0], pair[1]) #'P(%s) - P(%s)' % (pair[0], pair[1])
+              p_diff = pdf[0] - pdf[1]
+              d_plot_names.append(p_name)
+              d_plot_diffs.append(p_diff)
+            else:
+              if pair[0] in dominant_persons and pair[1] not in dominant_persons:
+                p_name = '%s - %s' % (pair[0], pair[1]) #'P(%s) - P(%s)' % (pair[0], pair[1])
+                p_diff = pdf[0] - pdf[1]
+                d_plot_names.append(p_name)
+                d_plot_diffs.append(p_diff)
+              elif pair[1] in dominant_persons and pair[0] not in dominant_persons:
+                p_name = '%s - %s' % (pair[1], pair[0]) #'P(%s) - P(%s)' % (pair[1], pair[0])
+                p_diff = pdf[1] - pdf[0]
+                d_plot_names.append(p_name)
+                d_plot_diffs.append(p_diff)
+
+          if short_base_prompt not in task_assignment_difference:
+            task_assignment_difference[short_base_prompt] = [0]*len(dimensions)
+          task_assignment_difference[short_base_prompt][d] = np.round(np.mean(d_plot_diffs),2)
+
+          #print(d_plot_names)
+          #print(d_plot_diffs)
+
+          # sort before visualizing
+          d_plot = {d_plot_names[i] : d_plot_diffs[i] for i in range(len(d_plot_names))}
+          d_plot = sorted(d_plot.items(), key=operator.itemgetter(1), reverse=False)
+          d_plot_names = [a[0] for a in d_plot]
+          d_plot_diffs = [a[1] for a in d_plot]
+
+          # visualise
+          x_pos = np.arange(1,len(d_plot_names)+1)
+          plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
+          fig, ax = plt.subplots()
+          ax.bar(x_pos, d_plot_diffs, align='center', width=0.8)
+          ax.set_xticks(x_pos)
+          ax.set_xticklabels(d_plot_names, rotation=90)
+          set_title(ax, model, base_prompt)
+          ax.set_ylim(-1, 1)
+          ax.set_ylabel('Assignment prob. difference')
+          ax.yaxis.grid(True)
+          if dimensions[d] != '':
+            ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(d_plot_diffs),np.mean(d_plot_diffs)], color='red', linestyle='--')
+          plt.tight_layout(rect=[0,0,1,1])
+          fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(d_plot_names), FIG_SIZE_H)
+          if FIG_SAVE:
+            plt.savefig('%s-%s-%s-%s.png' % (model, group, short_base_prompt, dimensions[d]), bbox_inches='tight', dpi=300)
+          if FIG_SHOW:
+            plt.show()
 
       # average rankings
       print('AVERAGE RANKINGS ' + group)
@@ -744,15 +804,28 @@ if __name__ == '__main__':
       print(tabulate.tabulate([[[task]+balance_stats[task]][0] for task in balance_stats], headers=['task']+dimensions, tablefmt='latex_booktabs'))
 
     # print table with balance stats
-    print('*** per-task dominant-person dominance')
-    if len(task_assignments) > 0:
+    print('*** per-task dominant-person preference percentage')
+    if len(task_assignment_dominance) > 0:
       # find dominant persons per dimension
       _, dim_indices = organizePersonsByDimension(dominant_persons, dimensions)
       header = []
       for d in range(len(dimensions)):
         dominant_persons_d = np.array(dominant_persons)[dim_indices[d]]
         header.append('/'.join(dominant_persons_d))
-      print(tabulate.tabulate([[[task]+task_assignments[task]][0] for task in task_assignments], headers=['task']+header))
+      print(tabulate.tabulate([[[task]+task_assignment_dominance[task]][0] for task in task_assignment_dominance], headers=['task']+header))
       print('latex:')
-      print(tabulate.tabulate([[[task]+task_assignments[task]][0] for task in task_assignments], headers=['task']+header, tablefmt='latex_booktabs'))
+      print(tabulate.tabulate([[[task]+task_assignment_dominance[task]][0] for task in task_assignment_dominance], headers=['task']+header, tablefmt='latex_booktabs'))
+
+    # print table with balance stats
+    print('*** per-task dominant-person average probability difference')
+    if len(task_assignment_difference) > 0:
+      # find dominant persons per dimension
+      _, dim_indices = organizePersonsByDimension(dominant_persons, dimensions)
+      header = []
+      for d in range(len(dimensions)):
+        dominant_persons_d = np.array(dominant_persons)[dim_indices[d]]
+        header.append('/'.join(dominant_persons_d))
+      print(tabulate.tabulate([[[task]+task_assignment_difference[task]][0] for task in task_assignment_difference], headers=['task']+header))
+      print('latex:')
+      print(tabulate.tabulate([[[task]+task_assignment_difference[task]][0] for task in task_assignment_difference], headers=['task']+header, tablefmt='latex_booktabs'))
 
