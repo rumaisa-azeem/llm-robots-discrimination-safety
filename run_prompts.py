@@ -8,7 +8,7 @@ from csv import writer
 import os, torch
 from prompt_set import PromptSet
 
-def run_for_seqs(input_set, output_filename:str, model_name:str="tiiuae/falcon-7b", **kwargs):
+def run_for_seqs(input_set, output_filename:str, model_name:str, **kwargs):
     """
     Run prompts through a model, where sequences are generated for each prompt and written to a file.
 
@@ -21,7 +21,7 @@ def run_for_seqs(input_set, output_filename:str, model_name:str="tiiuae/falcon-7
     write_sequences_out(output_sequences, input_set, output_filename)
 
 
-def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', top_n:int=10, selected_outputs:list=None):
+def run_for_scores(prompt_set, filename:str, model_name:str, top_n:int=10, selected_outputs:list=None):
     """
     Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt, 
     then written to a csv file.
@@ -46,7 +46,7 @@ def run_for_scores(prompt_set, filename:str, model_name:str='tiiuae/falcon-7b', 
 # testing functions ----------------------------------------------------------------------------------------------------------
 
 
-def test_for_seqs(prompt:str, model_name:str="tiiuae/falcon-7b", **kwargs):
+def test_for_seqs(prompt:str, model_name:str, **kwargs):
     """
     Run a single prompt on a model and print the output sequences.
 
@@ -60,7 +60,7 @@ def test_for_seqs(prompt:str, model_name:str="tiiuae/falcon-7b", **kwargs):
         print('> ' + seq['generated_text'])
 
 
-def test_top_n_scores(prompt:str, model_name:str="tiiuae/falcon-7b", model=None, tokenizer=None, top_n:int=10):
+def test_top_n_scores(prompt:str, model_name:str, model=None, tokenizer=None, top_n:int=10):
     """
     Run a single prompt through a model and print the top_n most likely next tokens and their probabilities.
 
