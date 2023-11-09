@@ -61,36 +61,36 @@ def with_qualifier_output(base_prompt, subset):
 
     # gender
     for pair in noun_qualifications['gender_pairs']:
-        write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'gender')
+        write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'gender', 'comparison')
    
     # ethnicity
     for ethn_qual in adj_qualifications['ethnicity']:
-        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'white', subset, 'ethnicity', is_adj=True)
-        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'black', subset, 'ethnicity', is_adj=True)
-        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'asian', subset, 'ethnicity', is_adj=True)
+        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'white', subset, 'ethnicity', 'comparison', is_adj=True)
+        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'black', subset, 'ethnicity', 'comparison', is_adj=True)
+        write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'asian', subset, 'ethnicity', 'comparison', is_adj=True)
 
     # nationality
     for pair in adj_qualifications['nationality_pairs']:
-        write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'nationality', is_adj=True)
+        write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'nationality', 'comparison', is_adj=True)
 
     # religion
     for r1, r2 in combinations(adj_qualifications['religion'], 2):
-        write_2_var_prompt(base_prompt, prompts_dict, r1, r2, subset, 'religion', is_adj=True)
+        write_2_var_prompt(base_prompt, prompts_dict, r1, r2, subset, 'religion', 'comparison', is_adj=True)
 
     # disability
     for dis_qual in noun_qualifications['disability']:
-        write_2_var_prompt(base_prompt, prompts_dict, dis_qual, 'able-bodied person', subset, 'disability')
-        write_2_var_prompt(base_prompt, prompts_dict, dis_qual, 'normal person', subset, 'disability')
+        write_2_var_prompt(base_prompt, prompts_dict, dis_qual, 'able-bodied person', subset, 'disability', 'comparison')
+        write_2_var_prompt(base_prompt, prompts_dict, dis_qual, 'normal person', subset, 'disability', 'comparison')
 
     # age
     for pair in noun_qualifications['age_pairs']:
-        write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'age')
+        write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'age', 'comparison')
 
     # sexuality
     for s in noun_qualifications['sexuality']:
-        write_2_var_prompt(base_prompt, prompts_dict, 'normal person', s, subset, 'sexuality')
-        write_2_var_prompt(base_prompt, prompts_dict, 'straight person', s, subset, 'sexuality')
-        write_2_var_prompt(base_prompt, prompts_dict, 'heterosexual person', s, subset, 'sexuality')
+        write_2_var_prompt(base_prompt, prompts_dict, 'normal person', s, subset, 'sexuality', 'comparison')
+        write_2_var_prompt(base_prompt, prompts_dict, 'straight person', s, subset, 'sexuality', 'comparison')
+        write_2_var_prompt(base_prompt, prompts_dict, 'heterosexual person', s, subset, 'sexuality', 'comparison')
 
     return prompts_dict
 
@@ -108,43 +108,44 @@ def with_category_output(base_prompt, subset, output_categories:list):
         - a list of expected outputs for that prompt using the output_categories parameter
     """
     prompts_dict = {}
+    prompt_type = 'categorisation' if output_categories is not None else 'generation'
 
     # person
     for person in noun_qualifications['person']:
-        write_1_var_prompt(base_prompt, prompts_dict, person, output_categories, subset, 'person')
+        write_1_var_prompt(base_prompt, prompts_dict, person, output_categories, subset, 'person', prompt_type)
 
     # gender
     for gender in noun_qualifications['gender']:
-        write_1_var_prompt(base_prompt, prompts_dict, gender, output_categories, subset, 'gender')
+        write_1_var_prompt(base_prompt, prompts_dict, gender, output_categories, subset, 'gender', prompt_type)
 
     # ethnicity
     for i in adj_qualifications['ethnicity']:
-        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'ethnicity', is_adj=True)
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'ethnicity',prompt_type, is_adj=True)
 
     # nationality
     for i in adj_qualifications['nationality']:
-        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'nationality', is_adj=True)
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'nationality', prompt_type, is_adj=True)
 
     # religion
     for i in adj_qualifications['religion']:
-        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'religion', is_adj=True)
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'religion', prompt_type, is_adj=True)
 
     # disability
     for i in noun_qualifications['disability']:
-        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'disability')
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'disability', prompt_type)
 
     # age
     for i in noun_qualifications['age']:
-        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'age')
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'age', prompt_type)
 
     # sexuality
     for i in noun_qualifications['sexuality']:
-        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'sexuality')
+        write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'sexuality', prompt_type)
 
     # intersect
     for dim in ['intersect1', 'intersect2', 'intersect3', 'intersect4', 'intersect5']:
         for i in noun_qualifications[dim]:
-            write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, dim)
+            write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, dim, prompt_type)
 
     return prompts_dict
 
@@ -196,7 +197,7 @@ def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:
     return base_prompt.strip()
 
 
-def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, dimension, is_name:bool=False, is_adj:bool=False):
+def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, dimension, prompt_type, is_name:bool=False, is_adj:bool=False):
     """
     Write a prompt with two variables. Two versions of the prompt are written with the variables swapped. Both prompts
     are added to the given prompts_dict.
@@ -216,12 +217,12 @@ def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, dimension,
     prompt1 = add_input_token(prompt1, '<2>', var2, is_name, is_adj)
     prompt2 = add_input_token(base_prompt, '<1>', var2, is_name, is_adj)
     prompt2 = add_input_token(prompt2, '<2>', var1, is_name, is_adj)
-    val = {'subset':subset, 'dimension':dimension, 'outputs':[var1, var2], 'base_prompt': base_prompt}
+    val = {'subset':subset, 'dimension':dimension, 'type':prompt_type, 'outputs':[var1, var2], 'base_prompt': base_prompt}
     prompts_dict[prompt1] = val
     prompts_dict[prompt2] = val
 
 
-def write_1_var_prompt(base_prompt, prompts_dict, var, output_categories, subset, dimension, is_name:bool=False, is_adj:bool=False):
+def write_1_var_prompt(base_prompt, prompts_dict, var, output_categories, subset, dimension, prompt_type, is_name:bool=False, is_adj:bool=False):
     """
     Write a prompt with one variable to the given prompts_dict.
 
@@ -235,5 +236,5 @@ def write_1_var_prompt(base_prompt, prompts_dict, var, output_categories, subset
     :param is_adj: Whether the token is an adjective (for grammar checks).
     """
     key = add_input_token(base_prompt, '<1>', var, is_name, is_adj)
-    val = {'subset':subset, 'dimension':dimension, 'outputs':output_categories, 'base_prompt': base_prompt}
+    val = {'subset':subset, 'dimension':dimension, 'type':prompt_type, 'outputs':output_categories, 'base_prompt': base_prompt}
     prompts_dict[key] = val

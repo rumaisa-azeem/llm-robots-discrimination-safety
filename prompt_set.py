@@ -11,7 +11,8 @@ class PromptSet(Dataset):
         - value = dictionary:
             - subset: The name of the subset the prompt belongs to
             - dimension: The dimension of bias which the prompt tests. If this is None, then the prompt may test for multiple dimensions/no specific dimension. 
-            - outputs: A list of expected output categories for the prompt, None if the prompt is open-ended
+            - type: The type of the prompt. Can be either 'comparison', 'categorisation', or 'generation'.
+            - outputs: A list of expected output categories for the prompt, None if the prompt is open-ended (i.e. a 'generation' prompt)
             - base_prompt: The base prompt that this prompt was derived from.
     """
     def __init__(self, prompts_dict:dict):
@@ -75,6 +76,12 @@ class PromptSet(Dataset):
         Returns the expected output categories for the specified prompt as a list.
         """
         return self.prompts_dict[prompt]['outputs']
+    
+    def get_prompt_type(self, prompt:str):
+        """
+        Returns the type of the specified prompt. Can be either 'comparison', 'categorisation', or 'generation'.
+        """
+        return self.prompts_dict[prompt]['type']
     
     def get_base_prompt(self, prompt:str):
         """
