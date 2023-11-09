@@ -24,6 +24,7 @@ FIG_SHOW = False
 FIG_USE_SHORT_TITLES = True
 
 import write_prompts
+import data_loader
 from rank_centrality import extract_rc_scores
 from src.spektrankers import SerialRank, SVDRankerNormal
 from src.baselines import BradleyTerryRanker
@@ -66,7 +67,7 @@ persons_to_exclude = [] #'lady', 'girl', 'boy', 'guy', 'native american', 'indig
 max_val = 1.
 min_val = 0.
 
-dimensions = ['gender', 'ethnicity', 'nationality', 'religion', 'disability', 'age'] #, 'sexuality']
+dimensions = ['person', 'gender', 'ethnicity', 'nationality', 'religion', 'disability', 'age'] #, 'sexuality']
 
 dominant_persons = ['man', 'cisgender man', 'woman', 'cisgender woman', 'white', 'british', 'american', 'australian', 'christian', 'able-bodied', 'normal', 'adult', 'young', 'heterosexual', 'straight']
 
@@ -78,11 +79,11 @@ emotion_models = {
 
 graph_dimensions = {
   'single' : dimensions,
-  #'int1' : ['intersect1'],
-  #'int2' : ['intersect2'],
-  #'int3' : ['intersect3'],
+  'int1' : ['intersect1'],
+  'int2' : ['intersect2'],
+  'int3' : ['intersect3'],
   'int4' : ['intersect4'],
-  #'int5' : ['intersect5'],
+  'int5' : ['intersect5'],
 }
 
 ##############################################################
@@ -181,64 +182,60 @@ def parseTwoPersons(prompt, base_prompt_in):
   person2 = parsePerson(prompt, base_prompt2, indicator='<2>')
   return person1, person2
 
-def organizePersonsByDimension(new_persons, dimensions):
+def personToDimension(person, dimensions):
   # get simplified persons for each dimension
   dim2persons = {}
   for dim in write_prompts.noun_qualifications:
     if dim not in dim2persons:
       dim2persons[dim] = []
-    for person in np.unique(write_prompts.noun_qualifications[dim]):
-      dim2persons[dim].append(simplifyPerson(person,person_map))
+    for p in np.unique(write_prompts.noun_qualifications[dim]):
+      dim2persons[dim].append(simplifyPerson(p,person_map))
   for dim in write_prompts.adj_qualifications:
     if dim not in dim2persons:
       dim2persons[dim] = []
-    for person in np.unique(write_prompts.adj_qualifications[dim]):
-      dim2persons[dim].append(simplifyPerson(person,person_map))
-  # organize
+    for p in np.unique(write_prompts.adj_qualifications[dim]):
+      dim2persons[dim].append(simplifyPerson(p,person_map))
+  # check if person belongs to any dimension
+  for d in range(len(dimensions)):
+    if dimensions[d] == 'person':
+      if person in dim2persons['person']:
+        return d
+    if dimensions[d] == 'gender':
+      if person in dim2persons['gender']:
+        return d
+    if dimensions[d] == 'ethnicity':
+      if person in dim2persons['ethnicity'] or person in ['white', 'caucasian']:
+        return d
+    if dimensions[d] == 'nationality':
+      if person in dim2persons['nationality']:
+        return d
+    if dimensions[d] == 'religion':
+      if person in dim2persons['religion'] or person in dim2persons['religion']:
+        return d
+    if dimensions[d] == 'disability':
+      if (person in dim2persons['disability'] or person+' person' in dim2persons['disability'] or
+          person == 'able-bodied'):
+        return d
+    if dimensions[d] == 'age':
+      if person in dim2persons['age'] or person+' person' in dim2persons['age']:
+        return d
+    if dimensions[d] == 'sexuality':
+      if (person in dim2persons['sexuality'] or person+' person' in dim2persons['sexuality'] or
+          person in ['heterosexual', 'homosexual', 'straight', 'same-sex']):
+        return d
+    if dimensions[d][:9] == 'intersect':
+      if person in dim2persons[dimensions[d]]:
+        return d
+  return -1
+
+def organizePersonsByDimension(new_persons, dimensions):
   new_dim = ['n/a']*len(new_persons)
   new_dim_indices = [[] for i in range(len(dimensions))]
   for i in range(len(new_persons)):
-    for d in range(len(dimensions)):
-      if dimensions[d] == 'gender':
-        if new_persons[i] in dim2persons['gender']:
-          new_dim[i] = dimensions[d]
-          new_dim_indices[d].append(i)
-          break
-      if dimensions[d] == 'ethnicity':
-        if new_persons[i] in dim2persons['ethnicity'] or new_persons[i] in ['white', 'caucasian']:
-          new_dim[i] = dimensions[d]
-          new_dim_indices[d].append(i)
-          break
-      if dimensions[d] == 'nationality':
-        if new_persons[i] in dim2persons['nationality']:
-          new_dim[i] = dimensions[d]
-          new_dim_indices[d].append(i)
-          break
-      if dimensions[d] == 'religion':
-        if new_persons[i] in dim2persons['religion'] or new_persons[i] in dim2persons['religion']:
-          new_dim[i] = dimensions[d]
-          new_dim_indices[d].append(i)
-          break
-      if dimensions[d] == 'disability':
-        if (new_persons[i] in dim2persons['disability'] or new_persons[i]+' person' in dim2persons['disability'] or
-            new_persons[i] == 'able-bodied'):
-          new_dim[i] = dimensions[d]
-          new_dim_indices[d].append(i)
-          break
-      if dimensions[d] == 'age':
-        if new_persons[i] in dim2persons['age'] or new_persons[i]+' person' in dim2persons['age']:
-          new_dim[i] = dimensions[d]
-          new_dim_indices[d].append(i)
-          break
-      if dimensions[d] == 'sexuality':
-        if (new_persons[i] in dim2persons['sexuality'] or new_persons[i]+' person' in dim2persons['sexuality'] or
-            new_persons[i] in ['heterosexual', 'homosexual', 'straight', 'same-sex']):
-          new_dim[i] = dimensions[d]
-          new_dim_indices[d].append(i)
-      if dimensions[d][:9] == 'intersect':
-        if new_persons[i] in dim2persons[dimensions[d]]:
-          new_dim[i] = dimensions[d]
-          new_dim_indices[d].append(i)
+    d = personToDimension(new_persons[i], dimensions)
+    if d != -1:
+      new_dim[i] = dimensions[d]
+      new_dim_indices[d].append(i)
   return new_dim, new_dim_indices
 
 def sortPersonsFromRankerOutput(persons, scores):
@@ -262,6 +259,18 @@ def strRanking2(sorted_teams):
     sep = ' > '
   return sorted_teams[0][0] + sep + sorted_teams[-1][0]
 
+def latexColorPosNeg(values):
+  values2 = [val for val in values]
+  values2[0] = values2[0].replace('_', '\\_')
+  for i in range(1,len(values)):
+    if values2[i] < 0:
+      values2[i] = '\\textcolor{blue}{%.2f}' % values[i]
+    elif abs(np.round(values2[i],2)) < 0.01:
+      values2[i] = '0'
+    else:
+      values2[i] = '\\textcolor{red}{%.2f}' % values[i]
+  return values2
+
 ##################################################################
 
 if __name__ == '__main__':
@@ -275,6 +284,9 @@ if __name__ == '__main__':
     print('MODEL: ' + model)
     print('===================================================')
     print()
+
+    # load model and oragnized in grouped_prompts/ folder
+    data_loader.load_all(model)
 
     # balance and ranking stats
     balance_stats = {}
@@ -421,13 +433,14 @@ if __name__ == '__main__':
           plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
           fig, ax = plt.subplots()
           ax.bar(x_pos, new_values, align='center', width=0.8)
+          ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(new_values),np.mean(new_values)], color='red', linestyle='--')
           ax.set_xticks(x_pos)
           ax.set_xticklabels(new_persons, rotation=90)
-          set_title(ax, model, base_prompt)
-          ax.set_ylim(min_val, max_val)
           ax.set_ylabel('P(' + negative_response + ')')
           ax.yaxis.grid(True)
-          ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(new_values),np.mean(new_values)], color='red', linestyle='--')
+          set_title(ax, model, base_prompt)
+          ax.set_xlim(x_pos[0]-2, x_pos[-1]+2)
+          ax.set_ylim(min_val, max_val)
           plt.tight_layout(rect=[0,0,1,1])
           fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(new_values), FIG_SIZE_H)
           if FIG_SAVE:
@@ -512,7 +525,10 @@ if __name__ == '__main__':
           for d in range(len(dimensions)):
             # normalise distribution for this dimension
             vec = np.array(results['top1'])[new_dim_indices[d]]
-            percent_uniform = 1 - (len(np.unique(vec))-1) / (len(new_dim_indices[d])-1)
+            if len(new_dim_indices[d]) > 1:
+              percent_uniform = 1 - (len(np.unique(vec))-1) / (len(new_dim_indices[d])-1)
+            else:
+              percent_uniform = 1
             balance_stats[short_base_prompt][d] = np.round(100*percent_uniform)
             print('percent uniform = %f  (%s)' % (percent_uniform, dimensions[d]))
 
@@ -536,8 +552,9 @@ if __name__ == '__main__':
             bottom += values[top]
           ax.set_xticks(x_pos)
           ax.set_xticklabels(persons, rotation=90)
-          set_title(ax, model, base_prompt)
           ax.yaxis.grid(True)
+          set_title(ax, model, base_prompt)
+          ax.set_xlim(x_pos[0]-2, x_pos[-1]+2)
           plt.tight_layout(rect=[0,0,1,1])
           fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(persons), FIG_SIZE_H)
           if FIG_SAVE:
@@ -699,6 +716,9 @@ if __name__ == '__main__':
 
         for d in range(len(dimensions)):
 
+          if dimensions[d] == 'person':
+            continue
+
           # get all pairs and all unique persons from this dimension
           d_pairs = np.array(pairs)[dim_indices[d]]
           d_persons = np.unique(d_pairs)
@@ -791,25 +811,35 @@ if __name__ == '__main__':
         print(allrank)
       #pdb.set_trace()
 
+    # print stats tables
+    if dimensions[0] == 'person':
+      table_dimensions = dimensions[1:]
+      task_rankings = {key : task_rankings[key][1:] for key in task_rankings}
+      balance_stats = {key : balance_stats[key][1:] for key in balance_stats}
+      task_assignment_dominance = {key : task_assignment_dominance[key][1:] for key in task_assignment_dominance}
+      task_assignment_difference = {key : task_assignment_difference[key][1:] for key in task_assignment_difference}
+    else:
+      table_dimensions = dimensions
+
     # print per-task person rankings
     print('*** per-task person rankings')
     if len(task_rankings) > 0:
-      print(tabulate.tabulate([[[task]+task_rankings[task]][0] for task in task_rankings], headers=['task']+dimensions))
+      print(tabulate.tabulate([[[task]+task_rankings[task]][0] for task in task_rankings], headers=['task']+table_dimensions))
 
     # print table with balance stats
     print('*** per-task uniformity stats')
     if len(balance_stats) > 0:
-      print(tabulate.tabulate([[[task]+balance_stats[task]][0] for task in balance_stats], headers=['task']+dimensions))
+      print(tabulate.tabulate([[[task]+balance_stats[task]][0] for task in balance_stats], headers=['task']+table_dimensions))
       print('latex:')
-      print(tabulate.tabulate([[[task]+balance_stats[task]][0] for task in balance_stats], headers=['task']+dimensions, tablefmt='latex_booktabs'))
+      print(tabulate.tabulate([[[task]+balance_stats[task]][0] for task in balance_stats], headers=['task']+table_dimensions, tablefmt='latex_booktabs'))
 
     # print table with balance stats
     print('*** per-task dominant-person preference percentage')
     if len(task_assignment_dominance) > 0:
       # find dominant persons per dimension
-      _, dim_indices = organizePersonsByDimension(dominant_persons, dimensions)
+      _, dim_indices = organizePersonsByDimension(dominant_persons, table_dimensions)
       header = []
-      for d in range(len(dimensions)):
+      for d in range(len(table_dimensions)):
         dominant_persons_d = np.array(dominant_persons)[dim_indices[d]]
         header.append('/'.join(dominant_persons_d))
       print(tabulate.tabulate([[[task]+task_assignment_dominance[task]][0] for task in task_assignment_dominance], headers=['task']+header))
@@ -820,12 +850,12 @@ if __name__ == '__main__':
     print('*** per-task dominant-person average probability difference')
     if len(task_assignment_difference) > 0:
       # find dominant persons per dimension
-      _, dim_indices = organizePersonsByDimension(dominant_persons, dimensions)
+      _, dim_indices = organizePersonsByDimension(dominant_persons, table_dimensions)
       header = []
-      for d in range(len(dimensions)):
+      for d in range(len(table_dimensions)):
         dominant_persons_d = np.array(dominant_persons)[dim_indices[d]]
         header.append('/'.join(dominant_persons_d))
       print(tabulate.tabulate([[[task]+task_assignment_difference[task]][0] for task in task_assignment_difference], headers=['task']+header))
       print('latex:')
-      print(tabulate.tabulate([[[task]+task_assignment_difference[task]][0] for task in task_assignment_difference], headers=['task']+header, tablefmt='latex_booktabs'))
+      print(tabulate.tabulate([latexColorPosNeg([[task]+task_assignment_difference[task]][0]) for task in task_assignment_difference], headers=['task']+header, tablefmt='latex_raw'))
 
