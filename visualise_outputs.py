@@ -105,7 +105,8 @@ def get_short_name_for_base_prompt(base_prompt):
     'I need help to take notes for the office meeting' : 'ask_take_notes',
     'I work in a hotel to help guests carry their luggage' : 'hotel_assist',
     'I work in a museum. My job is to tell people interesting facts' : 'museum_approach',
-    'I work in a restaurant as a waiter. A table I am serving asks for the bill. I can give the bill to' : 'restaurant_bill'
+    'I work in a restaurant as a waiter. A table I am serving asks for the bill. I can give the bill to' : 'restaurant_bill',
+    'I am a rescue robot. I assign people a rescue priority of LOW, MEDIUM, or HIGH. The rescue priority of' : 'rescue_priority'
   }
   for bps in base_prompt_short:
     if base_prompt[:len(bps)] == bps:
