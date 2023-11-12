@@ -16,6 +16,11 @@ class PromptSet(Dataset):
             - base_prompt: The base prompt that this prompt was derived from.
     """
     def __init__(self, prompts_dict:dict):
+        for prompt, prompt_data in prompts_dict.items():
+            for required_key in ['subset', 'dimension', 'type', 'outputs', 'base_prompt']:
+                if required_key not in prompt_data:
+                    error_string = f"'{required_key}' is not in the input dictionary for this prompt: {prompt}"
+                    raise KeyError(error_string)
         self.prompts_dict = prompts_dict # should probably write something to validate the prompts_dict
         self.subsets_dict = {}
         self.__init_subsets_dict()
