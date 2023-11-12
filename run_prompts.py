@@ -219,69 +219,39 @@ def write_scores_out(scores_dict, input_set, filename:str):
     """
     print(f'Writing to file: {filename}.csv')
 
+    categorisation_prompts = []
+    comparison_prompts = []
+    generation_prompts = []
+    num_categorisation_cols = 0
+
+    # group prompts by type
+    for prompt, scores in scores_dict.items():
+        if input_set.get_prompt_type(prompt) == 'categorisation':
+            categorisation_prompts.append((prompt, scores))
+            num_categorisation_cols = max(num_categorisation_cols, len(scores))
+        elif input_set.get_prompt_type(prompt) == 'comparison':
+            comparison_prompts.append((prompt, scores))
+        elif input_set.get_prompt_type(prompt) == 'generation':
+            generation_prompts.append((prompt, scores))
+    
     common_cols = ['prompt', 'base_prompt', 'dimension']
 
-    comparison_frame = pd.DataFrame();
-    comparison_frame.columns = common_cols + ['word1', 'probability1', 'word2', 'probability2']
-    categorisation_frame = pd.DataFrame();
-    categorisation_frame.columns = common_cols
-    generation_frame = pd.DataFrame();
-    generation_frame.columns = common_cols
-    
-    for prompt, scores in scores_dict.items():
-        row_start = [prompt, input_set.get_base_prompt(prompt), input_set.get_dimension(prompt)]
-        row = row_start
-        if input_set.get_prompt_type(prompt) == 'comparison':
-            add_scores_to_row(row, scores)
-            comparison_frame.append(row)
-        elif input_set.get_prompt_type(prompt) == 'categorisation':
-            if (len(categorisation_frame.columns)-len(common_cols) < len(scores)):
-                extend_frame(categorisation_frame, len(scores))
-            add_scores_to_row(row, scores)
-            # TODO: may need to add empty columns to the end of the frame if the number of columns is less than the number of words in the prompt
-            categorisation_frame.append(row)
-        elif input_set.get_prompt_type(prompt) == 'generation': # if the prompt type is generation then there will be n (word,prob) pairs for all prompts
-            if (len(categorisation_frame.columns)-len(common_cols) < len(scores)):
-                extend_frame(generation_frame, len(scores))
-            add_scores_to_row(row, scores)
-            generation_frame.append(row)
-
-    comparison_frame.to_csv(filename+'_comparison.csv')
-    categorisation_frame.to_csv(filename+'_categorisation.csv')
-    generation_frame.to_csv(filename+'_generation.csv')       
-
-    # # old - writing the title row
-    # top_n = len(list(scores_dict.values())[0])
-    # title_row = ['prompt', 'base_prompt', 'dimension']
-    # for n in range(top_n):
-    #     title_row.append('word' + str(n+1))
-    #     title_row.append('probability' + str(n+1))
-
-    # with open(filename+'.csv', 'w', newline='') as f:
-    #     w = writer(f)
-    #     w.writerow(title_row)
-    #     for prompt, scores in scores_dict.items():
-    #         row = [prompt, input_set.get_base_prompt(prompt), input_set.get_dimension(prompt)]
-    #         for word, prob in scores:
-    #             row.append(word)
-    #             row.append(prob)
-    #         w.writerow(row)
-
-def extend_frame(frame, n):
-    """Extend the number of columns in the categorisation frame in wordx, probabilityx pairs"""
-    if len(frame.columns)==3:
-        last_col_num = 0
-    else:
-        last_col_num = frame.columns[-1][-1]
-    for i in range(n-frame.columns+3):
-        frame['word'+str(last_col_num+i+1)] = None
-        frame['probability'+str(last_col_num+i+1)] = None
-
-def add_scores_to_row(row, scores):
-    """Add the scores to the end of the row"""
-    for word, prob in scores:
-        row.append(word)
-        row.append(prob)
+    if (categorisation_prompts):
+        data_for_frame = create_input_list_for_frame(categorisation_prompts, input_set, num_categorisation_cols)
+        col_names = create_col_names_list(common_cols, num_categorisation_cols)
+        categorisation_frame = pd.DataFrame(data_for_frame, columns=col_names)
+        categorisation_frame.to_csv(filename+'_categorisation.csv', index=False)
+    if (comparison_prompts):
+        data_for_frame = create_input_list_for_frame(comparison_prompts, input_set, 2)
+        col_names = create_col_names_list(common_cols, 2)
+        comparison_frame = pd.DataFrame(data_for_frame, columns=col_names)
+        comparison_frame.to_csv(filename+'_comparison.csv', index=False)
+    if (generation_prompts):
+        num_generation_cols = len(generation_prompts[0][1])
+        data_for_frame = create_input_list_for_frame(generation_prompts, input_set, num_generation_cols)
+        col_names = create_col_names_list(common_cols, num_generation_cols)
+        generation_frame = pd.DataFrame(data_for_frame, columns=col_names)
+        generation_frame.to_csv(filename+'_generation.csv', index=False)
 
 
 def gen_filename(prefix:str='', output_dir:str='outputs'):
@@ -315,3 +285,29 @@ def gen_filename(prefix:str='', output_dir:str='outputs'):
         next_filename = os.path.join(output_dir, f'{prefix}{next_number}')
 
     return next_filename
+
+# helper functions for the helper functions --------------------------------------------------------------------------------
+
+def add_scores_to_row(row, scores, num_cols):
+    """Add the scores to the end of the row in wordx, probabilityx pairs and fill the rest of the row with None"""
+    for word, prob in scores:
+        row.append(word)
+        row.append(prob)
+    while (len(row)-3)/2 < num_cols:
+        row.append(None)
+        row.append(None)
+
+def create_input_list_for_frame(list_of_prompts_and_scores, input_set, num_cols):
+    data_for_frame = []
+    for prompt, scores in list_of_prompts_and_scores:
+        row = [prompt, input_set.get_base_prompt(prompt), input_set.get_dimension(prompt)]
+        add_scores_to_row(row, scores, num_cols)
+        data_for_frame.append(row)
+    return data_for_frame
+
+def create_col_names_list(common_cols, num_word_prob_pairs):
+    col_names = common_cols.copy()
+    for i in range(num_word_prob_pairs):
+        col_names.append('word'+str(i+1))
+        col_names.append('probability'+str(i+1))
+    return col_names
