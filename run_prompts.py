@@ -7,20 +7,20 @@ from tqdm import tqdm
 from csv import writer
 import os, torch, pandas as pd
 
-def run_for_seqs(input_set, output_filename:str, model_name:str, **kwargs):
+def run_for_seqs(prompt_set, model_name:str, filename:str, output_dir:str, **kwargs):
     """
     Run prompts through a model, where sequences are generated for each prompt and written to a file.
 
-    :param input_set: Dataset of prompts to run through the model.
+    :param prompt_set: Dataset of prompts to run through the model.
     :param model_name: Name of model to use, must be able to load with AutoModelForCausalLM. Defaults to Falcon-7B.
     :param kwargs: Keyword arguments to pass to the pipeline function.
     :return: Output sequences from running the prompts through the model.
     """
-    output_sequences = use_pipeline(input_set, model_name, **kwargs)
-    write_sequences_out(output_sequences, input_set, output_filename)
+    output_sequences = use_pipeline(prompt_set, model_name, **kwargs)
+    write_sequences_out(output_sequences, prompt_set, gen_filename(filename, output_dir))
 
 
-def run_for_scores(prompt_set, filename:str, model_name:str, top_n:int=10, selected_outputs:list=None):
+def run_for_scores(prompt_set, model_name:str, filename:str, output_dir:str, top_n:int=10):
     """
     Run prompts through a model, where the top_n most likely next tokens and their probabilities are generated for each prompt, 
     then written to a csv file.
@@ -35,13 +35,12 @@ def run_for_scores(prompt_set, filename:str, model_name:str, top_n:int=10, selec
 
     scores_dict = {}
     for prompt in tqdm(prompt_set):
-        if not selected_outputs:
-            selected_outputs = prompt_set.get_expected_outputs(prompt)
-        scores = get_scores_for_prompt(prompt, model, tokenizer, selected_outputs)
-        if not selected_outputs:
+        expected_outputs = prompt_set.get_expected_outputs(prompt)
+        scores = get_scores_for_prompt(prompt, model, tokenizer, expected_outputs)
+        if not expected_outputs:
             scores = scores[:top_n]
         scores_dict[prompt] = scores    
-    write_scores_out(scores_dict, prompt_set, filename)
+    write_scores_out(scores_dict, prompt_set, filename, output_dir)
 
 
 # testing functions ----------------------------------------------------------------------------------------------------------
@@ -207,7 +206,7 @@ def write_sequences_out(output_sequences, input_set, filename:str):
                 w.writerow(row)
 
 
-def write_scores_out(scores_dict, input_set, filename:str):
+def write_scores_out(scores_dict, input_set, filename:str, output_dir:str):
     """
     Take a dictionary of prompts and their most likely tokens with corresponding confidence scores, and write to a csv file.
     
@@ -217,7 +216,6 @@ def write_scores_out(scores_dict, input_set, filename:str):
     :param input_set: PromptSet used to generate the scores.
     :param filename: Name of file to write to
     """
-    print(f'Writing to file: {filename}.csv')
 
     categorisation_prompts = []
     comparison_prompts = []
@@ -240,23 +238,31 @@ def write_scores_out(scores_dict, input_set, filename:str):
         data_for_frame = create_input_list_for_frame(categorisation_prompts, input_set, num_categorisation_cols)
         col_names = create_col_names_list(common_cols, num_categorisation_cols)
         categorisation_frame = pd.DataFrame(data_for_frame, columns=col_names)
-        categorisation_frame.to_csv(filename+'_categorisation.csv', index=False)
+        categorisation_filename = gen_filename(filename+'_categorisation', output_dir)
+        print(f"> Writing to file: {categorisation_filename}")
+        categorisation_frame.to_csv(categorisation_filename, index=False)
+
     if (comparison_prompts):
         data_for_frame = create_input_list_for_frame(comparison_prompts, input_set, 2)
         col_names = create_col_names_list(common_cols, 2)
         comparison_frame = pd.DataFrame(data_for_frame, columns=col_names)
-        comparison_frame.to_csv(filename+'_comparison.csv', index=False)
+        comparison_filename = gen_filename(filename+'_comparison', output_dir)
+        print(f"> Writing to file: {comparison_filename}")
+        comparison_frame.to_csv(comparison_filename, index=False)
+
     if (generation_prompts):
         num_generation_cols = len(generation_prompts[0][1])
         data_for_frame = create_input_list_for_frame(generation_prompts, input_set, num_generation_cols)
         col_names = create_col_names_list(common_cols, num_generation_cols)
         generation_frame = pd.DataFrame(data_for_frame, columns=col_names)
-        generation_frame.to_csv(filename+'_generation.csv', index=False)
+        generation_filename = gen_filename(filename+'_generation', output_dir)
+        print(f"> Writing to file: {generation_filename}")
+        generation_frame.to_csv(generation_filename, index=False)
 
 
 def gen_filename(prefix:str='', output_dir:str='outputs'):
     """
-    Generate a filename for the output file (doesn't include file extension). 
+    Generate a filename for the output file (with .csv file extension). 
     
     If prefix is specified, filename will start with that prefix and end with a number (e.g. 'outputs/prefix1' if no other files with that prefix exist)
     Otherwise filename will be a number (e.g. 'outputs/1' if no other files exist, or 'outputs/2' if 'outputs/1' already exists, etc)
@@ -284,7 +290,7 @@ def gen_filename(prefix:str='', output_dir:str='outputs'):
         next_number = max_number + 1
         next_filename = os.path.join(output_dir, f'{prefix}{next_number}')
 
-    return next_filename
+    return next_filename+'.csv'
 
 # helper functions for the helper functions --------------------------------------------------------------------------------
 
