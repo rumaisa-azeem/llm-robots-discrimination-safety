@@ -5,8 +5,7 @@ Module containing methods to run prompts on a model.
 from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer, LlamaForCausalLM, pipeline
 from tqdm import tqdm
 from csv import writer
-import os, torch
-from prompt_set import PromptSet
+import os, torch, pandas as pd
 
 def run_for_seqs(input_set, output_filename:str, model_name:str, **kwargs):
     """
@@ -36,6 +35,8 @@ def run_for_scores(prompt_set, filename:str, model_name:str, top_n:int=10, selec
 
     scores_dict = {}
     for prompt in tqdm(prompt_set):
+        if not selected_outputs:
+            selected_outputs = prompt_set.get_expected_outputs(prompt)
         scores = get_scores_for_prompt(prompt, model, tokenizer, selected_outputs)
         if not selected_outputs:
             scores = scores[:top_n]
@@ -217,21 +218,70 @@ def write_scores_out(scores_dict, input_set, filename:str):
     :param filename: Name of file to write to
     """
     print(f'Writing to file: {filename}.csv')
-    top_n = len(list(scores_dict.values())[0])
-    title_row = ['prompt', 'base_prompt', 'dimension']
-    for n in range(top_n):
-        title_row.append('word' + str(n+1))
-        title_row.append('probability' + str(n+1))
 
-    with open(filename+'.csv', 'w', newline='') as f:
-        w = writer(f)
-        w.writerow(title_row)
-        for prompt, scores in scores_dict.items():
-            row = [prompt, input_set.get_base_prompt(prompt), input_set.get_dimension(prompt)]
-            for word, prob in scores:
-                row.append(word)
-                row.append(prob)
-            w.writerow(row)
+    common_cols = ['prompt', 'base_prompt', 'dimension']
+
+    comparison_frame = pd.DataFrame();
+    comparison_frame.columns = common_cols + ['word1', 'probability1', 'word2', 'probability2']
+    categorisation_frame = pd.DataFrame();
+    categorisation_frame.columns = common_cols
+    generation_frame = pd.DataFrame();
+    generation_frame.columns = common_cols
+    
+    for prompt, scores in scores_dict.items():
+        row_start = [prompt, input_set.get_base_prompt(prompt), input_set.get_dimension(prompt)]
+        row = row_start
+        if input_set.get_prompt_type(prompt) == 'comparison':
+            add_scores_to_row(row, scores)
+            comparison_frame.append(row)
+        elif input_set.get_prompt_type(prompt) == 'categorisation':
+            if (len(categorisation_frame.columns)-len(common_cols) < len(scores)):
+                extend_frame(categorisation_frame, len(scores))
+            add_scores_to_row(row, scores)
+            # TODO: may need to add empty columns to the end of the frame if the number of columns is less than the number of words in the prompt
+            categorisation_frame.append(row)
+        elif input_set.get_prompt_type(prompt) == 'generation': # if the prompt type is generation then there will be n (word,prob) pairs for all prompts
+            if (len(categorisation_frame.columns)-len(common_cols) < len(scores)):
+                extend_frame(generation_frame, len(scores))
+            add_scores_to_row(row, scores)
+            generation_frame.append(row)
+
+    comparison_frame.to_csv(filename+'_comparison.csv')
+    categorisation_frame.to_csv(filename+'_categorisation.csv')
+    generation_frame.to_csv(filename+'_generation.csv')       
+
+    # # old - writing the title row
+    # top_n = len(list(scores_dict.values())[0])
+    # title_row = ['prompt', 'base_prompt', 'dimension']
+    # for n in range(top_n):
+    #     title_row.append('word' + str(n+1))
+    #     title_row.append('probability' + str(n+1))
+
+    # with open(filename+'.csv', 'w', newline='') as f:
+    #     w = writer(f)
+    #     w.writerow(title_row)
+    #     for prompt, scores in scores_dict.items():
+    #         row = [prompt, input_set.get_base_prompt(prompt), input_set.get_dimension(prompt)]
+    #         for word, prob in scores:
+    #             row.append(word)
+    #             row.append(prob)
+    #         w.writerow(row)
+
+def extend_frame(frame, n):
+    """Extend the number of columns in the categorisation frame in wordx, probabilityx pairs"""
+    if len(frame.columns)==3:
+        last_col_num = 0
+    else:
+        last_col_num = frame.columns[-1][-1]
+    for i in range(n-frame.columns+3):
+        frame['word'+str(last_col_num+i+1)] = None
+        frame['probability'+str(last_col_num+i+1)] = None
+
+def add_scores_to_row(row, scores):
+    """Add the scores to the end of the row"""
+    for word, prob in scores:
+        row.append(word)
+        row.append(prob)
 
 
 def gen_filename(prefix:str='', output_dir:str='outputs'):

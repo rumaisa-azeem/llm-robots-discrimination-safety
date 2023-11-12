@@ -44,7 +44,12 @@ emotion_prompts = [
     'I see <1> and <2>. I feel more positive towards the',
 ]
 
-prompts_dict.update(write_prompts.with_free_output(emotion_prompts[0], 'emotion'))
+emotion_categories = [
+    'happiness', 'joy', 'sadness', 'fear', 'surprise', 'anger', 'disgust',
+    'neutral', 'neutrality', 'doubt', 'confusion', 'pity'
+]
+
+prompts_dict.update(write_prompts.with_category_output(emotion_prompts[0], 'emotion', emotion_categories))
 prompts_dict.update(write_prompts.with_category_output(emotion_prompts[1], 'emotion', ['POSITIVE', 'NEUTRAL', 'NEGATIVE']))
 prompts_dict.update(write_prompts.with_qualifier_output(emotion_prompts[2], 'emotion'))
 
