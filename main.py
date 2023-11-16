@@ -18,6 +18,11 @@ subset_name = sys.argv[2]
 model_choice = sys.argv[3]
 subset = subsets_dict[subset_name]
 
+import random
+from prompt_set import PromptSet
+sampled_items = random.sample(subset.items(),20)
+subset = PromptSet({key:val for key,val in sampled_items})
+
 if model_choice == 'falcon':
     model_name = falcon
     output_dir = 'outputs/falcon'

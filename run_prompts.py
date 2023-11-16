@@ -94,28 +94,12 @@ def get_scores_for_prompt(prompt, model, tokenizer, selected_outputs:list=None):
     :param selected_outputs: A specific list of tokens to get the probabilities for. Defaults to None.
     :return: A list of tuples of the form (token, probability) sorted from highest to lowest probability. If selected_outputs is specified, the list will only contain tuples for those words. 
     '''
-    input_ids = tokenizer.encode(prompt, return_tensors='pt')
-    output = model(input_ids, return_dict=True, use_cache=True)
-    next_token_logits = output.logits[:, -1, :] # get logits for the next token in the sequence
-    probs = torch.softmax(next_token_logits, dim=-1).tolist()[0] # convert logits to list of probabilities
-
-    # convert vocab dict to list where index is the id of the word
-    vocab_dict = tokenizer.get_vocab()
-    vocab_list = [None for i in range(len(vocab_dict))]
-    for key, val in vocab_dict.items():
-        vocab_list[int(val)] = tokenizer.decode(val)
-    # create a list of (word, probability) pairs for the whole vocab
-    word_probs = []
-    for index, prob in enumerate(probs): 
-        word_probs.append((vocab_list[index], prob))
-
-
+    token_probs = get_full_vocab_scores_for_prompt(prompt, model, tokenizer)
     if selected_outputs: # get probabilities for specific words
-        word_probs = [(word.strip(), prob) for word, prob in word_probs]
-        selected_word_probs = [(word, prob) for word, prob in word_probs if word in selected_outputs]
-        return sorted(selected_word_probs, reverse=True, key=lambda x: x[1])[:len(selected_outputs)]
+        selected_word_probs = [(word, get_full_word_score(prompt, word, model, tokenizer)) for word in selected_outputs]
+        return sorted(selected_word_probs, reverse=True, key=lambda x: x[1])
     else: # get top n most probable words
-        return sorted(word_probs, reverse=True, key=lambda x: x[1])
+        return sorted(token_probs, reverse=True, key=lambda x: x[1])
 
 
 def load_model(model_name:str, **kwargs):
@@ -216,7 +200,6 @@ def write_scores_out(scores_dict, input_set, filename:str, output_dir:str):
     :param input_set: PromptSet used to generate the scores.
     :param filename: Name of file to write to
     """
-
     categorisation_prompts = []
     comparison_prompts = []
     generation_prompts = []
@@ -271,25 +254,18 @@ def gen_filename(prefix:str='', output_dir:str='outputs'):
     :param output_dir: Directory to save the output file in. Defaults to 'outputs'. (Optional)
     :return: Filename to use for the output file, including the directory.
     """
-    next_filename = None
-
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
     listdir = os.listdir(output_dir)
     filenames = []
     for filename in listdir: # Check for existing files with same type
         if prefix in filename:
             filenames.append(filename)
-    if not filenames:
-        # If no files exist, start with 1
-        next_filename = os.path.join(output_dir, f'{prefix}1')
-    else:
-        # Find the highest number used in the filenames
-        max_number = max([int(os.path.splitext(filename)[0][-1]) for filename in filenames])
-        next_number = max_number + 1
-        next_filename = os.path.join(output_dir, f'{prefix}{next_number}')
-
+    if not filenames: # If no files exist, start with 1
+        next_filename = os.path.join(output_dir, f'{prefix}01')  
+    else:  # Find the highest number used in the filenames
+        next_num = 1 + max([int(os.path.splitext(filename)[0][-1]) for filename in filenames])
+        next_filename = os.path.join(output_dir, f'{prefix}{"%02d" % next_num}')
     return next_filename+'.csv'
 
 # helper functions for the helper functions --------------------------------------------------------------------------------
@@ -317,3 +293,67 @@ def create_col_names_list(common_cols, num_word_prob_pairs):
         col_names.append('word'+str(i+1))
         col_names.append('probability'+str(i+1))
     return col_names
+
+# def map_words_to_tokens(input_words:list, tokenizer):
+#     """
+#     :param input_words: a list of words to map to their first token
+#     :param tokenizer: the tokenizer to use for tokenizing the words
+#     :return: a dict: {word: list of tokens the word is tokenized into} for all the words in input_words
+#     """
+#     tokens_map = {}
+#     for word in input_words:
+#         tokens_map[word] = [tokenizer.decode(token) for token in tokenizer.encode(word)]
+#     return tokens_map
+
+# def get_words_with_same_tokens(token_map:dict):
+#     """
+#     Check if any words in token_map map to the same first token
+
+#     Structure of token map:
+#     - key: a word in the list returned by prompt_set.get_expected_outputs(prompt)
+#     - value: the list of tokens that the word is broken down into by the tokenizer
+
+#     :return: a tuple of the two words with duplicate tokens
+#     """
+#     seen_tokens_map = {}
+#     duplicate_words = set()
+#     for word, tokens_list in token_map.items():
+#         token = tokens_list[1]
+#         if token in seen_tokens_map.keys():
+#             duplicate_words.add(word)
+#             duplicate_words.add(seen_tokens_map[token])
+#         else:
+#             seen_tokens_map[token] = word
+#     return duplicate_words
+
+
+def get_full_word_score(prompt:str, word:str, model, tokenizer):
+    tokens = [tokenizer.decode(token) for token in tokenizer.encode(word)]
+    i=1
+    score = 1
+    while i<len(tokens):
+        score *= get_score_for_prompt_and_token(prompt, tokens[i], model, tokenizer)
+        prompt = prompt + " " + tokens[i] if i==1 else prompt + tokens[i]
+        i+=1
+    return score
+
+def get_score_for_prompt_and_token(prompt, target_token, model, tokenizer):
+    """
+    Get the probability of a particular token being output for a given prompt.
+
+    :param prompt: The prompt to run through the model and get scores for
+    :param token: The specific token to get a score for 
+    """
+    token_probs = get_full_vocab_scores_for_prompt(prompt, model, tokenizer)
+    return sorted([prob for token, prob in token_probs if token==target_token])[0]
+
+def get_full_vocab_scores_for_prompt(prompt, model, tokenizer):
+    input_ids = tokenizer.encode(prompt, return_tensors='pt')
+    output = model(input_ids, return_dict=True, use_cache=True)
+    next_token_logits = output.logits[:, -1, :] # get logits for the next token in the sequence
+    probs = torch.softmax(next_token_logits, dim=-1).tolist()[0] # convert logits to list of probabilities
+    vocab_dict = tokenizer.get_vocab()
+    vocab_list = [None for i in range(len(vocab_dict))] # convert vocab dict to list where index is the id of the word
+    for key, val in vocab_dict.items():
+        vocab_list[int(val)] = tokenizer.decode(val)
+    return [(vocab_list[i].strip(), prob) for i, prob in enumerate(probs)]
