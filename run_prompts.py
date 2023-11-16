@@ -294,40 +294,8 @@ def create_col_names_list(common_cols, num_word_prob_pairs):
         col_names.append('probability'+str(i+1))
     return col_names
 
-# def map_words_to_tokens(input_words:list, tokenizer):
-#     """
-#     :param input_words: a list of words to map to their first token
-#     :param tokenizer: the tokenizer to use for tokenizing the words
-#     :return: a dict: {word: list of tokens the word is tokenized into} for all the words in input_words
-#     """
-#     tokens_map = {}
-#     for word in input_words:
-#         tokens_map[word] = [tokenizer.decode(token) for token in tokenizer.encode(word)]
-#     return tokens_map
-
-# def get_words_with_same_tokens(token_map:dict):
-#     """
-#     Check if any words in token_map map to the same first token
-
-#     Structure of token map:
-#     - key: a word in the list returned by prompt_set.get_expected_outputs(prompt)
-#     - value: the list of tokens that the word is broken down into by the tokenizer
-
-#     :return: a tuple of the two words with duplicate tokens
-#     """
-#     seen_tokens_map = {}
-#     duplicate_words = set()
-#     for word, tokens_list in token_map.items():
-#         token = tokens_list[1]
-#         if token in seen_tokens_map.keys():
-#             duplicate_words.add(word)
-#             duplicate_words.add(seen_tokens_map[token])
-#         else:
-#             seen_tokens_map[token] = word
-#     return duplicate_words
-
-
 def get_full_word_score(prompt:str, word:str, model, tokenizer):
+    """Calculate the probability of a full word being output for a given prompt."""
     tokens = [tokenizer.decode(token) for token in tokenizer.encode(word)]
     i=1
     score = 1
@@ -348,6 +316,7 @@ def get_score_for_prompt_and_token(prompt, target_token, model, tokenizer):
     return sorted([prob for token, prob in token_probs if token==target_token])[0]
 
 def get_full_vocab_scores_for_prompt(prompt, model, tokenizer):
+    """Get scores for every word in the model's vocab for a given prompt."""
     input_ids = tokenizer.encode(prompt, return_tensors='pt')
     output = model(input_ids, return_dict=True, use_cache=True)
     next_token_logits = output.logits[:, -1, :] # get logits for the next token in the sequence
