@@ -117,8 +117,8 @@ def load_model(model_name:str, **kwargs):
         tokenizer = LlamaTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True, **kwargs)
         model = LlamaForCausalLM.from_pretrained(model_name, use_cache=True, **kwargs)
     else:
-        tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', trust_remote_code=True, use_cache=True, **kwargs)
-        model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True, use_cache=True, **kwargs)
+        tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True, **kwargs)
+        model = AutoModelForCausalLM.from_pretrained(model_name, use_cache=True, torch_dtype=torch.bfloat16, device_map="auto", **kwargs)
     return model, tokenizer
 
 
@@ -339,7 +339,8 @@ def get_score_for_prompt_and_token(prompt, target_token, model, tokenizer):
 
 def get_full_vocab_scores_for_prompt(prompt, model, tokenizer):
     """Get scores for every word in the model's vocab for a given prompt."""
-    input_ids = tokenizer.encode(prompt, return_tensors='pt')
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+    input_ids = tokenizer.encode(prompt, return_tensors='pt').to(device)
     output = model(input_ids, return_dict=True, use_cache=True)
     next_token_logits = output.logits[:, -1, :] # get logits for the next token in the sequence
     probs = torch.softmax(next_token_logits, dim=-1).tolist()[0] # convert logits to list of probabilities
