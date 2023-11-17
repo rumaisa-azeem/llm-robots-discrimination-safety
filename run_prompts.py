@@ -6,6 +6,9 @@ from transformers import AutoTokenizer, AutoModelForCausalLM, LlamaTokenizer, Ll
 from tqdm import tqdm
 from csv import writer
 import os, torch, pandas as pd
+import math
+#import numpy as np
+#import pdb
 
 def run_for_seqs(prompt_set, model_name:str, filename:str, output_dir:str, **kwargs):
     """
@@ -32,14 +35,13 @@ def run_for_scores(prompt_set, model_name:str, filename:str, output_dir:str, top
     :param selected_outputs: (Optional) A specific list of tokens to get confidence scores for. 
     """
     model, tokenizer = load_model(model_name)
-
     scores_dict = {}
     for prompt in tqdm(prompt_set):
         expected_outputs = prompt_set.get_expected_outputs(prompt)
         scores = get_scores_for_prompt(prompt, model, tokenizer, expected_outputs)
         if not expected_outputs:
             scores = scores[:top_n]
-        scores_dict[prompt] = scores    
+        scores_dict[prompt] = scores
     write_scores_out(scores_dict, prompt_set, filename, output_dir)
 
 
@@ -87,7 +89,7 @@ def get_scores_for_prompt(prompt, model, tokenizer, selected_outputs:list=None):
     '''
     For a given prompt, return next possible tokens and their probabilities in order from highest to lowest. 
     Returns (token, probability) pairs for all tokens in the model's vocbulary.
-    
+
     :param prompt: The input sequence to get the most likely next tokens for.
     :param model: The model to use.
     :param tokenizer: The tokenizer to use (should match the model).
@@ -168,14 +170,14 @@ def write_sequences_out(output_sequences, input_set, filename:str):
     :param input_set: PromptSet used to generate the output sequences.
     :param filename: Name of the file to write to.
     """
-    print(f'Writing to file: {filename}.csv')
-    with open(filename+'.csv', 'w', newline='') as f:
+    print(f'Writing to file: {filename}')
+    with open(filename, 'w', newline='') as f:
         w = writer(f)
         is_first_row = True
         for index, sequences_for_prompt in tqdm(enumerate(output_sequences)):
             prompt = input_set[index]
             row = [prompt, input_set.get_base_prompt(prompt), input_set.get_dimension(prompt), input_set.get_expected_outputs(prompt)]
-    
+
             if is_first_row: # add title row then first row of sequences
                 title_row = ['prompt', 'base_prompt', 'dimension', 'output_categories']
                 for index, seq in enumerate(sequences_for_prompt):
@@ -193,7 +195,7 @@ def write_sequences_out(output_sequences, input_set, filename:str):
 def write_scores_out(scores_dict, input_set, filename:str, output_dir:str):
     """
     Take a dictionary of prompts and their most likely tokens with corresponding confidence scores, and write to a csv file.
-    
+
     Format: prompt, base_prompt, word1, probability1, word2, probability2, ..., wordn, probabilityn
 
     :param scores_dict: Dictionary where each key is a prompt, and the corresponding value is a list of tuples, starting with that prompt's base_prompt, then each possible word and its corresponding confidence score
@@ -214,7 +216,7 @@ def write_scores_out(scores_dict, input_set, filename:str, output_dir:str):
             comparison_prompts.append((prompt, scores))
         elif input_set.get_prompt_type(prompt) == 'generation':
             generation_prompts.append((prompt, scores))
-    
+
     common_cols = ['prompt', 'base_prompt', 'dimension']
 
     if (categorisation_prompts):
@@ -246,7 +248,7 @@ def write_scores_out(scores_dict, input_set, filename:str, output_dir:str):
 def gen_filename(prefix:str='', output_dir:str='outputs'):
     """
     Generate a filename for the output file (with .csv file extension). 
-    
+
     If prefix is specified, filename will start with that prefix and end with a number (e.g. 'outputs/prefix1' if no other files with that prefix exist)
     Otherwise filename will be a number (e.g. 'outputs/1' if no other files exist, or 'outputs/2' if 'outputs/1' already exists, etc)
 
@@ -262,9 +264,9 @@ def gen_filename(prefix:str='', output_dir:str='outputs'):
         if prefix in filename:
             filenames.append(filename)
     if not filenames: # If no files exist, start with 1
-        next_filename = os.path.join(output_dir, f'{prefix}01')  
+        next_filename = os.path.join(output_dir, f'{prefix}01')
     else:  # Find the highest number used in the filenames
-        next_num = 1 + max([int(os.path.splitext(filename)[0][-1]) for filename in filenames])
+        next_num = 1 + max([int(os.path.splitext(filename)[0][len(prefix):]) for filename in filenames])
         next_filename = os.path.join(output_dir, f'{prefix}{"%02d" % next_num}')
     return next_filename+'.csv'
 
@@ -297,13 +299,27 @@ def create_col_names_list(common_cols, num_word_prob_pairs):
 def get_full_word_score(prompt:str, word:str, model, tokenizer):
     """Calculate the probability of a full word being output for a given prompt."""
     tokens = [tokenizer.decode(token) for token in tokenizer.encode(word)]
+    word_so_far = ''
+    score_log = 0
     i=1
-    score = 1
+    #print('=====')
+    #print(tokens)
+    #print()
     while i<len(tokens):
-        score *= get_score_for_prompt_and_token(prompt, tokens[i], model, tokenizer)
-        prompt = prompt + " " + tokens[i] if i==1 else prompt + tokens[i]
-        i+=1
-    return score
+        ss = get_score_for_prompt_and_token(prompt, tokens[i], model, tokenizer)
+        score_log += math.log(ss)
+        #print('"%s"' % prompt)
+        #print(tokens[i])
+        #print(ss)
+        #prompt = prompt + " " + tokens[i] if i==1 else prompt + tokens[i]
+        prompt += tokens[i]
+        word_so_far += tokens[i]
+        if len(word_so_far) < len(word) and word[len(word_so_far)] == ' ':
+            prompt += ' '
+            word_so_far += ' '
+        i += 1
+    #print('score_log', math.exp(score_log))
+    return math.exp(score_log)
 
 def get_score_for_prompt_and_token(prompt, target_token, model, tokenizer):
     """
@@ -313,7 +329,13 @@ def get_score_for_prompt_and_token(prompt, target_token, model, tokenizer):
     :param token: The specific token to get a score for 
     """
     token_probs = get_full_vocab_scores_for_prompt(prompt, model, tokenizer)
-    return sorted([prob for token, prob in token_probs if token==target_token])[0]
+    #if target_token == 'P':
+    #    inds = np.argsort([-prob for token, prob in token_probs])
+    #    test1 = sorted([prob for token, prob in token_probs if token==target_token])[0]
+    #    test2 = sorted([prob for token, prob in token_probs if token==target_token], reverse=True)[0]
+    #    test3 = [token_probs[inds[i]] for i in range(5)]
+    #    pdb.set_trace()
+    return sorted([prob for token, prob in token_probs if token==target_token], reverse=True)[0]
 
 def get_full_vocab_scores_for_prompt(prompt, model, tokenizer):
     """Get scores for every word in the model's vocab for a given prompt."""

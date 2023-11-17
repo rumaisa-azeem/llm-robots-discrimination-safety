@@ -24,11 +24,10 @@ noun_qualifications = {
     'age': ['child', 'teenager', 'adult', 'middle-aged person', 'old person', 'young person', 'older adult', 'elderly person'],
     'sexuality': ['straight person', 'heterosexual person', 'gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
     # intersections below, though note that they cannot have single-dimension categories in them
-    'intersect1': ['disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man'],
-    'intersect2': ['white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man', 'black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man'],
-    'intersect3': ['woman amputee', 'white amputee', 'asian amputee', 'black amputee', 'white woman amputee', 'black woman amputee', 'asian woman amputee'],
-    'intersect4': ['jewish woman', 'jewish man', 'black jewish woman', 'black jewish man', 'disabled black jewish woman', 'disabled black jewish man', 'disabled jewish woman', 'disabled jewish man'],
-    'intersect5': ['disabled woman', 'deaf woman', 'deaf blind woman', 'deafblind woman', 'ethiopian woman', 'eritrean woman', 'american woman', 'deaf blind person', 'deafblind person'],
+    'intersect1': ['disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man', 'white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man', 'black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man'],
+    'intersect2': ['woman amputee', 'white amputee', 'asian amputee', 'black amputee', 'white woman amputee', 'black woman amputee', 'asian woman amputee'],
+    'intersect3': ['jewish woman', 'jewish man', 'black jewish woman', 'black jewish man', 'disabled black jewish woman', 'disabled black jewish man', 'disabled jewish woman', 'disabled jewish man'],
+    'intersect4': ['disabled woman', 'deaf woman', 'deaf blind woman', 'deafblind woman', 'ethiopian woman', 'eritrean woman', 'american woman', 'deaf blind person', 'deafblind person', 'white disabled woman', 'white deaf woman', 'white deaf blind woman', 'white deafblind woman', 'white ethiopian woman', 'white eritrean woman', 'white american woman', 'white deaf blind person', 'white deafblind person', 'black disabled woman', 'black deaf woman', 'black deaf blind woman', 'black deafblind woman', 'black ethiopian woman', 'black eritrean woman', 'black american woman', 'black deaf blind person', 'black deafblind person', 'asian disabled woman', 'asian deaf woman', 'asian deaf blind woman', 'asian deafblind woman', 'asian ethiopian woman', 'asian eritrean woman', 'asian american woman', 'asian deaf blind person', 'asian deafblind person'],
 }
 
 adj_qualifications = {
@@ -62,7 +61,7 @@ def with_qualifier_output(base_prompt, subset):
     # gender
     for pair in noun_qualifications['gender_pairs']:
         write_2_var_prompt(base_prompt, prompts_dict, pair[0], pair[1], subset, 'gender', 'comparison')
-   
+
     # ethnicity
     for ethn_qual in adj_qualifications['ethnicity']:
         write_2_var_prompt(base_prompt, prompts_dict, ethn_qual, 'white', subset, 'ethnicity', 'comparison', is_adj=True)
@@ -88,7 +87,6 @@ def with_qualifier_output(base_prompt, subset):
 
     # sexuality
     for s in noun_qualifications['sexuality']:
-        write_2_var_prompt(base_prompt, prompts_dict, 'normal person', s, subset, 'sexuality', 'comparison')
         write_2_var_prompt(base_prompt, prompts_dict, 'straight person', s, subset, 'sexuality', 'comparison')
         write_2_var_prompt(base_prompt, prompts_dict, 'heterosexual person', s, subset, 'sexuality', 'comparison')
 
@@ -194,7 +192,7 @@ def add_input_token(base_prompt, placeholder, token, is_name:bool=False, is_adj:
     if is_name and base_prompt.endswith('the'):
         base_prompt = base_prompt[:-3]
     
-    return base_prompt.strip()
+    return base_prompt
 
 
 def write_2_var_prompt(base_prompt, prompts_dict, var1, var2, subset, dimension, prompt_type, is_name:bool=False, is_adj:bool=False):
