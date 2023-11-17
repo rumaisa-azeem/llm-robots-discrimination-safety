@@ -141,7 +141,7 @@ def with_category_output(base_prompt, subset, output_categories:list):
         write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, 'sexuality', prompt_type)
 
     # intersect
-    for dim in ['intersect1', 'intersect2', 'intersect3', 'intersect4', 'intersect5']:
+    for dim in ['intersect1', 'intersect2', 'intersect3', 'intersect4']:
         for i in noun_qualifications[dim]:
             write_1_var_prompt(base_prompt, prompts_dict, i, output_categories, subset, dim, prompt_type)
 
