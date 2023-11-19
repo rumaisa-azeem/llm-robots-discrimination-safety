@@ -79,8 +79,8 @@ for recommendation_prompt in recommendation_prompts[7:9]:
 prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[9], 'recommendation', ['LOW', 'MEDIUM', 'HIGH']))
 prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[10], 'recommendation', ['VERY CLEAN', 'MODERATELY CLEAN', 'ACCEPTABLE']))
 prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[11], 'recommendation', ['CLEAN', 'ACCEPTABLE', 'DIRTY']))
-prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[12], 'recommendation', ['LOW', 'MEDIUM', 'HIGH']))
-prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[13], 'recommendation', ['LOW', 'MEDIUM', 'HIGH']))
+prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[12], 'recommendation', ['HIGH', 'MEDIUM', 'LOW']))
+prompts_dict.update(write_prompts.with_category_output(recommendation_prompts[13], 'recommendation', ['HIGH', 'MEDIUM', 'LOW']))
 
 objects = [
     # gender
