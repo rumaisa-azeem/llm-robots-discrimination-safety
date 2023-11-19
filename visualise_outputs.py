@@ -24,7 +24,7 @@ FIG_SHOW = False
 FIG_USE_SHORT_TITLES = True
 
 import write_prompts
-import data_loader
+from create_prompt_set import prompts_dict
 from rank_centrality import extract_rc_scores
 from src.spektrankers import SerialRank, SVDRankerNormal
 from src.baselines import BradleyTerryRanker
@@ -58,7 +58,7 @@ from src.baselines import BradleyTerryRanker
 
 ##############################################################
 
-output_folder = 'grouped_prompts'
+output_folder = 'outputs'
 
 person_map = {'person with down syndrome':'down synd.', 'wheelchair user':'wheelchair', 'african-american':'afr-american'} #{'boy':'man', 'guy':'man', 'lady':'woman', 'girl':'woman', 'straight':'heterosexual', 'same-sex':'homosexual'}
 
@@ -83,7 +83,6 @@ graph_dimensions = {
   'int2' : ['intersect2'],
   'int3' : ['intersect3'],
   'int4' : ['intersect4'],
-  'int5' : ['intersect5'],
 }
 
 ##############################################################
@@ -278,7 +277,7 @@ if __name__ == '__main__':
 
   models = os.listdir(output_folder)
 
-  for model in ['mistral7b']: #['falcon', 'mistral7b', 'text-davinci-003']: #models:
+  for model in ['mistral7b', 'text-davinci-003']: #['falcon', 'mistral7b', 'text-davinci-003']: #models:
 
     print()
     print('===================================================')
@@ -287,7 +286,7 @@ if __name__ == '__main__':
     print()
 
     # load model and oragnized in grouped_prompts/ folder
-    data_loader.load_all(model)
+    #data_loader.load_all(model)
 
     # balance and ranking stats
     balance_stats = {}
@@ -296,14 +295,13 @@ if __name__ == '__main__':
     task_assignment_difference = {}
 
     #############################
-    for group in ['recommendation_categorisation', 'emotion_categorisation', 'proxemics_categorisation']:
+    for group in ['recommendation_scores_categorisation', 'proxemics_scores_categorisation']:
       # emotion_categorisation          person -> value
       # recommendation_categorisation   person -> risk value / [cleanliness-setting value]
       # proxemics_categorisation        person -> distance (value)
       # [barplot, avg/median value, distribution balance, show examples of people that got top3 probability1, or examples where probability1 >> probability2]
       print(group)
-      group_filename = '%s/%s/scores/%s.csv' % (output_folder, model, group)
-      key_filename = '%s/%s/scores/%s_key.csv' % (output_folder, model, group)
+      group_filename = '%s/%s/%s01.csv' % (output_folder, model, group)
 
       # get data
       if not os.path.exists(group_filename):
@@ -312,12 +310,6 @@ if __name__ == '__main__':
       data = np.array(df)
       dims = np.unique(df['dimension'])
       base_prompts = np.unique(df['base_prompt'])
-
-      # get key
-      if not os.path.exists(key_filename):
-        continue
-      df_key = pd.read_csv(key_filename)
-      data_key = np.array(df_key)
 
       # for each graph type
       for graph_dim_name in graph_dimensions:
@@ -339,9 +331,12 @@ if __name__ == '__main__':
 
           tab = data[np.where(data[:,1]==base_prompt)[0], :]
 
-          positive_response = data_key[np.where(data_key[:,0]==base_prompt)[0], 1][0].lower()
-          neutral_response  = data_key[np.where(data_key[:,0]==base_prompt)[0], 2][0].lower()
-          negative_response = data_key[np.where(data_key[:,0]==base_prompt)[0], 3][0].lower()
+          positive_response = prompts_dict[tab[0,0]]['outputs'][0].lower()
+          neutral_response  = prompts_dict[tab[0,0]]['outputs'][1].lower()
+          negative_response = prompts_dict[tab[0,0]]['outputs'][2].lower()
+          #positive_response = data_key[np.where(data_key[:,0]==base_prompt)[0], 1][0].lower()
+          #neutral_response  = data_key[np.where(data_key[:,0]==base_prompt)[0], 2][0].lower()
+          #negative_response = data_key[np.where(data_key[:,0]==base_prompt)[0], 3][0].lower()
 
           # for each person get value
           persons = []
@@ -450,13 +445,13 @@ if __name__ == '__main__':
             plt.show()
 
     #############################
-    for group in ['emotion_generation', 'recommendation_generation']:
+    for group in ['emotion_scores_categorisation']:
       # emotion_generation              person -> emotion
       # recommendation_generation       person -> role
       # [tab top1, fig stacked bar, show examples of people that got top3 probability1, or examples where probability1 >> probability2]
       # [table uniformity e.g. 1 - (num_unique_values_topone-1) / (num_persons-1) ; separate figure for each dimension, so we show just relevant ones]
       print(group)
-      group_filename = '%s/%s/scores/%s.csv' % (output_folder, model, group)
+      group_filename = '%s/%s/%s01.csv' % (output_folder, model, group)
 
       # get data
       if not os.path.exists(group_filename):
@@ -592,7 +587,7 @@ if __name__ == '__main__':
                 plt.show()
 
     #############################
-    for group in ['emotion_comparison', 'proxemics_comparison', 'task_comparison_assertive', 'task_comparison_submissive', 'ownership_comparison', 'recommendation_comparison']:
+    for group in ['emotion_scores_comparison', 'proxemics_scores_comparison', 'task_scores_comparison', 'recommendation_scores_comparison']:
       # emotion_comparison              person -> (higher value) -> person
       # proxemics_comparison            person -> (higher value) -> person
       # task_comparison_assertive       person -> (higher likelihood ask lead-meeting / mow-lawn / fix-car / fix-plumbing / fix-computer) -> person
@@ -604,7 +599,7 @@ if __name__ == '__main__':
       # [or fig with stacked bars %white/%other, %man/%other]
       # [TODO: balance is 50-50 on all comparisons so avg(score1-score2) for all persons in each dimension?]
       print(group)
-      group_filename = '%s/%s/scores/%s.csv' % (output_folder, model, group)
+      group_filename = '%s/%s/%s01.csv' % (output_folder, model, group)
 
       # get data
       if not os.path.exists(group_filename):
@@ -713,7 +708,10 @@ if __name__ == '__main__':
         # task assignment consistency stats
         pairs = list(pairwise_comparisons.keys())
         persons1 = [k[0] for k in pairs]
-        _, dim_indices = organizePersonsByDimension(persons1, dimensions)
+        persons2 = [k[1] for k in pairs]
+        _, dim_indices1 = organizePersonsByDimension(persons1, dimensions)
+        _, dim_indices2 = organizePersonsByDimension(persons2, dimensions)
+        dim_indices = [list(set.intersection(set(dim_indices1[d]),set(dim_indices2[d]))) for d in range(len(dim_indices1))]
 
         for d in range(len(dimensions)):
 

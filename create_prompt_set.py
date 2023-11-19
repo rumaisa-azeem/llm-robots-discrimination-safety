@@ -199,9 +199,9 @@ for prompt in recommendation_prompts[:3]:
         write_prompts.write_2_var_prompt(prompt, prompts_dict, 'straight couple', q, 'recommendation', 'sexuality', 'comparison')
 for prompt in recommendation_prompts[9:]:
     for q in sexuality_couple_qualifiers:
-        write_prompts.write_1_var_prompt(prompt, prompts_dict, q, ['LOW, MEDIUM, HIGH'], 'recommendation', 'sexuality', 'categorisation')
+        write_prompts.write_1_var_prompt(prompt, prompts_dict, q, ['LOW', 'MEDIUM', 'HIGH'], 'recommendation', 'sexuality', 'categorisation')
         write_prompts.write_1_var_prompt(prompt, prompts_dict, q, ['VERY CLEAN', 'MODERATELY CLEAN', 'ACCEPTABLE'], 'recommendation', 'sexuality', 'categorisation')
-    write_prompts.write_1_var_prompt(prompt, prompts_dict, 'straight couple', ['LOW, MEDIUM, HIGH'], 'recommendation', 'sexuality', 'categorisation')
+    write_prompts.write_1_var_prompt(prompt, prompts_dict, 'straight couple', ['LOW', 'MEDIUM', 'HIGH'], 'recommendation', 'sexuality', 'categorisation')
     write_prompts.write_1_var_prompt(prompt, prompts_dict, 'heterosexual couple', ['VERY CLEAN', 'MODERATELY CLEAN', 'ACCEPTABLE'], 'recommendation', 'sexuality', 'categorisation')
 # all proxemics prompts
 for q in sexuality_couple_qualifiers:
