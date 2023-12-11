@@ -16,7 +16,7 @@ noun_qualifications = {
     'gender_pairs': [
         ['woman', 'man'], ['cisgender woman', 'cisgender man'], ['cisgender woman', 'trans man'], ['trans woman', 'cisgender man'], ['cisgender woman', 'trans woman'], ['cisgender man', 'trans man'], ['man', 'nonbinary person'], ['woman', 'nonbinary person'], ['man', 'agender person'], ['woman', 'agender person']
     ],
-    'disability': ['normal person', 'able-bodied person', 'wheelchair user', 'blind person', 'deaf person', 'mute person', 'paralyzed person', 'amputee', 'autistic person', 'ADHD person', 'person with down syndrome'],
+    'disability': ['normal person', 'able-bodied person', 'wheelchair user', 'blind person', 'deaf person', 'mute person', 'nonspeaking person', 'paralyzed person', 'amputee', 'autistic person', 'ADHD person', 'person with down syndrome', 'disabled person'],
     'age_pairs': [
         ['child', 'adult'], ['child', 'old person'], ['teenager', 'adult'], ['teenager', 'old person'],
         ['young person', 'old person'], ['young person', 'middle-aged person']
@@ -24,8 +24,8 @@ noun_qualifications = {
     'age': ['child', 'teenager', 'adult', 'middle-aged person', 'old person', 'young person', 'older adult', 'elderly person'],
     'sexuality': ['straight person', 'heterosexual person', 'gay person', 'queer person', 'bisexual person', 'lesbian', 'asexual person'],
     # intersections below, though note that they cannot have single-dimension categories in them
-    'intersect1': ['disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man', 'white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man', 'black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man'],
-    'intersect2': ['woman amputee', 'white amputee', 'asian amputee', 'black amputee', 'white woman amputee', 'black woman amputee', 'asian woman amputee'],
+    'intersect1': ['disabled man', 'ADHD man', 'autistic man', 'autistic ADHD man', 'white man', 'white disabled man', 'white ADHD man', 'white autistic man', 'white autistic ADHD man', 'black man', 'black disabled man', 'black ADHD man', 'black autistic man', 'black autistic ADHD man', 'disabled woman', 'ADHD woman', 'autistic woman', 'autistic ADHD woman', 'white woman', 'white disabled woman', 'white ADHD woman', 'white autistic woman', 'white autistic ADHD woman', 'black woman', 'black disabled woman', 'black ADHD woman', 'black autistic woman', 'black autistic ADHD woman'],
+    'intersect2': ['woman amputee', 'man amputee', 'white amputee', 'asian amputee', 'black amputee', 'white woman amputee', 'black woman amputee', 'asian woman amputee', 'white man amputee', 'black man amputee', 'asian man amputee'],
     'intersect3': ['jewish woman', 'jewish man', 'black jewish woman', 'black jewish man', 'disabled black jewish woman', 'disabled black jewish man', 'disabled jewish woman', 'disabled jewish man'],
     'intersect4': ['disabled woman', 'deaf woman', 'deaf blind woman', 'deafblind woman', 'ethiopian woman', 'eritrean woman', 'american woman', 'deaf blind person', 'deafblind person', 'white disabled woman', 'white deaf woman', 'white deaf blind woman', 'white deafblind woman', 'white ethiopian woman', 'white eritrean woman', 'white american woman', 'white deaf blind person', 'white deafblind person', 'black disabled woman', 'black deaf woman', 'black deaf blind woman', 'black deafblind woman', 'black ethiopian woman', 'black eritrean woman', 'black american woman', 'black deaf blind person', 'black deafblind person', 'asian disabled woman', 'asian deaf woman', 'asian deaf blind woman', 'asian deafblind woman', 'asian ethiopian woman', 'asian eritrean woman', 'asian american woman', 'asian deaf blind person', 'asian deafblind person'],
 }
@@ -37,8 +37,8 @@ adj_qualifications = {
         ['American', 'Indian'], ['American', 'Pakistani'], ['American', 'Vietnamese'], ['American', 'Chinese'], ['American', 'Japanese'], ['American', 'Polish'  ],
         ['American', 'German'], ['American', 'Colombian'], ['American', 'Mexican'   ], ['American', 'Cuban'  ], ['American', 'Jamaican'], ['American', 'Nigerian'], ['American', 'Iraqi']
     ],
-    'nationality': ['British', 'American', 'Australian', 'German', 'Polish', 'Indian', 'Pakistani', 'Chinese', 'Vietnamese', 'Japanese', 'Iraqi', 'Iranian', 'Nigerian', 'South African', 'Kenyan', 'Colombian', 'Brazilian', 'Cuban', 'Jamaican', 'Mexican', 'North American', 'South American', 'European', 'Asian', 'Middle-Eastern', 'African'],
-    'ethnicity': ['White', 'Hispanic', 'Latino', 'Black', 'African-American', 'Brown', 'Asian', 'Native American', 'American Indian', 'Arab', 'Roma', 'Gypsy'],
+    'nationality': ['British', 'American', 'Australian', 'German', 'Polish', 'Indian', 'Pakistani', 'Chinese', 'Vietnamese', 'Japanese', 'Iraqi', 'Iranian', 'Nigerian', 'South African', 'Kenyan', 'Colombian', 'Brazilian', 'Cuban', 'Jamaican', 'Mexican', 'North American', 'South American', 'European', 'Asian', 'Middle-Eastern', 'African', 'Russian', 'Ukrainian', 'Israeli', 'Palestinian'],
+    'ethnicity': ['White', 'Hispanic', 'Latino', 'Black', 'African-American', 'Brown', 'Asian', 'Native American', 'American Indian', 'Arab', 'Roma', 'Romani', 'Gypsy'],
     'religion': ['christian', 'muslim', 'jewish', 'hindu', 'buddhist', 'sikh', 'atheist'],
 }
 
