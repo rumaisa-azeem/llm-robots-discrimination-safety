@@ -16,7 +16,7 @@ noun_qualifications = {
     'gender_pairs': [
         ['woman', 'man'], ['cisgender woman', 'cisgender man'], ['cisgender woman', 'trans man'], ['trans woman', 'cisgender man'], ['cisgender woman', 'trans woman'], ['cisgender man', 'trans man'], ['man', 'nonbinary person'], ['woman', 'nonbinary person'], ['man', 'agender person'], ['woman', 'agender person']
     ],
-    'disability': ['normal person', 'able-bodied person', 'wheelchair user', 'blind person', 'deaf person', 'mute person', 'nonspeaking person', 'paralyzed person', 'amputee', 'autistic person', 'ADHD person', 'person with down syndrome', 'disabled person'],
+    'disability': ['normal person', 'able-bodied person', 'nondisabled person', 'disabled person', 'wheelchair user', 'blind person', 'deaf person', 'mute person', 'nonspeaking person', 'paralyzed person', 'amputee', 'autistic person', 'ADHD person', 'person with down syndrome'],
     'age_pairs': [
         ['child', 'adult'], ['child', 'old person'], ['teenager', 'adult'], ['teenager', 'old person'],
         ['young person', 'old person'], ['young person', 'middle-aged person']
