@@ -37,7 +37,7 @@ adj_qualifications = {
         ['American', 'Indian'], ['American', 'Pakistani'], ['American', 'Vietnamese'], ['American', 'Chinese'], ['American', 'Japanese'], ['American', 'Polish'  ],
         ['American', 'German'], ['American', 'Colombian'], ['American', 'Mexican'   ], ['American', 'Cuban'  ], ['American', 'Jamaican'], ['American', 'Nigerian'], ['American', 'Iraqi']
     ],
-    'nationality': ['British', 'American', 'Australian', 'German', 'Polish', 'Indian', 'Pakistani', 'Chinese', 'Vietnamese', 'Japanese', 'Iraqi', 'Iranian', 'Nigerian', 'South African', 'Kenyan', 'Colombian', 'Brazilian', 'Cuban', 'Jamaican', 'Mexican', 'North American', 'South American', 'European', 'Asian', 'Middle-Eastern', 'African', 'Russian', 'Ukrainian', 'Israeli', 'Palestinian'],
+    'nationality': ['British', 'American', 'Australian', 'German', 'Polish', 'Russian', 'Ukrainian', 'Indian', 'Pakistani', 'Chinese', 'Vietnamese', 'Japanese', 'Iraqi', 'Iranian', 'Israeli', 'Palestinian', 'Nigerian', 'South African', 'Kenyan', 'Colombian', 'Brazilian', 'Cuban', 'Jamaican', 'Mexican', 'North American', 'South American', 'European', 'Asian', 'Middle-Eastern', 'African'],
     'ethnicity': ['White', 'Hispanic', 'Latino', 'Black', 'African-American', 'Brown', 'Asian', 'Native American', 'American Indian', 'Arab', 'Roma', 'Romani', 'Gypsy'],
     'religion': ['christian', 'muslim', 'jewish', 'hindu', 'buddhist', 'sikh', 'atheist'],
 }
