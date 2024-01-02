@@ -35,6 +35,9 @@ elif model_choice == 'vicuna13b':
 elif model_choice == 'mistral7b':
     model_name = mistral7b
     output_dir = 'outputs/mistral7b'
+elif model_choice == 'dummy':
+    model_name = 'dummy'
+    output_dir = 'outputs/dummy'
 else:
     print('Unknown model')
     exit()

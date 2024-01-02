@@ -116,6 +116,9 @@ def load_model(model_name:str, **kwargs):
     if model_name == 'openlm-research/open_llama_7b':
         tokenizer = LlamaTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True, **kwargs)
         model = LlamaForCausalLM.from_pretrained(model_name, use_cache=True, **kwargs)
+    elif model_name == 'dummy':
+        tokenizer = AutoTokenizer.from_pretrained('mistralai/Mistral-7B-v0.1', padding_side='left', use_cache=True, **kwargs)
+        model = None
     else:
         tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side='left', use_cache=True, **kwargs)
         model = AutoModelForCausalLM.from_pretrained(model_name, use_cache=True, torch_dtype=torch.bfloat16, device_map="auto", **kwargs)
@@ -298,6 +301,8 @@ def create_col_names_list(common_cols, num_word_prob_pairs):
 
 def get_full_word_score(prompt:str, word:str, model, tokenizer):
     """Calculate the probability of a full word being output for a given prompt."""
+    if model == None:
+        return 1.0
     tokens = [tokenizer.decode(token) for token in tokenizer.encode(word)]
     word_so_far = ''
     score_log = 0
@@ -339,6 +344,13 @@ def get_score_for_prompt_and_token(prompt, target_token, model, tokenizer):
 
 def get_full_vocab_scores_for_prompt(prompt, model, tokenizer):
     """Get scores for every word in the model's vocab for a given prompt."""
+    if model == None:
+        vocab_dict = tokenizer.get_vocab()
+        vocab_list = [None for i in range(len(vocab_dict))] # convert vocab dict to list where index is the id of the word
+        #for key, val in vocab_dict.items():
+        #    vocab_list[int(val)] = tokenizer.decode(val)
+        #return [(vocab_list[i].strip(), 1.0) for i in range(len(vocab_list))]
+        return [(vocab_list[i], 1.0) for i in range(len(vocab_list))]
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
     input_ids = tokenizer.encode(prompt, return_tensors='pt').to(device)
     output = model(input_ids, return_dict=True, use_cache=True)
