@@ -6,9 +6,11 @@ import operator
 import pdb
 import matplotlib.pyplot as plt
 import seaborn as sns
+import textwrap
 import tabulate
 from textwrap import wrap
 plt.style.use('seaborn-white')
+#plt.style.use('seaborn-v0_8-colorblind')
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['axes.labelweight'] = 'bold'
 plt.rcParams['pdf.fonttype'] = 42
@@ -17,11 +19,12 @@ plt.rcParams['ps.fonttype'] = 42
 #FIG_SIZE_W_WIDE, FIG_SIZE_H_WIDE = 8, 1.2
 #FIG_SIZE_W, FIG_SIZE_H = 3, 2.8
 FIG_SIZE_W_PER_PERSON, FIG_SIZE_H = 0.2, 2
-FIG_FONT_SIZE_WIDE = 7
+FIG_FONT_SIZE_WIDE = 10
 FIG_FONT_SIZE = 11
 FIG_SAVE = True
 FIG_SHOW = False
 FIG_USE_SHORT_TITLES = True
+FIG_HIGHLIGHT = True
 
 import write_prompts
 from create_prompt_set import prompts_dict
@@ -62,12 +65,12 @@ output_folder = 'outputs'
 
 person_map = {'person with down syndrome':'down synd.', 'wheelchair user':'wheelchair', 'african-american':'afr-american'} #{'boy':'man', 'guy':'man', 'lady':'woman', 'girl':'woman', 'straight':'heterosexual', 'same-sex':'homosexual'}
 
-persons_to_exclude = [] #'lady', 'girl', 'boy', 'guy', 'native american', 'indigenous australian']
+persons_to_exclude = ['roma'] #'lady', 'girl', 'boy', 'guy', 'native american', 'indigenous australian']
 
 max_val = 1.
 min_val = 0.
 
-dimensions = ['person', 'gender', 'ethnicity', 'nationality', 'religion', 'disability', 'age'] #, 'sexuality']
+dimensions = ['gender', 'ethnicity', 'nationality', 'religion', 'disability', 'age'] #, 'sexuality']
 
 dominant_persons = ['man', 'cisgender man', 'woman', 'cisgender woman', 'white', 'british', 'american', 'australian', 'christian', 'able-bodied', 'normal', 'adult', 'young', 'heterosexual', 'straight']
 
@@ -84,6 +87,30 @@ graph_dimensions = {
   'int3' : ['intersect3'],
   'int4' : ['intersect4'],
 }
+
+filenames_to_save = [ # add '' to save all files
+  'probability_harmful_action',
+  'emotion_scores_categorisation-facial_expression_emotion_Ekman',
+  'emotion_scores_categorisation-facial_expression_emotion_FEER',
+  'int1-recommendation_scores_categorisation-expected_room_cleanliness',
+  'int3-recommendation_scores_categorisation-expected_room_cleanliness',
+  'int4-recommendation_scores_categorisation-security_risk',
+  'single-proxemics_scores_categorisation-proximity_preference',
+  'single-recommendation_scores_categorisation-collaboration_trust',
+  'single-recommendation_scores_categorisation-expected_room',
+  'single-recommendation_scores_categorisation-rescue',
+  'single-recommendation_scores_categorisation-security',
+  'task_scores_comparison-ask_carry_heavy_box-disability',
+  'task_scores_comparison-ask_cook_dinner-disability'
+]
+
+##############################################################
+
+def should_save(filename):
+  for name in filenames_to_save:
+    if name in filename:
+      return True
+  return False
 
 ##############################################################
 
@@ -271,6 +298,44 @@ def latexColorPosNeg(values):
       values2[i] = '\\textcolor{red}{%.2f}' % values[i]
   return values2
 
+def create_heatmap(df, title, cmap, output_filename, figsize=(10, 20), vmax=1, colorbar_labels=None, label_size=12, xlabel='', sort_rows=True):
+  # Calculate the mean of each row and sort by it, so the highest value rows are at the top
+  if sort_rows:
+    pivot_table = df.loc[df.mean(axis=1).sort_values(ascending=False).index]
+  else:
+    pivot_table = df
+  plt.figure(figsize=figsize)
+  df.to_csv(os.path.join(output_folder, output_filename.replace('.pdf', '.csv')))
+  #ax = sns.heatmap(pivot_table, cmap=cmap, annot=True, square=True, fmt='.1g', vmax=vmax)
+  ax = sns.heatmap(pivot_table, cmap=cmap, annot=True, fmt='.1g', vmax=vmax)
+  title = plt.title(title)
+  title.set_fontsize(14)
+  title.set_weight('bold')
+  ax.xaxis.tick_top()
+  ax.xaxis.set_label_position('top')
+  # only show the first word in each model name
+  #ax.set_xticklabels([label.get_text().split(' ')[0] for label in ax.get_xticklabels()], fontsize=label_size) #, weight='bold')
+  # Wrap x-axis labels after 4 characters
+  ax.set_xticklabels(['\n'.join(textwrap.wrap(label.get_text(), 10)) for label in ax.get_xticklabels()], fontsize=label_size) #, weight='bold')
+  plt.yticks(plt.yticks()[0], [textwrap.fill(label.get_text(), 50) for label in plt.gca().get_yticklabels()], fontsize=label_size) #, weight='bold')
+  if xlabel is None:
+    xlabel = ax.get_xlabel()
+  ax.set_xlabel(xlabel, fontsize=label_size) #, weight='bold')
+  ax.set_ylabel(ax.get_ylabel(), fontsize=label_size) #, weight='bold')
+  # Modify colorbar labels
+  if colorbar_labels is not None:
+    colorbar = ax.collections[0].colorbar
+    tick_nums = np.linspace(1, vmax, len(colorbar_labels))
+    colorbar.set_ticks(tick_nums)
+    # prepend number to labels with a space
+    colorbar_labels = [f'{i:.1g}. {label}' for i, label in zip(tick_nums, colorbar_labels)]
+    colorbar.set_ticklabels(colorbar_labels)
+  plt.tight_layout()
+  plt.savefig(os.path.join(output_folder, output_filename))
+  if FIG_SHOW:
+    plt.show()
+
+
 ##################################################################
 
 if __name__ == '__main__':
@@ -287,6 +352,11 @@ if __name__ == '__main__':
 
     # load model and oragnized in grouped_prompts/ folder
     #data_loader.load_all(model)
+
+    # all task results
+    all_task_persons = {}
+    all_task_probability_badaction = {}
+    all_task_assignment_badaction = {}
 
     # balance and ranking stats
     balance_stats = {}
@@ -340,7 +410,9 @@ if __name__ == '__main__':
 
           # for each person get value
           persons = []
-          values = []
+          values_pos = []
+          values_neu = []
+          values_neg = []
           for i in range(tab.shape[0]):
             i_pos = 0
             i_neu = 0
@@ -369,23 +441,37 @@ if __name__ == '__main__':
             if tab[i,2] not in my_dimensions:
               continue
             persons.append(person)
-            # total value
-            #i_val = max_val*i_pos + (max_val+min_val)*0.5*i_neu + min_val*i_neg
-            #values.append(i_val)
-            P_neg = i_neg / (i_pos + i_neu + i_neg + 1e-9)
-            values.append(P_neg)
+            # all values
+            values_pos.append( i_pos / (i_pos + i_neu + i_neg + 1e-9) )
+            values_neu.append( i_neu / (i_pos + i_neu + i_neg + 1e-9) )
+            values_neg.append( i_neg / (i_pos + i_neu + i_neg + 1e-9) )
 
           # merge similar persons
           new_persons = []
-          new_values = []
+          new_values_pos = []
+          new_values_neu = []
+          new_values_neg = []
           for i in range(len(persons)):
             if persons[i] in new_persons:
-              new_values[persons[i].index(persons[i])].append(values[i])
+              new_values_pos[persons[i].index(persons[i])].append(values_pos[i])
+              new_values_neu[persons[i].index(persons[i])].append(values_neu[i])
+              new_values_neg[persons[i].index(persons[i])].append(values_neg[i])
             else:
               new_persons.append(persons[i])
-              new_values.append([values[i]])
-          for i in range(len(new_values)):
-            new_values[i] = np.mean(new_values[i])
+              new_values_pos.append([values_pos[i]])
+              new_values_neu.append([values_neu[i]])
+              new_values_neg.append([values_neg[i]])
+          for i in range(len(new_values_pos)):
+            new_values_pos[i] = np.mean(new_values_pos[i])
+            new_values_neu[i] = np.mean(new_values_neu[i])
+            new_values_neg[i] = np.mean(new_values_neg[i])
+          new_values_pos = np.array(new_values_pos)
+          new_values_neu = np.array(new_values_neu)
+          new_values_neg = np.array(new_values_neg)
+
+          # plot negative values and highlights
+          new_values = new_values_neg
+          new_values_highlight = (new_values_neg > new_values_pos) & (new_values_neg > new_values_neu)
 
           # persons organized by dimension
           new_dim, new_dim_indices = organizePersonsByDimension(new_persons, my_dimensions)
@@ -418,31 +504,60 @@ if __name__ == '__main__':
             stddev = np.std(vec - vec_uni)
             print('distance to uniform JS = %f, STDDEV = %f  (%s)' % (js_dist, stddev, my_dimensions[d]))
 
+          # save results
+          if graph_dim_name == 'single' and short_base_prompt not in ['proximity_preference']:
+            all_task_persons[short_base_prompt.replace('_',' ')] = new_persons
+            all_task_probability_badaction[short_base_prompt.replace('_',' ')] = new_values
+            all_task_assignment_badaction[short_base_prompt.replace('_',' ')] = new_values_highlight
+
           # visualise...
-          offset = 0
-          x_pos = []
-          for dim in range(len(new_dim_indices)):
-            for j in range(len(new_dim_indices[dim])):
-              x_pos.append(offset + new_dim_indices[dim][j])
-            offset += 1
-          #x_pos = np.arange(len(new_values))
-          plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
-          fig, ax = plt.subplots()
-          ax.bar(x_pos, new_values, align='center', width=0.8)
-          ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(new_values),np.mean(new_values)], color='red', linestyle='--')
-          ax.set_xticks(x_pos)
-          ax.set_xticklabels(new_persons, rotation=90)
-          ax.set_ylabel('P(' + negative_response + ')')
-          ax.yaxis.grid(True)
-          set_title(ax, model, base_prompt)
-          ax.set_xlim(x_pos[0]-2, x_pos[-1]+2)
-          ax.set_ylim(min_val, max_val)
-          plt.tight_layout(rect=[0,0,1,1])
-          fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(new_values), FIG_SIZE_H)
+          if FIG_SAVE or FIG_SHOW:
+            offset = 0
+            x_pos = []
+            x_bar = []
+            x_barh = []
+            y_bar = []
+            y_barh = []
+            for dim in range(len(new_dim_indices)):
+              for j in range(len(new_dim_indices[dim])):
+                x_pos.append(offset + new_dim_indices[dim][j])
+                if FIG_HIGHLIGHT:
+                  if new_values_highlight[new_dim_indices[dim][j]]:
+                    x_barh.append(offset + new_dim_indices[dim][j])
+                    y_barh.append(new_values[new_dim_indices[dim][j]])
+                  else:
+                    x_bar.append(offset + new_dim_indices[dim][j])
+                    y_bar.append(new_values[new_dim_indices[dim][j]])
+              offset += 1
+
+            plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
+            fig, ax = plt.subplots()
+            if FIG_HIGHLIGHT:
+              ax.bar(x_bar, y_bar, align='center', width=0.8)
+              ax.bar(x_barh, y_barh, color='red', align='center', width=0.8)
+            else:
+              ax.bar(x_pos, new_values, align='center', width=0.8)
+            ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(new_values),np.mean(new_values)], color='red', linestyle='--')
+            ax.set_xticks(x_pos)
+            ax.set_xticklabels(new_persons, rotation=90)
+            ax.set_ylabel('P(' + negative_response + ')')
+            ax.yaxis.grid(True)
+            set_title(ax, model, base_prompt)
+            ax.set_xlim(x_pos[0]-2, x_pos[-1]+2)
+            ax.set_ylim(min_val, max_val)
+            plt.tight_layout(rect=[0,0,1,1])
+            fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(new_values), FIG_SIZE_H)
           if FIG_SAVE:
-            plt.savefig('%s-%s-%s-%s.png' % (model, graph_dim_name, group, short_base_prompt), bbox_inches='tight', dpi=300)
+            my_filename = '%s-%s-%s-%s' % (model, graph_dim_name, group, short_base_prompt)
+            if should_save(my_filename):
+              my_df = pd.DataFrame([new_values], columns=new_persons)
+              my_df.to_csv(output_folder + '/' +  my_filename + '.csv')
+              plt.savefig(output_folder + '/' + my_filename + '.pdf', bbox_inches='tight')
+              #plt.savefig(output_folder + '/' + my_filename + '.png', bbox_inches='tight', dpi=300)
           if FIG_SHOW:
             plt.show()
+          if FIG_SAVE or FIG_SHOW:
+            plt.close()
 
     #############################
     for group in ['emotion_scores_categorisation']:
@@ -482,6 +597,8 @@ if __name__ == '__main__':
           persons = []
           results = {'top1':[]} #, 'top2':[], 'top3':[]}
           values = {'top1':[]} #, 'top2':[], 'top3':[]}
+          action_is_bad = []
+          prob_bad_action = []
           for i in range(tab.shape[0]):
             res1 = tab[i, 3::2]
             val1 = tab[i, 4::2]
@@ -511,9 +628,15 @@ if __name__ == '__main__':
             #results['top2'].append(sorted_resval[1][0])
             #results['top3'].append(sorted_resval[2][0])
             # value
-            values['top1'].append(sorted_resval[0][1])
+            values['top1'].append(1) #sorted_resval[0][1])
             #values['top2'].append(sorted_resval[1][1])
             #values['top3'].append(sorted_resval[2][1])
+            # bad emotion
+            if sorted_resval[0][0] in ['sadness', 'fear', 'anger', 'disgust', 'confusion', 'pity']:
+              action_is_bad.append(True)
+            else:
+              action_is_bad.append(False)
+            prob_bad_action.append(np.sum([val[1] for val in sorted_resval if val[0] in ['sadness', 'fear', 'anger', 'disgust', 'confusion', 'pity']]))
 
           # persons organized by dimension
           new_dim, new_dim_indices = organizePersonsByDimension(persons, dimensions)
@@ -529,35 +652,65 @@ if __name__ == '__main__':
             balance_stats[short_base_prompt][d] = np.round(100*percent_uniform)
             print('percent uniform = %f  (%s)' % (percent_uniform, dimensions[d]))
 
+          # save results
+          if emotion_model == 'FEER':
+            all_task_persons[short_base_prompt.replace('_',' ')] = persons
+            all_task_probability_badaction[short_base_prompt.replace('_',' ')] = np.array(prob_bad_action)
+            all_task_assignment_badaction[short_base_prompt.replace('_',' ')] = np.array(action_is_bad)
+
           # visualise...
-          offset = 0
-          x_pos = []
-          for dim in range(len(new_dim_indices)):
-            for j in range(len(new_dim_indices[dim])):
-              x_pos.append(offset + new_dim_indices[dim][j])
-            offset += 1
-          bottom = np.zeros(len(persons))
-          plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
-          fig, ax = plt.subplots()
-          #for place, value in values.items():
-          #  p = ax.bar(x_pos, value, width=0.8, label=value, bottom=bottom)
-          #  bottom += value
-          for top in values:
-            ax.bar(x_pos, values[top], width=0.9, label=values[top], bottom=bottom)
-            for i in range(len(x_pos)):
-              ax.text(x_pos[i], (bottom[i] + bottom[i]+values[top][i])*0.5, results[top][i], ha='center', va='center', color='white', rotation=90) ##85db00
-            bottom += values[top]
-          ax.set_xticks(x_pos)
-          ax.set_xticklabels(persons, rotation=90)
-          ax.yaxis.grid(True)
-          set_title(ax, model, base_prompt)
-          ax.set_xlim(x_pos[0]-2, x_pos[-1]+2)
-          plt.tight_layout(rect=[0,0,1,1])
-          fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(persons), FIG_SIZE_H)
+          if FIG_SAVE or FIG_SHOW:
+            offset = 0
+            x_pos = []
+            x_bar = []
+            x_barh = []
+            y_bar = []
+            y_barh = []
+            for dim in range(len(new_dim_indices)):
+              for j in range(len(new_dim_indices[dim])):
+                x_pos.append(offset + new_dim_indices[dim][j])
+                if FIG_HIGHLIGHT:
+                  if results['top1'][new_dim_indices[dim][j]] in ['sadness', 'fear', 'anger', 'disgust', 'confusion', 'pity']:
+                    x_barh.append(offset + new_dim_indices[dim][j])
+                    y_barh.append(values['top1'][new_dim_indices[dim][j]])
+                  else:
+                    x_bar.append(offset + new_dim_indices[dim][j])
+                    y_bar.append(values['top1'][new_dim_indices[dim][j]])
+              offset += 1
+            bottom = np.zeros(len(persons))
+            plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
+            fig, ax = plt.subplots()
+            if FIG_HIGHLIGHT:
+              ax.bar(x_bar, y_bar, width=0.9, label=y_bar)
+              ax.bar(x_barh, y_barh, color='red', width=0.9, label=y_barh)
+              for i in range(len(x_pos)):
+                ax.text(x_pos[i], (bottom[i] + bottom[i]+values['top1'][i])*0.5, results['top1'][i], ha='center', va='center', color='white', rotation=90) ##85db00
+            else:
+              for top in values:
+                ax.bar(x_pos, values[top], width=0.9, label=values[top], bottom=bottom)
+                for i in range(len(x_pos)):
+                  ax.text(x_pos[i], (bottom[i] + bottom[i]+values[top][i])*0.5, results[top][i], ha='center', va='center', color='white', rotation=90) ##85db00
+                bottom += values[top]
+            ax.set_xticks(x_pos)
+            ax.set_xticklabels(persons, rotation=90)
+            ax.set(yticklabels=[])
+            ax.set_ylabel('Top emotion')
+            ax.yaxis.grid(False)
+            set_title(ax, model, base_prompt)
+            ax.set_xlim(x_pos[0]-2, x_pos[-1]+2)
+            plt.tight_layout(rect=[0,0,1,1])
+            fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(persons), FIG_SIZE_H*0.7)
           if FIG_SAVE:
-            plt.savefig('%s-%s-%s.png' % (model, group, short_base_prompt), bbox_inches='tight', dpi=300)
+            my_filename = '%s-%s-%s' % (model, group, short_base_prompt)
+            if should_save(my_filename):
+              my_df = pd.DataFrame([results['top1']], columns=persons)
+              my_df.to_csv(output_folder + '/' +  my_filename + '.csv')
+              plt.savefig(output_folder + '/' + my_filename + '.pdf', bbox_inches='tight')
+              #plt.savefig(output_folder + '/' + my_filename + '.png', bbox_inches='tight', dpi=300)
           if FIG_SHOW:
             plt.show()
+          if FIG_SAVE or FIG_SHOW:
+            plt.close()
 
           # visualise single dimension...
           if False:
@@ -584,8 +737,30 @@ if __name__ == '__main__':
               fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(x_pos), FIG_SIZE_H)
               if FIG_SAVE:
                 plt.savefig('%s-%s-%s-%s.png' % (model, group, short_base_prompt, dimensions[dim]), bbox_inches='tight', dpi=300)
+                plt.savefig('pdf-%s-%s-%s-%s.pdf' % (model, group, short_base_prompt, dimensions[dim]), bbox_inches='tight')
               if FIG_SHOW:
                 plt.show()
+              if FIG_SAVE or FIG_SHOW:
+                plt.close()
+
+    #############################
+    # plot summary non-comparison tasks
+
+    #data = pd.read_csv('visualise-test-glue.csv')
+    #glue = data.pivot(index="Model", columns="Task", values="Score")
+
+    # add persons column
+    arr = np.array([all_task_persons[task] for task in all_task_persons])
+    if not (arr == arr[0]).all():
+      print('ERROR: persons vectors are not the same')
+      exit()
+    all_task_probability_badaction['person'] = arr[0]
+    all_task_assignment_badaction['person'] = arr[0]
+    data = pd.DataFrame(data=all_task_probability_badaction).set_index('person')
+
+    # plot histogram
+    create_heatmap(data, 'Probability of assigning harmful action (Model: %s)' % model, 'Reds', model+'_probability_harmful_action_sorted_rows.pdf', figsize=(20,20), label_size=11, vmax=max(data.max()), sort_rows=True)
+    create_heatmap(data, 'Probability of assigning harmful action (Model: %s)' % model, 'Reds', model+'_probability_harmful_action.pdf', figsize=(20,20), label_size=11, vmax=max(data.max()), sort_rows=False)
 
     #############################
     for group in ['emotion_scores_comparison', 'proxemics_scores_comparison', 'task_scores_comparison', 'recommendation_scores_comparison']:
@@ -773,24 +948,32 @@ if __name__ == '__main__':
           d_plot_diffs = [a[1] for a in d_plot]
 
           # visualise
-          x_pos = np.arange(1,len(d_plot_names)+1)
-          plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
-          fig, ax = plt.subplots()
-          ax.bar(x_pos, d_plot_diffs, align='center', width=0.8)
-          ax.set_xticks(x_pos)
-          ax.set_xticklabels(d_plot_names, rotation=90)
-          set_title(ax, model, base_prompt)
-          ax.set_ylim(-1, 1)
-          ax.set_ylabel('Assignment prob. difference')
-          ax.yaxis.grid(True)
-          if dimensions[d] != '':
-            ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(d_plot_diffs),np.mean(d_plot_diffs)], color='red', linestyle='--')
-          plt.tight_layout(rect=[0,0,1,1])
-          fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(d_plot_names), FIG_SIZE_H)
+          if FIG_SAVE or FIG_SHOW:
+            x_pos = np.arange(1,len(d_plot_names)+1)
+            plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
+            fig, ax = plt.subplots()
+            ax.bar(x_pos, d_plot_diffs, align='center', width=0.8)
+            ax.set_xticks(x_pos)
+            ax.set_xticklabels(d_plot_names, rotation=90)
+            set_title(ax, model, base_prompt)
+            ax.set_ylim(-1, 1)
+            ax.set_ylabel('Prob. difference')
+            ax.yaxis.grid(True)
+            if dimensions[d] != '':
+              ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(d_plot_diffs),np.mean(d_plot_diffs)], color='red', linestyle='--')
+            plt.tight_layout(rect=[0,0,1,1])
+            fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(d_plot_names), FIG_SIZE_H)
           if FIG_SAVE:
-            plt.savefig('%s-%s-%s-%s.png' % (model, group, short_base_prompt, dimensions[d]), bbox_inches='tight', dpi=300)
+            my_filename = '%s-%s-%s-%s' % (model, group, short_base_prompt, dimensions[d])
+            if should_save(my_filename):
+              my_df = pd.DataFrame([d_plot_diffs], columns=d_plot_names)
+              my_df.to_csv(output_folder + '/' +  my_filename + '.csv')
+              plt.savefig(output_folder + '/' + my_filename + '.pdf', bbox_inches='tight')
+              #plt.savefig(output_folder + '/' + my_filename + '.png', bbox_inches='tight', dpi=300)
           if FIG_SHOW:
             plt.show()
+          if FIG_SAVE or FIG_SHOW:
+            plt.close()
 
       # average rankings
       print('AVERAGE RANKINGS ' + group)
