@@ -26,6 +26,8 @@ FIG_SHOW = False
 FIG_USE_SHORT_TITLES = True
 FIG_HIGHLIGHT = True
 
+SORT_BY_VALUE = True
+
 import write_prompts
 from create_prompt_set import prompts_dict
 #from rank_centrality import extract_rc_scores
@@ -82,10 +84,11 @@ emotion_models = {
 
 graph_dimensions = {
   'single' : dimensions,
-  'int1' : ['intersect1'],
-  'int2' : ['intersect2'],
-  'int3' : ['intersect3'],
-  'int4' : ['intersect4'],
+  'int1'   : ['intersect1'],
+  'int2'   : ['intersect2'],
+  'int3'   : ['intersect3'],
+  'int4'   : ['intersect4'],
+  'int13'  : ['intersect1', 'intersect3'],
 }
 
 filenames_to_save = [ # add '' to save all files
@@ -93,8 +96,9 @@ filenames_to_save = [ # add '' to save all files
   'emotion_scores_categorisation-facial_expression_emotion_Ekman',
   'emotion_scores_categorisation-facial_expression_emotion_FEER',
   'recommendation_scores_comparison-hotel_assist-ethnicity',
-  'int1-recommendation_scores_categorisation-expected_room_cleanliness',
-  'int3-recommendation_scores_categorisation-expected_room_cleanliness',
+  #'int1-recommendation_scores_categorisation-expected_room_cleanliness',
+  #'int3-recommendation_scores_categorisation-expected_room_cleanliness',
+  'int13-recommendation_scores_categorisation-expected_room_cleanliness',
   'int4-recommendation_scores_categorisation-security_risk',
   'single-proxemics_scores_categorisation-proximity_preference',
   'single-recommendation_scores_categorisation-collaboration_trust',
@@ -532,21 +536,30 @@ if __name__ == '__main__':
           if FIG_SAVE or FIG_SHOW:
             offset = 0
             x_pos = []
+            y_val = []
+            x_lbl = []
             x_bar = []
             x_barh = []
             y_bar = []
             y_barh = []
             for dim in range(len(new_dim_indices)):
-              for j in range(len(new_dim_indices[dim])):
-                x_pos.append(offset + new_dim_indices[dim][j])
+              if SORT_BY_VALUE:
+                dim_ind_order = np.argsort(-new_values[new_dim_indices[dim]])
+              else:
+                dim_ind_order = new_dim_indices[dim]
+              for j in range(len(dim_ind_order)):
+                ind = dim_ind_order[j]
+                x_pos.append(offset + j)
+                y_val.append(new_values[new_dim_indices[dim][ind]])
+                x_lbl.append(new_persons[new_dim_indices[dim][ind]])
                 if FIG_HIGHLIGHT:
-                  if new_values_highlight[new_dim_indices[dim][j]]:
-                    x_barh.append(offset + new_dim_indices[dim][j])
-                    y_barh.append(new_values[new_dim_indices[dim][j]])
+                  if new_values_highlight[new_dim_indices[dim][ind]]:
+                    x_barh.append(offset + j)
+                    y_barh.append(new_values[new_dim_indices[dim][ind]])
                   else:
-                    x_bar.append(offset + new_dim_indices[dim][j])
-                    y_bar.append(new_values[new_dim_indices[dim][j]])
-              offset += 1
+                    x_bar.append(offset + j)
+                    y_bar.append(new_values[new_dim_indices[dim][ind]])
+              offset += len(dim_ind_order) + 1
 
             plt.rcParams['font.size'] = FIG_FONT_SIZE_WIDE
             fig, ax = plt.subplots()
@@ -554,10 +567,10 @@ if __name__ == '__main__':
               ax.bar(x_bar, y_bar, align='center', width=0.8)
               ax.bar(x_barh, y_barh, color='red', align='center', width=0.8)
             else:
-              ax.bar(x_pos, new_values, align='center', width=0.8)
+              ax.bar(x_pos, y_val, align='center', width=0.8)
             ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(new_values),np.mean(new_values)], color='red', linestyle='--')
             ax.set_xticks(x_pos)
-            ax.set_xticklabels(new_persons, rotation=90)
+            ax.set_xticklabels(x_lbl, rotation=90)
             ax.set_ylabel('P(' + negative_response + ')')
             ax.yaxis.grid(True)
             set_title(ax, model, base_prompt)
