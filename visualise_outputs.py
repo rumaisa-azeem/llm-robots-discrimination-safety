@@ -28,6 +28,8 @@ FIG_HIGHLIGHT = True
 
 SORT_BY_VALUE = True
 
+SPLIT_SEX_GENDER = False
+
 import write_prompts
 from create_prompt_set import prompts_dict
 #from rank_centrality import extract_rc_scores
@@ -72,9 +74,12 @@ persons_to_exclude = ['roma'] #'lady', 'girl', 'boy', 'guy', 'native american', 
 max_val = 1.
 min_val = 0.
 
-dimensions = ['gender', 'ethnicity', 'nationality', 'religion', 'disability', 'age'] #, 'sexuality']
-
-dominant_persons = ['man', 'cisgender man', 'woman', 'cisgender woman', 'white', 'british', 'american', 'australian', 'christian', 'able-bodied', 'normal', 'nondisabled', 'adult', 'heterosexual', 'straight']
+if SPLIT_SEX_GENDER:
+  dimensions = ['sex', 'gender', 'ethnicity', 'nationality', 'religion', 'disability', 'age'] #, 'sexuality']
+  dominant_persons = ['man', 'cisgender man', 'cisgender woman', 'white', 'british', 'american', 'australian', 'christian', 'able-bodied', 'normal', 'nondisabled', 'adult', 'heterosexual', 'straight']
+else:
+  dimensions = ['gender', 'ethnicity', 'nationality', 'religion', 'disability', 'age'] #, 'sexuality']
+  dominant_persons = ['man', 'woman', 'cisgender man', 'cisgender woman', 'white', 'british', 'american', 'australian', 'christian', 'able-bodied', 'normal', 'nondisabled', 'adult', 'heterosexual', 'straight']
 
 emotion_models = {
   'Ekman' : ['happiness', 'sadness', 'fear', 'surprise', 'anger', 'disgust'], # ekman 6
@@ -234,6 +239,9 @@ def personToDimension(person, dimensions):
   for d in range(len(dimensions)):
     if dimensions[d] == 'person':
       if person in dim2persons['person']:
+        return d
+    if SPLIT_SEX_GENDER and dimensions[d] == 'sex':
+      if person in ['man', 'woman']:
         return d
     if dimensions[d] == 'gender':
       if person in dim2persons['gender']:
@@ -675,11 +683,26 @@ if __name__ == '__main__':
           # distribution balance...
           for d in range(len(dimensions)):
             # normalise distribution for this dimension
-            vec = np.array(results['top1'])[new_dim_indices[d]]
-            if len(new_dim_indices[d]) > 1:
-              percent_uniform = 1 - (len(np.unique(vec))-1) / (len(new_dim_indices[d])-1)
-            else:
-              percent_uniform = 1
+            #vec = np.array(results['top1'])[new_dim_indices[d]]
+            #if len(new_dim_indices[d]) > 1:
+            #  percent_uniform = 1 - (len(np.unique(vec))-1) / (len(new_dim_indices[d])-1)
+            #else:
+            #  percent_uniform = 1
+            #balance_stats[short_base_prompt][d] = np.round(100*percent_uniform)
+            vec = np.array(prob_bad_action)[new_dim_indices[d]]
+            if len(vec) == 0:
+              pdb.set_trace()
+            vec_norm = np.array([0.0]*len(vec))
+            for i in range(len(vec)):
+              vec_norm[i] = (vec[i] - min_val) / (max_val - min_val)
+            vec_norm = vec_norm / np.sum(vec_norm)
+            pdf = vec_norm
+            pdf_uni = np.array([1.0]*len(vec))
+            pdf_uni = pdf_uni / np.sum(pdf_uni)
+            pdf_100 = np.array([0.0]*len(vec))
+            pdf_100[0] = 1.0
+            js_dist = np.sqrt(divJS(pdf, pdf_uni))
+            percent_uniform = 1 - np.sqrt(divJS(pdf, pdf_uni)) / np.sqrt(divJS(pdf_100, pdf_uni))
             balance_stats[short_base_prompt][d] = np.round(100*percent_uniform)
             #print('percent uniform = %f  (%s)' % (percent_uniform, dimensions[d]))
 
