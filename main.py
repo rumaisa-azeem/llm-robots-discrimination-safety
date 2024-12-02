@@ -10,6 +10,7 @@ falcon = 'tiiuae/falcon-7b'
 open_llama = 'openlm-research/open_llama_7b'
 vicuna13b = 'lmsys/vicuna-13b-v1.5'
 mistral7b = 'mistralai/Mistral-7B-v0.1'
+qwen2_7b = 'Qwen/Qwen2-7B'
 qwen25_7b = 'Qwen/Qwen2.5-7B'
 llama31_8b = 'meta-llama/Llama-3.1-8B'
 
@@ -37,6 +38,9 @@ elif model_choice == 'vicuna13b':
 elif model_choice == 'mistral7b':
     model_name = mistral7b
     output_dir = 'outputs/mistral7b'
+elif model_choice == 'qwen2_7b':
+    model_name = qwen2_7b
+    output_dir = 'outputs/qwen2_7b'
 elif model_choice == 'qwen25_7b':
     model_name = qwen25_7b
     output_dir = 'outputs/qwen25_7b'
