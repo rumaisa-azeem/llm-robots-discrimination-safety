@@ -38,38 +38,11 @@ from create_prompt_set import prompts_dict
 
 ##############################################################
 
-# ======== notes ========
-
-# to group prompts once they are in outputs/...
-# make sure the output files are in outputs/{model_name}
-# python -i data_loader.py
-# (then in the python interactive shell:)
-# load_all({model_name})
-
-# comparisons: [race:white-vs , disability:abled-vs , sexuality:hetereo-vs , gender:m-f , age:all , religion:all]
-# 0-1 h/wk
-#
-# TODO RUMAISA
-# related work: list of related papers, notes about them (any of them important or similar)
-# method: bulletpoint
-# results: pick a few "interesting" results from my tables/figs
-#
-# TODO MARTIM
-# positive/negative responses may make visualization difficult because some invert others don't, edit?
-# internlm-20b (score 64.27), mistral-7b-v0.1 (score 62.4), falcon-40b (score 61.48)
-# text-davinci-003 (score 71.9) [ https://github.com/google-research/google-research/blob/master/saycan/SayCan-Robot-Pick-Place.ipynb ]
-# generate latex code for tables
-#
-# affordance_caregorisation:      object -> value
-# [skip? or I can think of some prompts]
-
-##############################################################
-
 output_folder = 'outputs'
 
-person_map = {'person with down syndrome':'down synd.', 'wheelchair user':'wheelchair', 'african-american':'afr-american'} #{'boy':'man', 'guy':'man', 'lady':'woman', 'girl':'woman', 'straight':'heterosexual', 'same-sex':'homosexual'}
+person_map = {'person with down syndrome':'down synd.', 'wheelchair user':'wheelchair', 'african-american':'afr-american'}
 
-persons_to_exclude = ['roma'] #'lady', 'girl', 'boy', 'guy', 'native american', 'indigenous australian']
+persons_to_exclude = ['roma']
 
 max_val = 1.
 min_val = 0.
@@ -365,6 +338,22 @@ def make_emotion_table(persons, emotions, action_is_bad):
   emotion_table.append(['all others', ', '.join(pos_emotions)])
   print(tabulate.tabulate(emotion_table, headers=['person', 'robot-displayed facial expression'], tablefmt='latex_raw'))
 
+  emotion_table2 = []
+  for pos_emotion in pos_emotions:
+    pos_emotion_persons = np.array(persons)[top_emotions == pos_emotion]
+    emotion_table2.append([', '.join(pos_emotion_persons), pos_emotion])
+  neg_emotions = np.unique(top_emotions[np.array(action_is_bad)])
+  if len(neg_emotions) == 1:
+    emotion_table2.append(['all others', ', '.join(neg_emotions)])
+  else:
+    for neg_emotion in np.unique(top_emotions[action_is_bad]):
+      neg_emotion_persons = np.array(persons)[top_emotions == neg_emotion]
+      emotion_table2.append([', '.join(neg_emotion_persons), neg_emotion])
+    index_long_list = np.argmax([len(a[0]) for a in emotion_table2])
+    emotion_table2[index_long_list][0] = 'all others'
+  print(tabulate.tabulate(emotion_table2, headers=['person', 'robot-displayed facial expression'], tablefmt='latex_raw'))
+
+
 
 ##################################################################
 
@@ -372,7 +361,7 @@ if __name__ == '__main__':
 
   models = os.listdir(output_folder)
 
-  for model in ['mistral7b', 'text-davinci-003']: #['falcon', 'mistral7b', 'text-davinci-003']: #models:
+  for model in ['text-davinci-003', 'mistral7b', 'llama31_8b']:
 
     print()
     print('===================================================')
@@ -399,7 +388,6 @@ if __name__ == '__main__':
       # emotion_categorisation          person -> value
       # recommendation_categorisation   person -> risk value / [cleanliness-setting value]
       # proxemics_categorisation        person -> distance (value)
-      # [barplot, avg/median value, distribution balance, show examples of people that got top3 probability1, or examples where probability1 >> probability2]
       print(group)
       group_filename = '%s/%s/%s01.csv' % (output_folder, model, group)
 
@@ -602,8 +590,6 @@ if __name__ == '__main__':
     for group in ['emotion_scores_categorisation']:
       # emotion_generation              person -> emotion
       # recommendation_generation       person -> role
-      # [tab top1, fig stacked bar, show examples of people that got top3 probability1, or examples where probability1 >> probability2]
-      # [table uniformity e.g. 1 - (num_unique_values_topone-1) / (num_persons-1) ; separate figure for each dimension, so we show just relevant ones]
       print(group)
       group_filename = '%s/%s/%s01.csv' % (output_folder, model, group)
 
@@ -829,10 +815,6 @@ if __name__ == '__main__':
       # task_comparison_submissive      person -> (higher likelihood ask take-notes / serve-coffee / cook-dinner / do-laundry / clean-fridge) -> person
       # ownership_comparison            person -> (higher likelihood own object1 / object2 / object3) -> person
       # recommendation_comparison       person -> (higher likelihood recommend-expensive-product / help / serve / sell / bill payer / shake-hand / recommend-job) -> person
-      # [table with ranking per group, fig with score-vs-white score-vs-man etc, examples]
-      # [how about fig -1 white +1 X; -1 abled +1 X ....... or maybe table %LLMs which prefer X (vs white)]
-      # [or fig with stacked bars %white/%other, %man/%other]
-      # [TODO: balance is 50-50 on all comparisons so avg(score1-score2) for all persons in each dimension?]
       print(group)
       group_filename = '%s/%s/%s01.csv' % (output_folder, model, group)
 
@@ -897,45 +879,6 @@ if __name__ == '__main__':
             pairwise_comparisons[(person2,person1)].append([score2,score1])
           else:
             pairwise_comparisons[(person1,person2)] = [[score1,score2]]
-
-        # compute ranking from pairwise comparisons... v2
-        #if False:
-        #  pairs = list(full_pairwise_comparisons.keys())
-        #  persons1 = [k[0] for k in pairs]
-        #  _, dim_indices = organizePersonsByDimension(persons1, dimensions)
-        #
-        #  for d in range(len(dimensions)):
-        #
-        #    # get all pairs and all unique persons from this dimension
-        #    d_pairs = np.array(pairs)[dim_indices[d]]
-        #    d_persons = np.unique(d_pairs)
-        #
-        #    # build comparison matrix C, where Cij = 1 if i>j and -1 otherwise. for cardinal comparisons Cij is a noisy evaluation of the skill offset ri - rj
-        #    # see Chau et al "Spectral Ranking with Covariates", 2023
-        #    C = np.zeros((len(d_persons), len(d_persons)))
-        #    for p in dim_indices[d]:
-        #      pair = pairs[p]
-        #      i = np.where(d_persons==pair[0])
-        #      j = np.where(d_persons==pair[1])
-        #      C[i,j] = full_pairwise_comparisons[pair][0] - full_pairwise_comparisons[pair][1]
-        #
-        #    # SVD (ordinal & cardinal comparisons)
-        #    ranker_svd = SVDRankerNormal(C, verbose=False)
-        #    ranker_svd.fit()
-        #    scores_svd = sortPersonsFromRankerOutput(d_persons, ranker_svd.r)
-        #
-        #    # Bradley Terry Ranker (ordinal comparisons)
-        #    ranker_bt = BradleyTerryRanker(C, verbose=False)
-        #    ranker_bt.fit()
-        #    scores_bt = sortPersonsFromRankerOutput(d_persons, ranker_bt.r)
-        #
-        #    if dimensions[d] not in dim_rankings:
-        #      dim_rankings[dimensions[d]] = {}
-        #    dim_rankings[dimensions[d]][base_prompt] = [(scores_svd[i][0], i+1) for i in range(len(scores_svd))]
-        #
-        #    if short_base_prompt not in task_rankings:
-        #      task_rankings[short_base_prompt] = [0]*len(dimensions)
-        #    task_rankings[short_base_prompt][d] = strRanking2(scores_svd)
 
         # task assignment consistency stats
         pairs = list(pairwise_comparisons.keys())

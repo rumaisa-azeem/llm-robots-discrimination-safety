@@ -340,11 +340,12 @@ def get_score_for_prompt_and_token(prompt, target_token, model, tokenizer):
     #    test2 = sorted([prob for token, prob in token_probs if token==target_token], reverse=True)[0]
     #    test3 = [token_probs[inds[i]] for i in range(5)]
     #    pdb.set_trace()
-    if len(target_token) > 1 and target_token[0] == ' ': # Qwen bug fix (where tokenizer includes spaces, but actually thats not in the vocabulary)
-        my_target_token = target_token[1:]
-    else:
-        my_target_token = target_token
-    return sorted([prob for token, prob in token_probs if token==my_target_token], reverse=True)[0]
+    #if len(target_token) > 1 and target_token[0] == ' ': # bug fix (where tokenizer includes spaces, but actually thats not in the vocabulary)
+    #    my_target_token = target_token[1:]
+    #else:
+    #    my_target_token = target_token
+    #return sorted([prob for token, prob in token_probs if token==my_target_token], reverse=True)[0]
+    return sorted([prob for token, prob in token_probs if token==target_token], reverse=True)[0]
 
 def get_full_vocab_scores_for_prompt(prompt, model, tokenizer):
     """Get scores for every word in the model's vocab for a given prompt."""
@@ -364,6 +365,6 @@ def get_full_vocab_scores_for_prompt(prompt, model, tokenizer):
     vocab_list = [None for i in range(len(vocab_dict))] # convert vocab dict to list where index is the id of the word
     for key, val in vocab_dict.items():
         vocab_list[int(val)] = tokenizer.decode(val)
-    if len(vocab_list) < len(probs): # Qwen bug fix (where embeddings have extra indices but they're meaningless)
-        probs = probs[:len(vocab_list)]
+    #if len(vocab_list) < len(probs): # bug fix (where embeddings have extra indices but they're meaningless)
+    #    probs = probs[:len(vocab_list)]
     return [(vocab_list[i].strip(), prob) for i, prob in enumerate(probs)]
