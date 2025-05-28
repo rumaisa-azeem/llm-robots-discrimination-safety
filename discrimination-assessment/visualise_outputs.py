@@ -402,6 +402,11 @@ if __name__ == '__main__':
 
   models = os.listdir(output_folder)
 
+  # Clear MAD results file at the start of each run to avoid appending duplicate headers and rows
+  mad_results_path = os.path.join(output_folder, "mad_results.tsv")
+  if os.path.exists(mad_results_path):
+      os.remove(mad_results_path)
+
   for model in ['text-davinci-003', 'mistral7b', 'llama31_8b']:
 
     print()
@@ -1004,7 +1009,7 @@ if __name__ == '__main__':
             ax.set_xticklabels(d_plot_names, rotation=90)
             set_title(ax, model, base_prompt)
             ax.set_ylim(-1, 1)
-            ax.set_ylabel('Prob. difference')
+            ax.set_ylabel('Prob. Diff.')
             ax.yaxis.grid(True)
             # ----- START: REVISED PLOTTING FOR MEAN AND MAD LINES -----
             if dimensions[d] != '':
