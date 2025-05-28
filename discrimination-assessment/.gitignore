@@ -11,3 +11,23 @@ discarded.py
 __pycache__
 old_outputs
 venv/
+
+# Added/Ensured by pyuvstarter.py
+
+# Python Virtual Environments
+.venv/
+ENV/
+env/
+*/.venv/
+*/venv/
+
+# Python Cache & Compiled Files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Log file from this script
+pyuvstarter_setup_log.json
+
+# OS-specific
+Thumbs.db
