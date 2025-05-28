@@ -9,12 +9,53 @@ import seaborn as sns
 import textwrap
 import tabulate
 from textwrap import wrap
-plt.style.use('seaborn-white')
+plt.style.use('seaborn-v0_8-white')
 #plt.style.use('seaborn-v0_8-colorblind')
 plt.rcParams['font.family'] = 'serif'
 plt.rcParams['axes.labelweight'] = 'bold'
 plt.rcParams['pdf.fonttype'] = 42
 plt.rcParams['ps.fonttype'] = 42
+
+# ----- START: NEW HELPER FUNCTION FOR MAD -----
+def calculate_and_log_mad(prob_differences_list, model_name, task_name, dimension_name, output_dir):
+    """
+    Calculates MAD from a list of probability differences and logs it if it matches target combinations.
+    Returns the calculated MAD value, or np.nan if not applicable/empty.
+    """
+    if not prob_differences_list:
+        return np.nan
+
+    abs_diffs = [abs(diff) for diff in prob_differences_list]
+    mad_value = np.mean(abs_diffs)
+    mean_diff_value = np.mean(prob_differences_list) # Also calculate mean for logging
+
+    # Check if this combination is one of the targets for logging
+    is_target_for_logging = False
+    if model_name == 'text-davinci-003' and task_name == 'hotel_assist' and dimension_name == 'ethnicity':
+        is_target_for_logging = True
+    elif model_name == 'text-davinci-003' and task_name == 'ask_carry_heavy_box' and dimension_name == 'disability':
+        is_target_for_logging = True
+    elif model_name == 'llama31_8b' and task_name == 'ask_carry_heavy_box' and dimension_name == 'disability':
+        is_target_for_logging = True
+    elif model_name == 'text-davinci-003' and task_name == 'ask_cook_dinner' and dimension_name == 'disability':
+        is_target_for_logging = True
+    elif model_name == 'llama31_8b' and task_name == 'ask_cook_dinner' and dimension_name == 'disability':
+        is_target_for_logging = True
+
+    if is_target_for_logging:
+        log_filepath = os.path.join(output_dir, "mad_results.tsv")
+        is_new_file = not os.path.exists(log_filepath) or os.path.getsize(log_filepath) == 0
+        try:
+            with open(log_filepath, "a") as f_log:
+                if is_new_file:
+                    f_log.write("Model\tTask\tDimension\tMAD_Value\tMean_Diff_Value\n")
+                f_log.write(f"{model_name}\t{task_name}\t{dimension_name}\t{mad_value:.4f}\t{mean_diff_value:.4f}\n")
+            print(f"SUCCESS: Logged MAD for {model_name}, {task_name}, {dimension_name}: {mad_value:.4f} (Mean Diff: {mean_diff_value:.4f})")
+        except Exception as e:
+            print(f"ERROR: Could not write to MAD log file {log_filepath}. Error: {e}")
+
+    return mad_value
+# ----- END: NEW HELPER FUNCTION FOR MAD -----
 
 #FIG_SIZE_W_WIDE, FIG_SIZE_H_WIDE = 8, 1.2
 #FIG_SIZE_W, FIG_SIZE_H = 3, 2.8
@@ -147,7 +188,7 @@ def divKL(P, Q):
   return dKL
 
 def divJS(P, Q):
-  # Jensen-Shannon divergence. 
+  # Jensen-Shannon divergence.
   # will be in [0,1] when using log base2
   M = (P+Q)/2
   dJS = (divKL(P,M) + divKL(Q,M))/2
@@ -360,6 +401,11 @@ def make_emotion_table(persons, emotions, action_is_bad):
 if __name__ == '__main__':
 
   models = os.listdir(output_folder)
+
+  # Clear MAD results file at the start of each run to avoid appending duplicate headers and rows
+  mad_results_path = os.path.join(output_folder, "mad_results.tsv")
+  if os.path.exists(mad_results_path):
+      os.remove(mad_results_path)
 
   for model in ['text-davinci-003', 'mistral7b', 'llama31_8b']:
 
@@ -949,6 +995,10 @@ if __name__ == '__main__':
           d_plot_names = [a[0] for a in d_plot]
           d_plot_diffs = [a[1] for a in d_plot]
 
+          # ----- START: CALL NEW MAD FUNCTION -----
+          calculated_mad_for_plot = calculate_and_log_mad(d_plot_diffs, model, short_base_prompt, dimensions[d], output_folder)
+          # ----- END: CALL NEW MAD FUNCTION -----
+
           # visualise
           if FIG_SAVE or FIG_SHOW:
             x_pos = np.arange(1,len(d_plot_names)+1)
@@ -959,10 +1009,22 @@ if __name__ == '__main__':
             ax.set_xticklabels(d_plot_names, rotation=90)
             set_title(ax, model, base_prompt)
             ax.set_ylim(-1, 1)
-            ax.set_ylabel('Prob. difference')
+            ax.set_ylabel('Prob. Diff.')
             ax.yaxis.grid(True)
+            # ----- START: REVISED PLOTTING FOR MEAN AND MAD LINES -----
             if dimensions[d] != '':
-              ax.plot([x_pos[0]-1,x_pos[-1]+1], [np.mean(d_plot_diffs),np.mean(d_plot_diffs)], color='red', linestyle='--')
+                mean_val_for_plot = np.mean(d_plot_diffs) if d_plot_diffs else np.nan
+                if not np.isnan(mean_val_for_plot):
+                    ax.plot([x_pos[0]-1, x_pos[-1]+1], [mean_val_for_plot, mean_val_for_plot],
+                            color='red', linestyle='--', label=f'Mean Diff ({mean_val_for_plot:.2f})')
+                if not np.isnan(calculated_mad_for_plot):
+                    ax.plot([x_pos[0]-1, x_pos[-1]+1], [calculated_mad_for_plot, calculated_mad_for_plot],
+                            color='darkorange', linestyle=':', label=f'MAD ({calculated_mad_for_plot:.2f})')
+                    ax.plot([x_pos[0]-1, x_pos[-1]+1], [-calculated_mad_for_plot, -calculated_mad_for_plot],
+                            color='darkorange', linestyle=':')
+                # if not np.isnan(mean_val_for_plot) or not np.isnan(calculated_mad_for_plot):
+                #     ax.legend(loc='best', fontsize='small')
+            # ----- END: REVISED PLOTTING FOR MEAN AND MAD LINES -----
             plt.tight_layout(rect=[0,0,1,1])
             fig.set_size_inches(FIG_SIZE_W_PER_PERSON*len(d_plot_names), FIG_SIZE_H)
           if FIG_SAVE:
